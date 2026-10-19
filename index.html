@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lern-App Wirtschaft & Gesellschaft I</title>
+<style>
+:root{
+  --bg:#ECEFE8; --surface:#F8F9F5; --ink:#1C2B3A; --muted:#5B6873; --line:#C9D0C6;
+  --accent:#2F6F62; --accent-ink:#FFFFFF; --good:#2F7A4A; --bad:#A3392B; --gold:#B5862A;
+  --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ color-scheme:dark;
+    --bg:#131A1F; --surface:#1C252C; --ink:#E3E8E2; --muted:#9AA6AE; --line:#33414B;
+    --accent:#6FB3A2; --accent-ink:#0F1A17; --good:#6CC28B; --bad:#E07A6B; --gold:#D9AE55; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+main{max-width:640px;margin:0 auto;padding:20px 18px 110px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;margin:0 0 .4em}
+h1{font-size:1.75rem} h2{font-size:1.35rem} h3{font-size:1.08rem}
+p{margin:0 0 .8em}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+.block{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+button,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:12px 18px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.warn{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grow{flex:1}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+select{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 10px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+nav .wrap{display:flex;max-width:640px;width:100%}
+nav button{flex:1;background:none;border:0;padding:12px 4px 14px;font-size:.82rem;color:var(--muted);border-top:3px solid transparent}
+nav button[aria-current="page"]{color:var(--ink);border-top-color:var(--accent);font-weight:600}
+
+/* Münzleiste: 12 Fragen der Quiz-Simulation */
+.coins{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;margin:12px 0}
+.coin{aspect-ratio:1;border-radius:50%;border:2px solid var(--line);background:transparent;padding:0;font-size:.7rem;color:var(--muted);display:grid;place-items:center}
+.coin.done{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.coin.now{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.coin.ok{background:var(--good);border-color:var(--good);color:#fff}
+.coin.no{background:transparent;border-color:var(--bad);color:var(--bad)}
+
+.timer{font-family:var(--serif);font-size:2.6rem;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.timer.low{color:var(--bad)}
+.q{font-family:var(--serif);font-size:1.2rem;line-height:1.4;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;line-height:1.4}
+.opt.sel{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+.expl{border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin:14px 0}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.card{min-height:220px;display:flex;flex-direction:column;justify-content:center;text-align:center;cursor:pointer;user-select:none}
+.card .front{font-family:var(--serif);font-size:1.45rem}
+.card .back{white-space:pre-line;text-align:left;line-height:1.55}
+textarea{width:100%;min-height:180px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:.82rem}
+.verdict{font-family:var(--serif);font-size:1.6rem}
+.verdict.pass{color:var(--good)} .verdict.fail{color:var(--bad)}
+.review{border-top:1px solid var(--line);padding:12px 0}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+td{padding:6px 0;border-bottom:1px solid var(--line)}
+td:last-child{text-align:right}
+.switch{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 18px}
+.switch button{background:transparent;border:0;padding:10px 6px;font-weight:600;color:var(--muted)}
+.switch button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"><p class="muted">Lade …</p></main>
+<nav><div class="wrap" id="nav"></div></nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ===== Fragen und Karten: Sitzung 1 ===== */
+/* Bei Fragen steht die richtige Antwort immer an erster Stelle in "o"; die App mischt sie. */
+const BASE = {
+  sitzungen: { "1": "Grundlagen und Antike" },
+  fragen: [
+    {id:"s1-01",s:1,q:"Wie wird ein Modell in der Vorlesung definiert?",o:["Eine vereinfachte Darstellung der Realität, mit der bestimmte Zusammenhänge isoliert untersucht werden","Eine möglichst vollständige Abbildung der Realität","Eine empirisch bewiesene Gesetzmäßigkeit","Eine normative Vorgabe, wie Wirtschaft funktionieren soll"],e:"Ein Modell kann und soll nicht die gesamte Realität abbilden, sondern bestimmte Mechanismen."},
+    {id:"s1-02",s:1,q:"Was veranschaulicht das Beispiel des U-Bahn-Plans?",o:["Ein Modell zeigt nur, was für seine Frage wichtig ist (Stationen, keine Straßen)","Modelle müssen maßstabsgetreu sein","Modelle sind immer geografisch","Je detaillierter ein Modell, desto besser"],e:"U-Bahn-Pläne zeigen nur die Stationen, keine Straßen."},
+    {id:"s1-03",s:1,q:"Welches Modell gehört NICHT zu den fünf Modellen des Kernlehrplans?",o:["Gefangenendilemma","Homo oeconomicus","Erweiterter Wirtschaftskreislauf","Modell des Konjunkturzyklus"],e:"Die fünf: Homo oeconomicus, Marktmodell, erweiterter Wirtschaftskreislauf, soziales Interaktionsmodell, Konjunkturzyklus."},
+    {id:"s1-04",s:1,q:"Welches der folgenden Modelle gehört zu den fünf Modellen des Kernlehrplans?",o:["Soziales Interaktionsmodell","Akerlofs Lemons-Modell","Modell der Spieltheorie","Modell der Geldschöpfung"],e:"Die fünf: Homo oeconomicus, Marktmodell, erweiterter Wirtschaftskreislauf, soziales Interaktionsmodell, Konjunkturzyklus."},
+    {id:"s1-05",s:1,q:"Welche Frage gehört NICHT zu den Fragen, die man laut Vorlesung immer an ein Modell stellen muss?",o:["Wer hat das Modell zuerst veröffentlicht?","Was nimmt es an?","Was blendet es aus?","Was können wir damit nicht erklären?"],e:"Die fünf Fragen: Welche Frage beantwortet es? Was nimmt es an? Was blendet es aus? Was können wir damit erklären? Was nicht?"},
+    {id:"s1-06",s:1,q:"Wie wurde das Fach Wirtschaftswissenschaften historisch bezeichnet?",o:["Politische Ökonomie","Kameralistik der Moderne","Chrematistik","Haushaltslehre"],e:"Der Begriff Politische Ökonomie macht die interdisziplinäre Perspektive deutlich: Wirtschaft im Zusammenhang mit Politik und Gesellschaft."},
+    {id:"s1-07",s:1,q:"Welche Inhaltsfelder des Kernlehrplans sind besonders ökonomisch ausgerichtet?",o:["Inhaltsfeld 1 (Marktwirtschaftliche Ordnung) und Inhaltsfeld 4 (Wirtschaftspolitik)","Inhaltsfeld 2 und Inhaltsfeld 3","Nur Inhaltsfeld 1","Inhaltsfeld 1 und Inhaltsfeld 5"],e:"IF 1: Marktwirtschaftliche Ordnung, IF 4: Wirtschaftspolitik."},
+    {id:"s1-08",s:1,q:"Was untersuchen Wirtschaftswissenschaften laut Vorlesung?",o:["Wie Menschen und Gesellschaften Güter und Ressourcen produzieren, verteilen und verwenden","Ausschließlich das Verhalten von Unternehmen auf Märkten","Nur die Geldpolitik von Zentralbanken","Wie man den Gewinn eines Betriebs maximiert"],e:"Dazu kommt die Frage, wie Wirtschaft, politische Institutionen, Macht und gesellschaftliche Interessen zusammenhängen."},
+    {id:"s1-09",s:1,q:"In welchen Zusammenhang waren wirtschaftliche Fragen in der Antike NICHT eingebettet?",o:["Finanzmärkte und Börsenhandel","Ethik/Philosophie","Haushaltsführung","Landwirtschaft"],e:"Eingebettet in Ethik/Philosophie, Politik, Haushaltsführung und Landwirtschaft."},
+    {id:"s1-10",s:1,q:"Was war in der Antike die zentrale Produktionseinheit?",o:["Haushalt bzw. Gutshof","Manufaktur","Fabrik","Handelsgesellschaft"],e:"Hintergrund: Agrargesellschaft, Gutshof, Sklaverei, begrenzte Märkte, zunehmende Monetarisierung."},
+    {id:"s1-11",s:1,q:"Wer betrachtet Arbeitsteilung als Organisation des Haushalts bzw. Gutshofs?",o:["Xenophon","Platon","Aristoteles","Cicero"],e:"Xenophons Fragestellung wirkt „betriebswirtschaftlich“: Wie lässt sich Arbeit sinnvoll organisieren?"},
+    {id:"s1-12",s:1,q:"Wer betrachtet Arbeitsteilung als gesellschaftliches Prinzip?",o:["Platon","Xenophon","Cato","Columella"],e:"Menschen können ihre Bedürfnisse nicht allein befriedigen; Arbeitsteilung erzeugt gegenseitige Abhängigkeit."},
+    {id:"s1-13",s:1,q:"Was erzeugt Arbeitsteilung nach Platon?",o:["Gegenseitige Abhängigkeit","Vollständige Autarkie jedes Haushalts","Steigenden Eigennutz","Sinkende Spezialisierung"],e:"Die Frage verschiebt sich vom einzelnen Haushalt zur Organisation der Gesellschaft."},
+    {id:"s1-14",s:1,q:"Wodurch wird Arbeitsteilung in der Antike (noch) NICHT primär erklärt?",o:["Durch Markt, Preise und individuellen Eigennutz","Durch eine Vorstellung gesellschaftlicher Ordnung","Durch unterschiedliche Fähigkeiten","Durch die Organisation des Gutshofs"],e:"Wirtschaftliches Handeln erscheint als Teil der Gesellschaft, nicht als eigenständige Sphäre."},
+    {id:"s1-15",s:1,q:"Was ist Arbeitsteilung?",o:["Aufteilung wirtschaftlicher Tätigkeiten auf unterschiedliche Personen, wodurch Spezialisierung und häufig höhere Produktivität möglich werden","Die gleichmäßige Verteilung des Einkommens","Die Trennung von Haushalt und Staat","Der Tausch von Gütern gegen Geld"],e:"Konzept-Folie zur Arbeitsteilung."},
+    {id:"s1-16",s:1,q:"Welche Funktion hat Geld nach Aristoteles?",o:["Es erleichtert den Austausch und macht unterschiedliche Güter vergleichbar","Es dient vor allem der Vermögensanhäufung","Es ist entstanden, weil der Staat Steuern eintreiben wollte","Es ersetzt den Wert der Arbeit"],e:"Wichtig: Das ist eine Aussage über den Nutzen von Geld, nicht über seine historische Entstehung."},
+    {id:"s1-17",s:1,q:"Worüber trifft Aristoteles mit seiner Erklärung von Geld eine Aussage?",o:["Über den Nutzen von Geld","Über die historische Entstehung von Geld","Über die Geldmenge","Über Zinsen"],e:"Die Folie betont: keine Aussage über die Entstehung, sondern eine Frage nach dem Nutzen."},
+    {id:"s1-18",s:1,q:"Was macht Geld nach Aristoteles NICHT wertvoll?",o:["Die Arbeitszeit, die zu seiner Herstellung nötig ist","Gebrauch","Seltenheit","Vergleichbarkeit"],e:"Wertbestimmend: Gebrauch, Austausch, Seltenheit, Vergleichbarkeit."},
+    {id:"s1-19",s:1,q:"Was bezeichnet Aristoteles als Oikonomia?",o:["Wirtschaften zur Bedarfsdeckung","Geldvermehrung zum Selbstzweck","Handel mit fremden Städten","Staatliche Steuerpolitik"],e:"Oikonomia = Bedarfsdeckung; Chrematistik = Geldvermehrung zum Selbstzweck."},
+    {id:"s1-20",s:1,q:"Was bezeichnet Aristoteles als Chrematistik?",o:["Geldvermehrung zum Selbstzweck","Wirtschaften zur Bedarfsdeckung","Die Lehre vom gerechten Preis","Die Führung des Gutshofs"],e:"Hintergrund: Ist jede Form des Gelderwerbs legitim?"},
+    {id:"s1-21",s:1,q:"Was ist eine normative Aussage?",o:["Eine Aussage darüber, wie etwas sein sollte","Eine Aussage darüber, wie etwas ist","Eine statistisch geprüfte Aussage","Eine Aussage über Normen in der Industrie"],e:"Beispiel der Folie: Was ist notwendig für eine gerechte Gesellschaft?"},
+    {id:"s1-22",s:1,q:"Was ist eine positive Aussage?",o:["Eine Aussage darüber, wie etwas ist bzw. funktioniert","Eine Aussage darüber, wie etwas sein sollte","Eine zustimmende Bewertung","Eine optimistische Prognose"],e:"„Positiv“ heißt hier beschreibend, nicht „gut“."},
+    {id:"s1-23",s:1,q:"Laut Folie ist „Ist die Gesellschaft gerecht?“ ein Beispiel für …",o:["… eine positive Aussage","… eine normative Aussage","… eine Informationsasymmetrie","… eine Modellannahme"],e:"Die Folie führt „Ist die Gesellschaft gerecht?“ und „Warum ist die Gesellschaft gerecht?“ als positive Beispiele. Normativ ist dagegen: Was ist notwendig für eine gerechte Gesellschaft?"},
+    {id:"s1-24",s:1,q:"Welcher Wandel des ökonomischen Denkens vollzieht sich von der Antike zur Moderne?",o:["Von einem normativen zu einem positiven Verständnis","Von einem positiven zu einem normativen Verständnis","Von der Theorie zur Praxis","Vom Markt zum Haushalt"],e:"In der Antike hängt wirtschaftliches Handeln an der Frage, was ein gutes Leben und eine gute Gesellschaft ausmacht."},
+    {id:"s1-25",s:1,q:"Ciceros Getreidehändler weiß, dass morgen viel Getreide eintrifft und der Preis fällt. Welcher moderne Begriff beschreibt das Problem?",o:["Informationsasymmetrie","Opportunitätskosten","Arbeitsteilung","Chrematistik"],e:"Die Beteiligten einer Transaktion sind unterschiedlich gut informiert."},
+    {id:"s1-26",s:1,q:"Mit welchem Beispiel ist Akerlofs „The Market for Lemons“ verbunden?",o:["Gebrauchtwagenmarkt","Getreidehandel im alten Rom","Arbeitsmarkt für Sklaven","Aktienmarkt"],e:"Akerlof (1970): Quality Uncertainty and the Market Mechanism."},
+    {id:"s1-27",s:1,q:"Was zeigt Ciceros Getreidehändler-Beispiel über Handel?",o:["Handel ist mehr als Preise und Mengen; es geht um Regeln, Wissen und Moral","Handel funktioniert nur mit vollständiger Information","Händler sollen den Preis maximieren","Preise sind immer gerecht"],e:"Folie: Handel ist mehr als Preise und Mengen."},
+    {id:"s1-28",s:1,q:"Wie hoch ist bei Platon das Maximalvermögen?",o:["Das Vierfache des Existenzminimums","Das Doppelte des Existenzminimums","Das Zehnfache des Existenzminimums","Es gibt keine Obergrenze"],e:"Der Staat legt ein Existenzminimum fest; alles über dem Vierfachen geht an den Staat bzw. die Schutzgötter."},
+    {id:"s1-29",s:1,q:"Was geschieht bei Platon mit Vermögen oberhalb des Maximalvermögens?",o:["Es geht an den Staat bzw. die Schutzgötter","Es wird an die Armen verteilt","Es wird verboten zu erwerben","Es wird in Land investiert"],e:"Platons Gerechtigkeitsmodell."},
+    {id:"s1-30",s:1,q:"Womit beschäftigt sich Cato in seiner Schrift zur Betriebsführung?",o:["Kosten, Arbeitsorganisation, Auslastung und Eigenproduktion vs. Einkauf","Geld als Tauschmittel","Gerechte Vermögensverteilung","Informationspflichten von Händlern"],e:"Der Gutshof wird kalkulatorisch betrachtet. Moderner Begriff: make or buy."},
+    {id:"s1-31",s:1,q:"Welcher moderne Begriff entspricht der Frage „Produktion selbst oder zukaufen?“",o:["Make or buy","Opportunitätskosten","Arbeitsteilung","Rendite"],e:"Tabelle „Antike und Moderne“."},
+    {id:"s1-32",s:1,q:"Wer betrachtet Investitionen als Verhältnis von Aufwand und erwartetem Ertrag und vergleicht sie mit Alternativen?",o:["Columella","Cato","Xenophon","Aristoteles"],e:"Daraus folgen die Konzepte Rendite und Opportunitätskosten."},
+    {id:"s1-33",s:1,q:"Ertrag 20 €, Kosten 5 €. Wie hoch ist die Rendite nach der Formel der Vorlesung?",o:["300 %","400 %","75 %","15 %"],e:"(20 − 5) / 5 = 3 = 300 %."},
+    {id:"s1-34",s:1,q:"Ertrag 30 €, Kosten 10 €. Wie hoch ist die Rendite?",o:["200 %","300 %","20 %","66 %"],e:"(30 − 10) / 10 = 2 = 200 %."},
+    {id:"s1-35",s:1,q:"Du kaufst einen Fernseher für 1.000 € statt das Geld zu 4 % p. a. anzulegen. Wie hoch sind die Opportunitätskosten (ein Jahr)?",o:["40 €","1.000 €","1.040 €","4 €"],e:"Entgangener Ertrag der besten Alternative: 4 % von 1.000 € = 40 €."},
+    {id:"s1-36",s:1,q:"Was sind Opportunitätskosten?",o:["Der entgangene Nutzen oder Ertrag der nicht gewählten Alternative","Die direkten Ausgaben für ein Gut","Die Kosten für Informationsbeschaffung","Die Steuern auf einen Gewinn"],e:"Kosten für entgangenen Nutzen bei anderer Verwendung eines Gutes oder Produktionsfaktors."},
+    {id:"s1-37",s:1,q:"Welcher moderne Begriff entspricht dem antiken Problem „Menschen reagieren auf Belohnungen“?",o:["Anreize","Geld und Wert","Informationsasymmetrie","Arbeitsteilung"],e:"Tabelle „Antike und Moderne“."},
+    {id:"s1-38",s:1,q:"Welcher moderne Begriff entspricht dem antiken Problem „Tausch benötigt Vergleichbarkeit“?",o:["Geld und Wert","Make or buy","Anreize","Steuer- und Transfersysteme"],e:"Tabelle „Antike und Moderne“."},
+    {id:"s1-39",s:1,q:"Welcher moderne Begriff entspricht der antiken Frage „Was ist eine gerechte Gesellschaft?“",o:["Steuer- und Transfersysteme","Rendite","Arbeitsteilung","Informationsasymmetrie"],e:"Tabelle „Antike und Moderne“."},
+    {id:"s1-40",s:1,q:"Welche Aussage über die Antike trifft laut Vorlesung zu?",o:["Antike Autoren stellen ähnliche Fragen, entwickeln aber noch keine geschlossenen ökonomischen Modelle","Die Antike kannte bereits ein ausgearbeitetes Marktmodell","Wirtschaftswissenschaft war in der Antike eine eigenständige Disziplin","Antike Autoren erklärten Arbeitsteilung über Preise und Eigennutz"],e:"Ähnliche Fragestellung ≠ gleiche Theorie."},
+    {id:"s1-41",s:1,q:"Was ist eine der Take-aways der ersten Sitzung?",o:["Ökonomische Modelle sind historisch entstandene Perspektiven auf Probleme, nicht die Probleme selbst","Ökonomische Probleme sind erst in der Moderne entstanden","Moderne Modelle bilden die Realität vollständig ab","Die Antike ist für heutige Wirtschaftsfragen irrelevant"],e:"Weitere Take-aways: Viele ökonomische Probleme sind sehr alt; keine eigenständige Disziplin in der Antike."},
+    {id:"s1-42",s:1,q:"Richtig oder falsch: Ökonomische Modelle entstehen unabhängig von historischen Ereignissen.",o:["Falsch","Richtig"],fix:true,a:0,e:"Grundidee der Vorlesung: Modelle entstehen nicht losgelöst von historischen und gesellschaftlichen Bedingungen."}
+  ],
+  karten: [
+    {id:"s1-k01",s:1,f:"Modell",b:"Vereinfachte Darstellung der Realität, mit der bestimmte Zusammenhänge isoliert untersucht werden.\nBeispiel: U-Bahn-Plan zeigt nur Stationen, keine Straßen."},
+    {id:"s1-k02",s:1,f:"Fünf Fragen an jedes Modell",b:"Welche Frage beantwortet es?\nWas nimmt es an?\nWas blendet es aus?\nWas können wir damit erklären?\nWas können wir damit nicht erklären?"},
+    {id:"s1-k03",s:1,f:"Fünf Modelle des Kernlehrplans",b:"Homo oeconomicus\nMarktmodell\nErweiterter Wirtschaftskreislauf\nSoziales Interaktionsmodell\nModell des Konjunkturzyklus"},
+    {id:"s1-k04",s:1,f:"Politische Ökonomie",b:"Historische Bezeichnung des Fachs. Wirtschaft wird im Zusammenhang mit Politik und Gesellschaft gedacht (interdisziplinär)."},
+    {id:"s1-k05",s:1,f:"Antike: Einbettung der Wirtschaft",b:"Ethik/Philosophie, Politik, Haushaltsführung, Landwirtschaft.\nHintergrund: Agrargesellschaft, Gutshof als Produktionseinheit, Sklaverei, begrenzte Märkte, zunehmende Monetarisierung."},
+    {id:"s1-k06",s:1,f:"Xenophon (~400 v. Chr.)",b:"Arbeitsteilung als Organisation von Haushalt/Gutshof, nach Fähigkeiten und Aufgaben. Führung und Anreize. „Betriebswirtschaftliche“ Perspektive."},
+    {id:"s1-k07",s:1,f:"Platon: Arbeitsteilung",b:"Gesellschaftliches Prinzip: Niemand kann alle Bedürfnisse allein befriedigen. Spezialisierung verteilt Aufgaben und erzeugt gegenseitige Abhängigkeit."},
+    {id:"s1-k08",s:1,f:"Platon: gerechte Gesellschaft",b:"Staat legt Existenzminimum fest. Maximalvermögen = 4 × Existenzminimum. Alles darüber geht an den Staat bzw. die Schutzgötter."},
+    {id:"s1-k09",s:1,f:"Arbeitsteilung",b:"Aufteilung wirtschaftlicher Tätigkeiten auf unterschiedliche Personen → Spezialisierung, häufig höhere Produktivität.\nIn der Antike noch nicht über Markt, Preise und Eigennutz erklärt."},
+    {id:"s1-k10",s:1,f:"Aristoteles: Geld",b:"Erleichtert den Austausch und macht Güter vergleichbar. Aussage über den Nutzen, nicht über die Entstehung.\nWert durch: Gebrauch, Austausch, Seltenheit, Vergleichbarkeit."},
+    {id:"s1-k11",s:1,f:"Oikonomia vs. Chrematistik",b:"Oikonomia: Bedarfsdeckung.\nChrematistik: Geldvermehrung zum Selbstzweck.\n(Aristoteles: Ist jeder Gelderwerb legitim?)"},
+    {id:"s1-k12",s:1,f:"Normativ vs. positiv",b:"Normativ: wie etwas sein sollte („Was ist notwendig für eine gerechte Gesellschaft?“).\nPositiv: wie etwas ist bzw. funktioniert („Ist die Gesellschaft gerecht?“).\nAntike → Moderne: von normativ zu positiv."},
+    {id:"s1-k13",s:1,f:"Cicero (~100 v. Chr.)",b:"Getreidehändler: Muss er sagen, dass der Preis morgen fällt?\nHandel ist mehr als Preise und Mengen: Regeln, Wissen, Moral → Informationsasymmetrie."},
+    {id:"s1-k14",s:1,f:"Informationsasymmetrie",b:"Beteiligte einer Transaktion sind unterschiedlich gut informiert.\nAkerlof (1970): The Market for Lemons → Gebrauchtwagenmarkt."},
+    {id:"s1-k15",s:1,f:"Cato (~50 v. Chr.)",b:"Kalkulatorische Betriebsführung: Kosten, Arbeitsorganisation, Auslastung, Eigenproduktion vs. Einkauf (make or buy)."},
+    {id:"s1-k16",s:1,f:"Columella (~50 n. Chr.)",b:"Investition als Verhältnis von Aufwand und erwartetem Ertrag, Vergleich mit alternativen Verwendungen → Rendite, Opportunitätskosten."},
+    {id:"s1-k17",s:1,f:"Rendite",b:"(Ertrag − Kosten) / Kosten\nBeispiel: (20 − 5) / 5 = 300 %"},
+    {id:"s1-k18",s:1,f:"Opportunitätskosten",b:"Entgangener Nutzen/Ertrag der nicht gewählten Alternative.\nBeispiel: Fernseher für 1.000 € statt Anlage zu 4 % → 40 €."},
+    {id:"s1-k19",s:1,f:"Antikes Problem → moderner Begriff",b:"Spezialisierung → Arbeitsteilung\nBelohnungen → Anreize\nVergleichbarkeit im Tausch → Geld und Wert\nVerkäufer weiß mehr → Informationsasymmetrie\nSelbst produzieren oder zukaufen → make or buy\nLohnt sich Investition → Rendite/Opportunitätskosten\nGerechte Gesellschaft → Steuer- und Transfersysteme"},
+    {id:"s1-k20",s:1,f:"Take-aways Sitzung 1",b:"Viele ökonomische Probleme sind sehr alt.\nModelle sind historisch entstandene Perspektiven auf Probleme, nicht die Probleme selbst.\nIn der Antike keine eigenständige Wirtschaftswissenschaft.\nÄhnliche Fragestellung ≠ gleiche Theorie."}
+  ]
+};
+
+/* ===== Sozialstruktur: Karteikarten Sitzung 1 ===== */
+const BASE_SOZ = {
+  sitzungen: { "1": "Einführung (15.10.)" },
+  karten: [
+    {id:"soz1-k01",s:1,f:"Struktur (Glatzer 2002)",b:"Eine Mehrzahl von Einheiten ist nicht zufällig angeordnet bzw. verbunden. Es gibt Regelmäßigkeiten oder Muster: Was an einer Stelle auftritt, kehrt an einer anderen wieder."},
+    {id:"soz1-k02",s:1,f:"Soziologie als Verhaltenswissenschaft",b:"Ziel: soziale Phänomene erklären und vorhersagen.\nNicht: Verhalten einzelner Menschen (Warum läuft Herr K. Amok?).\nSondern: strukturierende Einflüsse, die Handeln systematisch beeinflussen (Welche gesellschaftlichen Bedingungen fördern die Häufigkeit von Amokläufen?)."},
+    {id:"soz1-k03",s:1,f:"Ziel jeder Sozialstrukturanalyse",b:"Faktoren bestimmen, die Verhalten systematisch beeinflussen.\nFokus: Muster, verursacht durch offene oder verdeckte soziale Regeln.\nKein Interesse am Einzelfall, sondern an Durchschnittswerten bzw. Wahrscheinlichkeiten.\nSoziale Regeln manifestieren sich in sozialen Strukturen."},
+    {id:"soz1-k04",s:1,f:"Goldene Regel",b:"Keine Argumentation mit Einzelfällen!\nBeispiel: „Raucher sterben nicht früher“ (Helmut Schmidt, ca. 40 Zigaretten am Tag, wurde 96).\nGegenbeleg: Überlebensraten britischer Ärzte, Raucher vs. Nichtraucher (Doll et al. 2004)."},
+    {id:"soz1-k05",s:1,f:"Wie entsteht Sozialstruktur?",b:"Von Menschen gemacht: Grundlage und Ergebnis menschlichen Handelns.\nEntsteht durch bewusst oder unbewusst geschaffene, dauerhafte und durchsetzbare Regeln.\nRegeln steuern, ordnen und stabilisieren soziale Prozesse.\nBegrenzte Reichweite, historisch und kulturell wandelbar.\nBestand und Wandel hängen von der Verteilung von Ressourcen (Macht) ab."},
+    {id:"soz1-k06",s:1,f:"Restriktionen",b:"Beschränkungen des individuellen Handlungsspielraums.\nKönnen enger oder weiter sein.\nNatürlich (Schwerkraft, Klima) oder sozial (Normen, Gesetze)."},
+    {id:"soz1-k07",s:1,f:"Ressourcen",b:"Mehr (weniger) Ressourcen = mehr (weniger) Macht.\nRessourcen wirken in Kombination mit Restriktionen auf den Handlungsspielraum."},
+    {id:"soz1-k08",s:1,f:"Lebensverlaufsansatz: drei Wechselwirkungen",b:"1. Zwischen Lebensbereichen (Beruf im Kontext von Familie).\n2. Vorher-nachher: frühere Erfahrungen strukturieren aktuelles Verhalten (frühere Arbeitslosigkeit → Angst vor Jobverlust).\n3. Mit dem Verhalten anderer, „linked lives“ (Partnerschaft braucht Zustimmung beider)."},
+    {id:"soz1-k09",s:1,f:"Drei generelle Faktoren der Sozialstrukturanalyse",b:"Restriktionen – Ressourcen – Lebensverlauf"},
+    {id:"soz1-k10",s:1,f:"Sozialordnung",b:"Gesellschaften müssen Verhaltensregeln („Spielregeln“) und Kriterien der Ressourcenverteilung festlegen.\nDie Sozialordnung soll sorgen für:\nEffizienz (keine Ressourcen verschwenden)\nGerechtigkeit (Ressourcen gerecht verteilen)"},
+    {id:"soz1-k11",s:1,f:"Soziale Ungleichheit",b:"Eng verbunden mit Sozialstruktur und Sozialordnung.\nNicht per se gut oder schlecht.\nImmer verbunden mit Fragen der Motivation und Gerechtigkeit.\nRelevant für die praktische Sozialpolitik."},
+    {id:"soz1-k12",s:1,f:"Seit wann gibt es Sozialstruktur?",b:"In frühen Gruppen: unterschiedliche Funktionen und Ressourcenverteilung, aber eher interne Gruppenstruktur.\nVon Sozialstruktur spricht man erst mit größeren, komplexeren Gesellschaften seit der Antike."},
+    {id:"soz1-k13",s:1,f:"Stände (Schäfers/Kopp 2006)",b:"Soziale Gruppierungen mit spezifischen Rechten (Privilegien) und Pflichten, deren ungleicher Status rechtlich abgesichert ist.\nEntscheidend für Standeszugehörigkeit und Lebenschancen: soziale Herkunft.\nUm 1795: Adel, Geistlichkeit, Bürgertum (z. B. Handwerker), einfaches Volk (Bauern, Arbeiter)."},
+    {id:"soz1-k14",s:1,f:"Merkmale moderner Gesellschaften",b:"Rationale Lebensführung / Selbstkontrolle\nErfahrungswissenschaftlicher und technischer Fortschritt\nSoziale Mobilität\nSäkularisierung\nAusdifferenzierung von Subsystemen\nPluralisierung\nIndividualisierung\nspäter: Industrialisierung"},
+    {id:"soz1-k15",s:1,f:"Voraussetzungen der Industrialisierung in Deutschland",b:"Bauernbefreiung (Ende feudaler Abhängigkeit)\nBerufs- und Niederlassungsfreiheit, mehr Mobilität\nBevölkerungswachstum\nSteigender Bildungsstand\nTrennung von Arbeits- und Wohnort, Wandel der Familie\n(Späte) Nationalstaatsgründung bzw. Zollunion\n(Späte) Demokratisierung, Sozialversicherungen"},
+    {id:"soz1-k16",s:1,f:"Modernisierung",b:"(Vormoderne) Agrargesellschaft → (moderne) Industriegesellschaft → (postmoderne?) Dienstleistungsgesellschaft (?)\nSpätestens seit dem 19. Jh. grundlegender Wandel der Sozialstruktur.\nOffene Frage: Wie beschreibt man die (post-)moderne Gesellschaft am besten?"},
+    {id:"soz1-k17",s:1,f:"Karl Marx (1818–1883): Klassengesellschaft",b:"Hintergrund: Industrialisierung, wenige Fabrikanten vs. viele arme Arbeiter.\nEine Ungleichheitsdimension: Besitz von Produktionsmitteln (Kapital).\nZwei Klassen: Bourgeoisie vs. Proletariat.\nArbeiter müssen ihre Arbeitskraft verkaufen, werden ausgebeutet, sind fremdbestimmt.\nKlassen stehen sich antagonistisch gegenüber (Klassenkonflikt)."},
+    {id:"soz1-k18",s:1,f:"Max Weber (1864–1920)",b:"Drei Ungleichheitsdimensionen:\nKlasse: Besitz von Kapital und Wissen\nStand: soziales Prestige (Ansehen)\nPartei: Potenzial, Gruppeninteressen zu organisieren (Konfliktfähigkeit)"},
+    {id:"soz1-k19",s:1,f:"Schichtmodelle",b:"Bolte-Zwiebel: Schichtung Westdeutschlands, 1960er (Bolte/Kappe/Neidhardt 1967)\nHaus-Modell von Dahrendorf: Westdeutschland, 1960er (1965)\nHaus-Modell für Deutschland 2000 (Geißler 2008)"},
+    {id:"soz1-k20",s:1,f:"Grenzen von Klassen- und Schichtmodellen",b:"Nur vertikale Ungleichheit (Beruf, Qualifikation, ökonomische Lage).\nHorizontale Ungleichheit fehlt (Geschlecht, Alter, Generation, Region).\nMentalitäten und Lebensstile innerhalb von Klassen/Schichten kaum berücksichtigt.\nDaher seit den 1970er/80er Jahren: Lebenslage – Lebensstil – Milieu."},
+    {id:"soz1-k21",s:1,f:"Traditionelle vs. Neue Sozialstrukturanalyse",b:"Traditionell: identifiziert Großgruppen (Klassen, Schichten, Lebenslagen). Prämisse: Handeln ist Produkt gesellschaftlicher Strukturen.\nNeu: identifiziert Indikatoren (Alter, Bildung, Geschlecht), die individuelles Handeln strukturieren. Prämisse: Gesellschaftliches Handeln ist Produkt strukturierten individuellen Handelns."},
+    {id:"soz1-k22",s:1,f:"Homo sociologicus vs. Homo oeconomicus",b:"Homo sociologicus: „Rädchen im Getriebe“, Spielball sozialer Gegebenheiten, Position durch Rollenerwartungen bestimmt. Sozialstruktur reproduziert sich selbst bzw. wird von Eliten bestimmt.\nHomo oeconomicus: „seines Glückes Schmied“, vollkommen rationaler Akteur, Position durch Talent und Präferenzen. Sozialstruktur ergibt sich aus freien Handlungen.\nBeide: Pole eines idealtypischen Kontinuums."},
+    {id:"soz1-k23",s:1,f:"Einordnung auf dem Kontinuum",b:"Gruppenzentriert → akteurszentriert:\nTraditionelle Sozialstrukturanalyse (Klasse, Schicht, Lebenslage, Lebensstil, Milieu) → Neue Sozialstrukturanalyse → neoklassische bzw. neoliberale Ökonomie"},
+    {id:"soz1-k24",s:1,f:"Was ist klausurrelevant?",b:"Vor allem die Ausführungen in der Vorlesung und die Folien.\nDringend empfohlen: parallel das Lehrbuch Erlinghagen & Hank (2018), Neue Sozialstrukturanalyse."}
+  ]
+};
+
+const QUIZZES = [
+  {n:1,open:"2026-11-16"},{n:2,open:"2026-12-07"},{n:3,open:"2027-01-25"},{n:4,open:"2027-02-07"}
+];
+const KEY = "od-lernapp-v1";
+
+/* ===== Zustand ===== */
+let state = {custom:{sitzungen:{},fragen:[],karten:[]}, soz:{sitzungen:{},karten:[]}, box:{}, quizzes:[], filter:"alle", sozFilter:"alle", course:"od"};
+let view = "home";
+let practice = null, cards = null, quiz = null, timerId = null, resetArmed = false;
+
+let store = "none";
+async function initStore(){
+  try{
+    if(window.storage){
+      await window.storage.set("od-test", String(Date.now()), false);
+      const r = await window.storage.get("od-test", false);
+      if(r && r.value){ store="claude"; return; }
+    }
+  }catch(e){}
+  try{ localStorage.setItem("od-test","1"); if(localStorage.getItem("od-test")==="1"){ store="local"; return; } }catch(e){}
+  store="none";
+}
+async function load(){
+  await initStore();
+  let raw=null;
+  try{
+    if(store==="claude"){ const r=await window.storage.get(KEY,false); raw=r&&r.value; }
+    else if(store==="local"){ raw=localStorage.getItem(KEY); }
+  }catch(e){ /* noch nichts gespeichert */ }
+  if(raw){ try{ state=Object.assign(state, JSON.parse(raw)); }catch(e){} }
+  if(!state.soz) state.soz={sitzungen:{},karten:[]};
+}
+async function save(){
+  const raw=JSON.stringify(state);
+  try{
+    if(store==="claude") await window.storage.set(KEY, raw, false);
+    else if(store==="local") localStorage.setItem(KEY, raw);
+  }catch(e){ store="none"; toast("Speichern hat nicht geklappt."); }
+}
+/* Sicherung per Code: funktioniert auch dort, wo die App beim Schließen alles vergisst */
+function makeCode(){
+  const box={}; Object.keys(state.box).forEach(k=>{ if(state.box[k]) box[k]=state.box[k]; });
+  const json=JSON.stringify({b:box,q:state.quizzes});
+  return "LA1-"+btoa(unescape(encodeURIComponent(json)));
+}
+function readCode(code){
+  const c=code.trim().replace(/^LA1-/,"");
+  const d=JSON.parse(decodeURIComponent(escape(atob(c))));
+  if(!d || typeof d.b!=="object") throw new Error();
+  state.box=Object.assign({}, state.box, d.b);
+  if(Array.isArray(d.q)) state.quizzes=d.q;
+}
+function storeNote(){
+  return `<div class="block"><h3>Fortschritt sichern</h3>
+    <p class="small muted">In der Claude-App geht dein Fortschritt beim Schließen verloren. Kopier ihn vor dem Schließen und leg ihn z. B. in deinen Notizen ab. Beim nächsten Mal fügst du ihn wieder ein. Das klappt auch auf einem anderen Gerät.</p>
+    <div class="row"><button class="btn" id="bkCopy">Fortschritt kopieren</button><button class="btn ghost" id="bkLoad">Fortschritt einfügen</button></div>
+    <div id="bkArea"></div></div>`;
+}
+function bindBackup(){
+  const area=$("#bkArea"); if(!area) return;
+  $("#bkCopy").onclick=async()=>{
+    const code=makeCode();
+    try{ await navigator.clipboard.writeText(code); toast("Kopiert. Jetzt in deinen Notizen einfügen."); area.innerHTML=""; }
+    catch(e){
+      area.innerHTML=`<p class="small" style="margin-top:10px">Kopieren ging nicht automatisch. Halte den Text gedrückt und kopiere ihn:</p><textarea readonly style="min-height:90px">${esc(code)}</textarea>`;
+      const t=area.querySelector("textarea"); t.focus(); t.select();
+    }
+  };
+  $("#bkLoad").onclick=()=>{
+    area.innerHTML=`<textarea id="bkIn" style="min-height:90px;margin-top:10px" placeholder="Hier den kopierten Text einfügen (beginnt mit LA1-)"></textarea><button class="btn" id="bkGo" style="margin-top:8px">Laden</button>`;
+    $("#bkGo").onclick=()=>{
+      try{ readCode($("#bkIn").value); save(); toast("Fortschritt geladen"); render(); }
+      catch(e){ toast("Das hat nicht geklappt. Bitte den ganzen Text ab LA1- einfügen."); }
+    };
+  };
+}
+
+/* ===== Hilfen ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),2600); }
+
+const isSoz = () => state.course==="soz";
+function sessions(){ return isSoz() ? Object.assign({}, BASE_SOZ.sitzungen, state.soz.sitzungen) : Object.assign({}, BASE.sitzungen, state.custom.sitzungen); }
+function mergeById(a,b){ const m=new Map(); a.forEach(x=>m.set(x.id,x)); b.forEach(x=>m.set(x.id,x)); return [...m.values()]; }
+function allQ(){ return mergeById(BASE.fragen, state.custom.fragen); }
+function allK(){ return isSoz() ? mergeById(BASE_SOZ.karten, state.soz.karten) : mergeById(BASE.karten, state.custom.karten); }
+function getF(){ return isSoz() ? state.sozFilter : state.filter; }
+function setF(v){ if(isSoz()) state.sozFilter=v; else state.filter=v; }
+function inFilter(x){ return getF()==="alle" || String(x.s)===String(getF()); }
+function boxOf(id){ return state.box[id]||0; }
+function grade(id, ok){ const b=boxOf(id); state.box[id] = ok ? Math.min(5, Math.max(b,1)+1) : 1; }
+function weightedPick(items, avoidId){
+  const pool = items.length>1 ? items.filter(x=>x.id!==avoidId) : items;
+  const w = pool.map(x=>[6,5,4,3,2,1][boxOf(x.id)]);
+  let r = Math.random()*w.reduce((a,b)=>a+b,0);
+  for(let i=0;i<pool.length;i++){ r-=w[i]; if(r<=0) return pool[i]; }
+  return pool[pool.length-1];
+}
+function prepQ(q){
+  const idx = q.o.map((_,i)=>i);
+  const correct = Number.isInteger(q.a) ? q.a : 0;
+  const order = q.fix ? idx : shuffle(idx);
+  return {q, order, correct};
+}
+function filterSelect(){
+  const s = sessions();
+  return `<label class="small muted">Sitzung <select id="flt">
+    <option value="alle"${getF()==="alle"?" selected":""}>Alle</option>
+    ${Object.keys(s).sort((a,b)=>a-b).map(k=>`<option value="${k}"${String(getF())===k?" selected":""}>${k}: ${esc(s[k])}</option>`).join("")}
+  </select></label>`;
+}
+function bindFilter(after){ const f=$("#flt"); if(f) f.onchange=()=>{ setF(f.value); save(); after(); }; }
+
+/* ===== Navigation ===== */
+const TABS_OD = [["home","Übersicht"],["practice","Üben"],["cards","Karten"],["quiz","Quiz"]];
+const TABS_SOZ = [["home","Übersicht"],["cards","Karten"]];
+const tabs = () => isSoz() ? TABS_SOZ : TABS_OD;
+function renderNav(){
+  $("#nav").innerHTML = tabs().map(([k,l])=>`<button data-v="${k}"${view===k?' aria-current="page"':""}>${l}</button>`).join("");
+  $("#nav").querySelectorAll("button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+}
+function go(v){
+  if(quiz && quiz.running && v!=="quiz"){ toast("Die Quiz-Simulation läuft. Erst abgeben."); return; }
+  view=v; resetArmed=false; render(); window.scrollTo(0,0);
+}
+function render(){
+  if(!tabs().some(t=>t[0]===view)) view="home";
+  renderNav();
+  ({home:isSoz()?renderSozHome:renderHome,practice:renderPractice,cards:renderCards,quiz:renderQuiz})[view]();
+}
+/* Fachumschalter: wird nach jedem Neuzeichnen oben eingesetzt (außer während der Quiz-Simulation) */
+function addSwitch(){
+  const app=$("#app");
+  if(app.querySelector(".switch") || (quiz && quiz.running)) return;
+  app.insertAdjacentHTML("afterbegin",`<div class="switch" role="group" aria-label="Fach wählen">
+    <button data-c="od" aria-pressed="${!isSoz()}">Ökonomisches Denken</button>
+    <button data-c="soz" aria-pressed="${isSoz()}">Sozialstruktur</button></div>`);
+}
+new MutationObserver(addSwitch).observe(document.getElementById("app"),{childList:true});
+document.getElementById("app").addEventListener("click",e=>{
+  const b=e.target.closest(".switch button"); if(!b || state.course===b.dataset.c) return;
+  state.course=b.dataset.c; cards=null; practice=null; save(); view="home"; render(); window.scrollTo(0,0);
+});
+
+/* ===== Übersicht ===== */
+function renderHome(){
+  const s = sessions(), qs = allQ(), ks = allK();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const next = QUIZZES.find(z=>new Date(z.open+"T00:00:00")>today);
+  const days = next ? Math.round((new Date(next.open+"T00:00:00")-today)/864e5) : null;
+  const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>{
+    const items = qs.filter(x=>String(x.s)===k).concat(ks.filter(x=>String(x.s)===k));
+    const sure = items.filter(x=>boxOf(x.id)>=4).length;
+    const pct = items.length ? Math.round(sure/items.length*100) : 0;
+    return `<div style="margin:10px 0"><div class="row"><span class="grow">${k}. ${esc(s[k])}</span><span class="small muted">${pct} % sicher</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+  }).join("");
+  const last = state.quizzes.slice(-5).reverse();
+  $("#app").innerHTML = `
+    <h1>Ökonomisches Denken</h1>
+    <p class="muted">${qs.length} Fragen und ${ks.length} Karten aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}.</p>
+    <div class="block">
+      ${next ? `<h2>${days===0?"Quiz "+next.n+" öffnet heute":"Noch "+days+" Tage bis Quiz "+next.n}</h2>
+      <p class="small muted">Öffnet am ${new Date(next.open).toLocaleDateString("de-DE")}, Abgabe bis 21.02.2027. 12 Fragen, 15 Minuten, bestanden ab 7. Insgesamt mindestens 30 Punkte aus allen vier Quiz.</p>`
+      : `<h2>Alle Quiz sind geöffnet</h2><p class="small muted">Abgabe bis 21.02.2027.</p>`}
+      <div class="row"><button class="btn" id="goQuiz">Quiz simulieren</button><button class="btn ghost" id="goPr">Fragen üben</button></div>
+    </div>
+    <div class="block"><h3>Fortschritt pro Sitzung</h3>
+      <p class="small muted">„Sicher“ heißt: mindestens dreimal hintereinander richtig.</p>${rows}</div>
+    <div class="block"><h3>Letzte Simulationen</h3>
+      ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · Sitzung ${esc(z.scope)}</td><td style="color:var(--${z.score>=7?"good":"bad"})">${z.score} / ${z.total}</td></tr>`).join("")}</table>`
+      : `<p class="small muted">Noch keine Simulation. Starte eine, sobald du die Karten einmal durch hast.</p>`}
+    </div>
+    ${storeNote()}
+    <div class="block"><h3>Fortschritt zurücksetzen</h3>
+      <p class="small muted">Löscht Lernstand und Simulationen beider Fächer. Die Fragen und Karten bleiben.</p>
+      <button class="btn warn" id="reset">${resetArmed?"Wirklich zurücksetzen":"Zurücksetzen"}</button></div>`;
+  bindBackup();
+  $("#goQuiz").onclick=()=>go("quiz"); $("#goPr").onclick=()=>go("practice");
+  $("#reset").onclick=()=>{ if(!resetArmed){resetArmed=true;renderHome();return;} state.box={}; state.quizzes=[]; resetArmed=false; save(); toast("Fortschritt zurückgesetzt"); renderHome(); };
+}
+
+/* ===== Übersicht Sozialstruktur ===== */
+function renderSozHome(){
+  const s = sessions(), ks = allK();
+  const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>{
+    const items = ks.filter(x=>String(x.s)===k);
+    const sure = items.filter(x=>boxOf(x.id)>=4).length;
+    const pct = items.length ? Math.round(sure/items.length*100) : 0;
+    return `<div style="margin:10px 0"><div class="row"><span class="grow">${k}. ${esc(s[k])}</span><span class="small muted">${items.length} Karten, ${pct} % sicher</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+  }).join("");
+  $("#app").innerHTML = `
+    <h1>Sozialstruktur</h1>
+    <p class="muted">${ks.length} Karten aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}. Abschluss ist die Modulklausur.</p>
+    <div class="block">
+      <h2>Karten lernen</h2>
+      <p class="small muted">Erst selbst erklären, dann umdrehen. Was du nicht wusstest, kommt öfter dran. Klausurrelevant sind vor allem Vorlesung und Folien.</p>
+      <button class="btn" id="goCards">Karten starten</button>
+    </div>
+    <div class="block"><h3>Fortschritt pro Sitzung</h3>
+      <p class="small muted">„Sicher“ heißt: mindestens dreimal hintereinander gewusst.</p>${rows}</div>
+    ${storeNote()}`;
+  bindBackup();
+  $("#goCards").onclick=()=>go("cards");
+}
+
+/* ===== Üben ===== */
+function renderPractice(){
+  const items = allQ().filter(inFilter);
+  if(!items.length){ $("#app").innerHTML=`<h1>Üben</h1>${filterSelect()}<p>Für diese Auswahl gibt es noch keine Fragen.</p>`; bindFilter(renderPractice); return; }
+  if(!practice || !items.find(x=>x.id===practice.p.q.id)) practice = {p:prepQ(weightedPick(items)), chosen:null, n:0, right:0};
+  const {p, chosen} = practice;
+  const answered = chosen!==null;
+  $("#app").innerHTML = `
+    <div class="row"><h1 class="grow">Üben</h1>${filterSelect()}</div>
+    <p class="small muted">Diese Runde: ${practice.right} von ${practice.n} richtig. Falsche Fragen kommen öfter dran.</p>
+    <div class="block">
+      <p class="small muted">Sitzung ${esc(p.q.s)}</p>
+      <div class="q">${esc(p.q.q)}</div>
+      <div class="opts">${p.order.map(i=>{
+        let c="opt"; if(answered){ if(i===p.correct) c+=" right"; else if(i===chosen) c+=" wrong"; }
+        return `<button class="${c}" data-i="${i}"${answered?" disabled":""}>${esc(p.q.o[i])}</button>`;}).join("")}</div>
+      ${answered ? `<div class="expl"><strong>${chosen===p.correct?"Richtig.":"Nicht ganz."}</strong> ${esc(p.q.e||"")}</div>
+        <button class="btn" id="nextQ">Nächste Frage</button>` : ""}
+    </div>`;
+  bindFilter(()=>{practice=null;renderPractice();});
+  if(!answered) document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i; practice.chosen=i; practice.n++; const ok=i===p.correct; if(ok) practice.right++;
+    grade(p.q.id, ok); save(); renderPractice();
+  });
+  else $("#nextQ").onclick=()=>{ practice.p=prepQ(weightedPick(items,p.q.id)); practice.chosen=null; renderPractice(); };
+}
+
+/* ===== Karteikarten ===== */
+function renderCards(){
+  const items = allK().filter(inFilter);
+  if(!items.length){ $("#app").innerHTML=`<h1>Karten</h1>${filterSelect()}<p>Für diese Auswahl gibt es noch keine Karten.</p>`; bindFilter(renderCards); return; }
+  if(!cards || !items.find(x=>x.id===cards.k.id)) cards = {k:weightedPick(items), flipped:false};
+  const {k, flipped} = cards;
+  $("#app").innerHTML = `
+    <div class="row"><h1 class="grow">Karten</h1>${filterSelect()}</div>
+    <p class="small muted">Erst selbst erklären, dann umdrehen. Sei ehrlich beim Bewerten.</p>
+    <div class="block card" id="card" role="button" tabindex="0" aria-label="Karte umdrehen">
+      ${flipped ? `<p class="small muted" style="text-align:left">${esc(k.f)}</p><div class="back">${esc(k.b)}</div>` : `<div class="front">${esc(k.f)}</div><p class="small muted" style="margin-top:14px">Tippen zum Umdrehen</p>`}
+    </div>
+    ${flipped ? `<div class="row"><button class="btn ghost grow" id="no">Nicht gewusst</button><button class="btn grow" id="yes">Gewusst</button></div>` : ""}`;
+  bindFilter(()=>{cards=null;renderCards();});
+  const flip=()=>{ cards.flipped=true; renderCards(); };
+  const c=$("#card"); c.onclick=flip; c.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();} };
+  if(flipped){
+    const nxt=ok=>{ grade(k.id,ok); save(); cards={k:weightedPick(items,k.id),flipped:false}; renderCards(); };
+    $("#yes").onclick=()=>nxt(true); $("#no").onclick=()=>nxt(false);
+  }
+}
+
+/* ===== Quiz-Simulation ===== */
+function renderQuiz(){
+  if(!quiz){
+    const n = allQ().filter(inFilter).length;
+    $("#app").innerHTML = `
+      <div class="row"><h1 class="grow">Quiz-Simulation</h1>${filterSelect()}</div>
+      <div class="block">
+        <p>Wie auf Moodle: 12 Fragen, 15 Minuten, bestanden ab 7 richtigen Antworten. Du kannst zwischen den Fragen springen und erst am Ende abgeben.</p>
+        <p class="small muted">${n} Fragen im Pool${n<12?". Für eine volle Simulation braucht es mindestens 12.":"."}</p>
+        <button class="btn" id="start"${n?"":" disabled"}>Simulation starten</button>
+      </div>`;
+    bindFilter(renderQuiz);
+    $("#start").onclick=startQuiz;
+    return;
+  }
+  if(quiz.running) return renderQuizRunning();
+  renderQuizResult();
+}
+function startQuiz(){
+  const pool = shuffle(allQ().filter(inFilter)).slice(0,12).map(prepQ);
+  quiz = {items:pool, answers:Array(pool.length).fill(null), cur:0, end:Date.now()+15*60*1000, running:true, scope:state.filter==="alle"?"alle":state.filter};
+  clearInterval(timerId); timerId=setInterval(tick,1000); renderQuiz();
+}
+function tick(){
+  if(!quiz||!quiz.running) return clearInterval(timerId);
+  const left = quiz.end-Date.now();
+  if(left<=0){ finishQuiz(); toast("Zeit abgelaufen. Das Quiz wurde abgegeben."); return; }
+  const el=$("#timer"); if(el){ el.textContent=fmt(left); el.classList.toggle("low",left<120000); }
+}
+const fmt = ms => { const s=Math.max(0,Math.ceil(ms/1000)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); };
+function renderQuizRunning(){
+  const it = quiz.items[quiz.cur], a = quiz.answers[quiz.cur];
+  const done = quiz.answers.filter(x=>x!==null).length;
+  $("#app").innerHTML = `
+    <div class="row"><div class="grow"><div class="timer" id="timer">${fmt(quiz.end-Date.now())}</div><span class="small muted">${done} von ${quiz.items.length} beantwortet</span></div>
+      <button class="btn" id="submit">Abgeben</button></div>
+    <div class="coins">${quiz.items.map((_,i)=>`<button class="coin${quiz.answers[i]!==null?" done":""}${i===quiz.cur?" now":""}" data-i="${i}" aria-label="Frage ${i+1}">${i+1}</button>`).join("")}</div>
+    <div class="block">
+      <p class="small muted">Frage ${quiz.cur+1}</p>
+      <div class="q">${esc(it.q.q)}</div>
+      <div class="opts">${it.order.map(i=>`<button class="opt${a===i?" sel":""}" data-o="${i}">${esc(it.q.o[i])}</button>`).join("")}</div>
+    </div>
+    <div class="row"><button class="btn ghost grow" id="prev"${quiz.cur===0?" disabled":""}>Zurück</button><button class="btn ghost grow" id="next"${quiz.cur===quiz.items.length-1?" disabled":""}>Weiter</button></div>`;
+  document.querySelectorAll(".coin").forEach(b=>b.onclick=()=>{quiz.cur=+b.dataset.i;renderQuiz();});
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    quiz.answers[quiz.cur]=+b.dataset.o;
+    if(quiz.cur<quiz.items.length-1) quiz.cur++;
+    renderQuiz();
+  });
+  $("#prev").onclick=()=>{quiz.cur--;renderQuiz();};
+  $("#next").onclick=()=>{quiz.cur++;renderQuiz();};
+  const sub=$("#submit");
+  sub.onclick=()=>{
+    const open = quiz.items.length-quiz.answers.filter(x=>x!==null).length;
+    if(open && !sub.dataset.armed){ sub.dataset.armed="1"; sub.textContent=`${open} offen. Trotzdem abgeben`; return; }
+    finishQuiz();
+  };
+}
+function finishQuiz(){
+  clearInterval(timerId);
+  quiz.running=false;
+  quiz.score = quiz.items.reduce((s,it,i)=>s+(quiz.answers[i]===it.correct?1:0),0);
+  quiz.items.forEach((it,i)=>grade(it.q.id, quiz.answers[i]===it.correct));
+  state.quizzes.push({date:Date.now(), score:quiz.score, total:quiz.items.length, scope:quiz.scope});
+  save(); view="quiz"; render(); window.scrollTo(0,0);
+}
+function renderQuizResult(){
+  const pass = quiz.score>=7;
+  $("#app").innerHTML = `
+    <h1>Ergebnis</h1>
+    <div class="block">
+      <div class="verdict ${pass?"pass":"fail"}">${quiz.score} von ${quiz.items.length}: ${pass?"bestanden":"nicht bestanden"}</div>
+      <div class="coins">${quiz.items.map((it,i)=>`<span class="coin ${quiz.answers[i]===it.correct?"ok":"no"}">${i+1}</span>`).join("")}</div>
+      <p class="small muted">${pass?"Mit "+quiz.score+" Punkten liegst du "+(quiz.score>=8?"über":"unter")+" dem Schnitt von 7,5, den du für 30 Punkte insgesamt brauchst.":"Für das echte Quiz brauchst du mindestens 7. Übe die falschen Fragen, sie kommen jetzt öfter dran."}</p>
+      <div class="row"><button class="btn" id="again">Neue Simulation</button><button class="btn ghost" id="toPr">Fragen üben</button></div>
+    </div>
+    <h2>Durchsicht</h2>
+    ${quiz.items.map((it,i)=>{ const a=quiz.answers[i], ok=a===it.correct; return `<div class="review">
+      <p class="small" style="color:var(--${ok?"good":"bad"})">Frage ${i+1}: ${ok?"richtig":a===null?"nicht beantwortet":"falsch"}</p>
+      <p><strong>${esc(it.q.q)}</strong></p>
+      ${!ok && a!==null ? `<p class="small">Deine Antwort: ${esc(it.q.o[a])}</p>` : ""}
+      <p class="small">Richtig: ${esc(it.q.o[it.correct])}</p>
+      ${it.q.e?`<p class="small muted">${esc(it.q.e)}</p>`:""}</div>`; }).join("")}`;
+  $("#again").onclick=()=>{quiz=null;renderQuiz();};
+  $("#toPr").onclick=()=>{quiz=null;go("practice");};
+}
+
+/* ===== Start ===== */
+load().then(render);
+</script>
+</body>
+</html>
