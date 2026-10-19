@@ -240,7 +240,7 @@ async function push(){
   pushing=false;
   if(pushAgain){ pushAgain=false; push(); }
 }
-function schedulePush(){ if(!ghToken) return; clearTimeout(pushTimer); pushTimer=setTimeout(push, 4000); }
+function schedulePush(){ if(!ghToken) return; clearTimeout(pushTimer); pushTimer=setTimeout(push, 1500); }
 function flushPush(){ if(pushTimer){ clearTimeout(pushTimer); pushTimer=null; push(); } }
 
 /* Neuerer Stand gewinnt: Vergleich über den Zeitstempel "updated" */
@@ -272,10 +272,16 @@ async function save(){
   if(store==="local") lsSet(KEY, JSON.stringify(state));
   schedulePush();
 }
-document.addEventListener("visibilitychange", async ()=>{
-  if(document.visibilityState==="hidden") flushPush();
-  else if(!(quiz && quiz.running) && await syncFromRemote()) render();
-});
+/* Automatischer Abgleich: beim Öffnen, beim Zurückkehren in die App und alle 30 Sekunden */
+async function autoPull(){
+  if(!ghToken || document.visibilityState!=="visible" || (quiz && quiz.running) || pushTimer || pushing) return;
+  if(await syncFromRemote()){ practice=null; cards=null; render(); }
+}
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") flushPush(); else autoPull(); });
+window.addEventListener("pagehide", flushPush);
+window.addEventListener("pageshow", autoPull);
+window.addEventListener("focus", autoPull);
+setInterval(autoPull, 30000);
 
 function storeNote(){
   if(!ghToken) return `<div class="block"><h3>Geräte verbinden</h3>
@@ -283,13 +289,13 @@ function storeNote(){
     <p class="small muted">Oder füge hier deinen GitHub-Schlüssel ein (beginnt mit github_pat_):</p>
     <textarea id="tkIn" style="min-height:70px"></textarea>
     <button class="btn" id="tkGo" style="margin-top:8px">Gerät verbinden</button></div>`;
-  const msg = {ok:`Dein Fortschritt wird mit deinen anderen Geräten abgeglichen${lastSync?", zuletzt um "+lastSync.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}):""}.`,
+  const msg = {ok:`Dieses Gerät ist verbunden. Dein Fortschritt wird automatisch mit deinen anderen Geräten abgeglichen${lastSync?", zuletzt um "+lastSync.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}):""}.`,
     fehler:"Abgleich gerade nicht möglich, z. B. ohne Internet. Dein Fortschritt bleibt auf diesem Gerät und wird später abgeglichen.",
     schluessel:"Der Schlüssel funktioniert nicht mehr. Trenne das Gerät und verbinde es mit einem neuen Schlüssel.",
     aus:"Wird abgeglichen …"}[syncStatus];
   return `<div class="block"><h3>Geräte-Abgleich</h3>
     <p class="small ${syncStatus==="ok"?"muted":""}" ${syncStatus==="ok"?"":'style="color:var(--bad)"'}>${msg}</p>
-    <div class="row"><button class="btn ghost" id="syNow">Jetzt abgleichen</button><button class="btn ghost" id="syOff">Gerät trennen</button></div></div>`;
+    <button class="btn ghost small" id="syOff" style="padding:6px 10px">Gerät trennen</button></div>`;
 }
 function bindBackup(){
   const go=$("#tkGo");
