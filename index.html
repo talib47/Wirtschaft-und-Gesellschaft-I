@@ -133,7 +133,13 @@ const BASE = {
     {id:"s1-39",s:1,q:"Welcher moderne Begriff entspricht der antiken Frage „Was ist eine gerechte Gesellschaft?“",o:["Steuer- und Transfersysteme","Rendite","Arbeitsteilung","Informationsasymmetrie"],e:"Tabelle „Antike und Moderne“."},
     {id:"s1-40",s:1,q:"Welche Aussage über die Antike trifft laut Vorlesung zu?",o:["Antike Autoren stellen ähnliche Fragen, entwickeln aber noch keine geschlossenen ökonomischen Modelle","Die Antike kannte bereits ein ausgearbeitetes Marktmodell","Wirtschaftswissenschaft war in der Antike eine eigenständige Disziplin","Antike Autoren erklärten Arbeitsteilung über Preise und Eigennutz"],e:"Ähnliche Fragestellung ≠ gleiche Theorie."},
     {id:"s1-41",s:1,q:"Was ist eine der Take-aways der ersten Sitzung?",o:["Ökonomische Modelle sind historisch entstandene Perspektiven auf Probleme, nicht die Probleme selbst","Ökonomische Probleme sind erst in der Moderne entstanden","Moderne Modelle bilden die Realität vollständig ab","Die Antike ist für heutige Wirtschaftsfragen irrelevant"],e:"Weitere Take-aways: Viele ökonomische Probleme sind sehr alt; keine eigenständige Disziplin in der Antike."},
-    {id:"s1-42",s:1,q:"Richtig oder falsch: Ökonomische Modelle entstehen unabhängig von historischen Ereignissen.",o:["Falsch","Richtig"],fix:true,a:0,e:"Grundidee der Vorlesung: Modelle entstehen nicht losgelöst von historischen und gesellschaftlichen Bedingungen."}
+    {id:"s1-42",s:1,q:"Richtig oder falsch: Ökonomische Modelle entstehen unabhängig von historischen Ereignissen.",o:["Falsch","Richtig"],fix:true,a:0,e:"Grundidee der Vorlesung: Modelle entstehen nicht losgelöst von historischen und gesellschaftlichen Bedingungen."},
+    {id:"s1-43",s:1,typ:"multi",q:"Was macht Geld nach Aristoteles wertvoll? (Mehrere Antworten sind richtig.)",o:["Gebrauch","Austausch","Seltenheit","Vergleichbarkeit","Die zu seiner Herstellung nötige Arbeitszeit","Eine staatliche Goldgarantie"],a:[0,1,2,3],e:"Gebrauch, Austausch, Seltenheit, Vergleichbarkeit."},
+    {id:"s1-44",s:1,typ:"multi",q:"In welche Zusammenhänge waren wirtschaftliche Fragen in der Antike eingebettet? (Mehrere Antworten sind richtig.)",o:["Ethik/Philosophie","Politik","Haushaltsführung","Landwirtschaft","Finanzmärkte","Industrielle Produktion"],a:[0,1,2,3],e:"Ethik/Philosophie, Politik, Haushaltsführung, Landwirtschaft."},
+    {id:"s1-45",s:1,typ:"zuord",q:"Ordne den antiken Autoren ihr Thema zu.",paare:[["Xenophon","Arbeitsteilung als Organisation des Gutshofs"],["Platon","Arbeitsteilung als gesellschaftliches Prinzip"],["Aristoteles","Oikonomia und Chrematistik"],["Cicero","Getreidehändler und Informationsasymmetrie"],["Cato","Kosten, Auslastung, make or buy"],["Columella","Investition im Vergleich zu Alternativen"]],e:"Siehe Folien zu Produktion, Geld/Tausch und Entscheidungen."},
+    {id:"s1-46",s:1,typ:"zuord",q:"Ordne dem antiken Problem den modernen Begriff zu.",paare:[["Spezialisierung von Tätigkeiten","Arbeitsteilung"],["Menschen reagieren auf Belohnungen","Anreize"],["Tausch benötigt Vergleichbarkeit","Geld und Wert"],["Verkäufer wissen mehr als Käufer","Informationsasymmetrie"],["Lohnt sich eine Investition?","Rendite/Opportunitätskosten"],["Was ist eine gerechte Gesellschaft?","Steuer- und Transfersysteme"]],e:"Tabelle „Antike und Moderne“."},
+    {id:"s1-47",s:1,typ:"zahl",q:"Ertrag 50 €, Kosten 10 €. Wie hoch ist die Rendite in Prozent?",a:400,einheit:"%",e:"(50 − 10) / 10 = 4 = 400 %."},
+    {id:"s1-48",s:1,typ:"zahl",q:"Statt 2.500 € zu 2 % p. a. anzulegen, kaufst du ein E-Bike. Wie hoch sind die Opportunitätskosten für ein Jahr in Euro?",a:50,einheit:"€",e:"2 % von 2.500 € = 50 €."}
   ],
   karten: [
     {id:"s1-k01",s:1,f:"Modell",b:"Vereinfachte Darstellung der Realität, mit der bestimmte Zusammenhänge isoliert untersucht werden.\nBeispiel: U-Bahn-Plan zeigt nur Stationen, keine Straßen."},
@@ -201,7 +207,8 @@ const BASE_SOZ = {
 };
 
 const QUIZZES = [
-  {n:1,open:"2026-11-16"},{n:2,open:"2026-12-07"},{n:3,open:"2027-01-25"},{n:4,open:"2027-02-07"}
+  /* s = Sitzungen, die vor Öffnung des Quiz behandelt werden (Annahme nach Syllabus) */
+  {n:1,open:"2026-11-16",s:[1,2,3,4]},{n:2,open:"2026-12-07",s:[5,6,7]},{n:3,open:"2027-01-25",s:[8,9,10]},{n:4,open:"2027-02-07",s:[11,12]}
 ];
 const KEY = "od-lernapp-v1";
 
@@ -344,7 +351,11 @@ function getF(){ return isSoz() ? state.sozFilter : state.filter; }
 function setF(v){ if(isSoz()) state.sozFilter=v; else state.filter=v; }
 function inFilter(x){ return getF()==="alle" || String(x.s)===String(getF()); }
 function boxOf(id){ return state.box[id]||0; }
-function grade(id, ok){ const b=boxOf(id); state.box[id] = ok ? Math.min(5, Math.max(b,1)+1) : 1; }
+function grade(id, ok){
+  const b=boxOf(id); state.box[id] = ok ? Math.min(5, Math.max(b,1)+1) : 1;
+  if(!state.err) state.err={};
+  if(!ok) state.err[id]=1; else if(state.box[id]>=4) delete state.err[id];
+}
 function weightedPick(items, avoidId){
   const pool = items.length>1 ? items.filter(x=>x.id!==avoidId) : items;
   const w = pool.map(x=>[6,5,4,3,2,1][boxOf(x.id)]);
@@ -352,12 +363,75 @@ function weightedPick(items, avoidId){
   for(let i=0;i<pool.length;i++){ r-=w[i]; if(r<=0) return pool[i]; }
   return pool[pool.length-1];
 }
+/* Fragetypen: sc = eine richtige (Standard), multi = mehrere richtige, zuord = Zuordnung, zahl = Zahleneingabe */
+const qType = q => q.typ || "sc";
 function prepQ(q){
-  const idx = q.o.map((_,i)=>i);
-  const correct = Number.isInteger(q.a) ? q.a : 0;
-  const order = q.fix ? idx : shuffle(idx);
-  return {q, order, correct};
+  const t=qType(q);
+  if(t==="zuord") return {q,t,order:shuffle(q.paare.map((_,i)=>i)),rights:shuffle(q.paare.map(x=>x[1]))};
+  if(t==="zahl") return {q,t};
+  const idx=q.o.map((_,i)=>i);
+  return {q,t,order:q.fix?idx:shuffle(idx),correct:t==="multi"?q.a:(Number.isInteger(q.a)?q.a:0)};
 }
+const numOf = v => { let t=String(v).trim().replace(/\s|€|%/g,""); if(t.includes(",")) t=t.replace(/\./g,"").replace(",","."); else if(/^\d{1,3}(\.\d{3})+$/.test(t)) t=t.replace(/\./g,""); return parseFloat(t); };
+function isAnswered(p,a){
+  if(a===null||a===undefined) return false;
+  if(p.t==="multi") return a.length>0;
+  if(p.t==="zuord") return a.some(Boolean);
+  if(p.t==="zahl") return String(a).trim()!=="";
+  return true;
+}
+function isRight(p,a){
+  if(!isAnswered(p,a)) return false;
+  if(p.t==="multi"){ const x=a.slice().sort().join(), y=p.correct.slice().sort().join(); return x===y; }
+  if(p.t==="zuord") return p.q.paare.every((pr,i)=>a[i]===pr[1]);
+  if(p.t==="zahl") return Math.abs(numOf(a)-p.q.a)<=(p.q.tol||0)+1e-9;
+  return a===p.correct;
+}
+function correctText(p){
+  if(p.t==="multi") return p.correct.map(i=>p.q.o[i]).join("; ");
+  if(p.t==="zuord") return p.q.paare.map(x=>x[0]+" → "+x[1]).join("; ");
+  if(p.t==="zahl") return p.q.a+(p.q.einheit?" "+p.q.einheit:"");
+  return p.q.o[p.correct];
+}
+function answerText(p,a){
+  if(!isAnswered(p,a)) return "keine";
+  if(p.t==="multi") return a.map(i=>p.q.o[i]).join("; ");
+  if(p.t==="zuord") return p.q.paare.map((x,i)=>x[0]+" → "+(a[i]||"?")).join("; ");
+  if(p.t==="zahl") return a+(p.q.einheit?" "+p.q.einheit:"");
+  return p.q.o[a];
+}
+const typeHint = p => ({multi:"Mehrere Antworten können richtig sein.",zuord:"Ordne jedem Begriff das Passende zu.",zahl:"Gib eine Zahl ein."})[p.t]||"";
+function answerHTML(p,a,reveal){
+  const dis=reveal?" disabled":"";
+  if(p.t==="zuord"){
+    a=a||[];
+    return `<div class="opts">${p.order.map(i=>{ const pr=p.q.paare[i], ok=a[i]===pr[1];
+      return `<label class="opt${reveal?(ok?" right":" wrong"):""}" style="display:block"><span class="small">${esc(pr[0])}</span>
+        <select data-z="${i}" style="width:100%;margin-top:6px"${dis}><option value="">Bitte wählen</option>${p.rights.map(r=>`<option${a[i]===r?" selected":""}>${esc(r)}</option>`).join("")}</select>
+        ${reveal&&!ok?`<span class="small" style="display:block;margin-top:4px">Richtig: ${esc(pr[1])}</span>`:""}</label>`; }).join("")}</div>`;
+  }
+  if(p.t==="zahl"){
+    const ok=isRight(p,a);
+    return `<div class="row"><input id="zahlIn" inputmode="decimal" value="${a==null?"":esc(a)}"${dis} style="font:inherit;font-size:1.2rem;padding:10px 12px;border-radius:10px;border:1.5px solid ${reveal?(ok?"var(--good)":"var(--bad)"):"var(--line)"};background:var(--surface);color:var(--ink);width:10rem">
+      <span>${esc(p.q.einheit||"")}</span></div>${reveal&&!ok?`<p class="small" style="margin-top:6px">Richtig: ${esc(correctText(p))}</p>`:""}`;
+  }
+  const multi=p.t==="multi", sel=multi?(a||[]):[a];
+  return `<div class="opts">${p.order.map(i=>{
+    const isSel=sel.includes(i), isC=multi?p.correct.includes(i):i===p.correct;
+    let c="opt"; if(reveal){ if(isC) c+=" right"; else if(isSel) c+=" wrong"; } else if(isSel) c+=" sel";
+    return `<button class="${c}" data-o="${i}"${dis}>${multi?(isSel?"☑ ":"☐ "):""}${esc(p.q.o[i])}</button>`; }).join("")}</div>`;
+}
+/* onSet(neueAntwort, sofortPruefen, neuZeichnen) */
+function bindAnswer(p,getA,onSet){
+  if(p.t==="zuord"){ document.querySelectorAll("[data-z]").forEach(el=>el.onchange=()=>{ const a=(getA()||[]).slice(); a[+el.dataset.z]=el.value; onSet(a,false,false); }); return; }
+  if(p.t==="zahl"){ const el=$("#zahlIn"); if(el){ el.oninput=()=>onSet(el.value,false,false); el.onkeydown=e=>{ if(e.key==="Enter") onSet(el.value,true,true); }; } return; }
+  document.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.o;
+    if(p.t==="multi"){ const a=(getA()||[]).slice(), k=a.indexOf(i); if(k>=0) a.splice(k,1); else a.push(i); onSet(a,false,true); }
+    else onSet(i,true,true);
+  });
+}
+
 function filterSelect(){
   const s = sessions();
   return `<label class="small muted">Sitzung <select id="flt">
@@ -494,10 +568,11 @@ function renderHome(){
       : `<h2>Alle Quiz sind geöffnet</h2><p class="small muted">Abgabe bis 21.02.2027.</p>`}
       <div class="row"><button class="btn" id="goQuiz">Quiz simulieren</button><button class="btn ghost" id="goPr">Fragen üben</button></div>
     </div>
+    ${readinessBlock()}
     <div class="block"><h3>Fortschritt pro Sitzung</h3>
       <p class="small muted">„Sicher“ heißt: dreimal hintereinander richtig. Dann kommt die Frage nur noch selten.</p>${rows}</div>
     <div class="block"><h3>Letzte Simulationen</h3>
-      ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · Sitzung ${esc(z.scope)}</td><td style="color:var(--${z.score>=7?"good":"bad"})">${z.score} / ${z.total}</td></tr>`).join("")}</table>`
+      ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · ${/^q\d$/.test(z.scope)?"Quiz "+z.scope.slice(1):z.scope==="alle"?"alle Sitzungen":"Sitzung "+esc(z.scope)}</td><td style="color:var(--${z.score>=7?"good":"bad"})">${z.score} / ${z.total}</td></tr>`).join("")}</table>`
       : `<p class="small muted">Noch keine Simulation. Starte eine, sobald du die Karten einmal durch hast.</p>`}
     </div>
     ${storeNote()}
@@ -507,6 +582,27 @@ function renderHome(){
   bindBackup();
   $("#goQuiz").onclick=()=>go("quiz"); $("#goPr").onclick=()=>go("practice");
   $("#reset").onclick=()=>{ if(!resetArmed){resetArmed=true;renderHome();return;} state.box={}; state.quizzes=[]; resetArmed=false; save(); toast("Fortschritt zurückgesetzt"); renderHome(); };
+}
+
+/* ===== Bereitschaft pro Quiz ===== */
+function readiness(z){
+  const have=z.s.filter(n=>sessions()[n]);
+  const items=allQ().concat(allK()).filter(x=>z.s.includes(Number(x.s)));
+  const sure=items.length?Math.round(items.filter(x=>boxOf(x.id)>=4).length/items.length*100):0;
+  const sims=state.quizzes.filter(q=>q.scope==="q"+z.n).slice(-3), good=sims.filter(q=>q.score>=9).length;
+  const ready = have.length===z.s.length && sure>=70 && sims.length===3 && good===3;
+  return {have, sure, good, ready, empty:!have.length};
+}
+function readinessBlock(){
+  return `<div class="block"><h3>Bereit fürs echte Quiz?</h3>
+    <p class="small muted">Jedes Quiz kannst du nur einmal schreiben, Abgabe für alle bis 21.02.2027. „Bereit“ heißt: Der Stoff ist komplett in der App, mindestens 70 % sitzen sicher, und die letzten drei Simulationen hatten jeweils mindestens 9 von 12.</p>
+    ${QUIZZES.map(z=>{ const r=readiness(z);
+      if(r.empty) return `<div class="review"><strong>Quiz ${z.n}</strong> <span class="small muted">· Sitzung ${z.s[0]}–${z.s[z.s.length-1]} · noch keine Inhalte</span></div>`;
+      return `<div class="review"><div class="row"><strong class="grow">Quiz ${z.n}</strong><span class="small" style="color:var(--${r.ready?"good":"muted"});font-weight:600">${r.ready?"Bereit":"Noch nicht"}</span></div>
+        <p class="small" style="margin:4px 0 0">${r.have.length===z.s.length?"✓":"○"} Inhalte: ${r.have.length} von ${z.s.length} Sitzungen in der App</p>
+        <p class="small" style="margin:2px 0 0">${r.sure>=70?"✓":"○"} Sicher: ${r.sure} % (Ziel 70 %)</p>
+        <p class="small" style="margin:2px 0 0">${r.good===3?"✓":"○"} Simulationen mit mind. 9 Punkten: ${r.good} von 3</p></div>`; }).join("")}
+  </div>`;
 }
 
 /* ===== Übersicht Sozialstruktur ===== */
@@ -598,34 +694,47 @@ function renderWrite(){
 
 /* ===== Üben ===== */
 function renderPractice(){
-  const items = allQ().filter(inFilter);
-  if(!items.length){ $("#app").innerHTML=`<h1>Üben</h1>${filterSelect()}<p>Für diese Auswahl gibt es noch keine Fragen.</p>`; bindFilter(renderPractice); return; }
+  if(!state.err) state.err={};
+  const all = allQ().filter(inFilter);
+  const errs = all.filter(x=>state.err[x.id] && boxOf(x.id)<4);
+  const items = state.errOnly ? errs : all;
+  const head = `<div class="row"><h1 class="grow">Üben</h1>${filterSelect()}</div>
+    <div class="row" style="margin:-4px 0 10px"><label class="small muted">Modus <select id="mode">
+      <option value="0"${state.errOnly?"":" selected"}>Alle Fragen</option>
+      <option value="1"${state.errOnly?" selected":""}>Nur meine Fehler (${errs.length})</option></select></label></div>`;
+  const bindHead = () => { bindFilter(()=>{practice=null;renderPractice();}); $("#mode").onchange=e=>{ state.errOnly=e.target.value==="1"; practice=null; save(); renderPractice(); }; };
+  if(!items.length){
+    $("#app").innerHTML = head + (state.errOnly ? `<div class="block"><p>Keine offenen Fehler. Alles, was du falsch hattest, sitzt inzwischen sicher.</p></div>` : `<p>Für diese Auswahl gibt es noch keine Fragen.</p>`);
+    bindHead(); return;
+  }
   if(!practice || !items.find(x=>x.id===practice.p.q.id)){
     const last = items.find(x=>x.id===state.lastQ);
-    practice = {p:prepQ(last || weightedPick(items)), chosen:null};
+    practice = {p:prepQ(last || weightedPick(items)), ans:null, done:false};
     state.lastQ = practice.p.q.id;
   }
-  const rightAll = items.filter(x=>boxOf(x.id)>=2).length;
-  const {p, chosen} = practice;
-  const answered = chosen!==null;
-  $("#app").innerHTML = `
-    <div class="row"><h1 class="grow">Üben</h1>${filterSelect()}</div>
-    <p class="small muted">${rightAll} von ${items.length} Fragen schon richtig beantwortet. Falsche kommen öfter dran.</p>
+  const rightAll = all.filter(x=>boxOf(x.id)>=2).length;
+  const {p, ans, done} = practice;
+  const ok = done && isRight(p,ans);
+  $("#app").innerHTML = head + `
+    <p class="small muted">${rightAll} von ${all.length} Fragen schon richtig beantwortet. Falsche kommen öfter dran.</p>
     <div class="block">
-      <p class="small muted">Sitzung ${esc(p.q.s)}</p>
+      <p class="small muted">Sitzung ${esc(p.q.s)}${typeHint(p)?" · "+typeHint(p):""}</p>
       <div class="q">${esc(p.q.q)}</div>
-      <div class="opts">${p.order.map(i=>{
-        let c="opt"; if(answered){ if(i===p.correct) c+=" right"; else if(i===chosen) c+=" wrong"; }
-        return `<button class="${c}" data-i="${i}"${answered?" disabled":""}>${esc(p.q.o[i])}</button>`;}).join("")}</div>
-      ${answered ? `<div class="expl"><strong>${chosen===p.correct?"Richtig.":"Nicht ganz."}</strong> ${esc(p.q.e||"")}</div>
-        <button class="btn" id="nextQ">Nächste Frage</button>` : ""}
+      ${answerHTML(p, ans, done)}
+      ${done ? `<div class="expl"><strong>${ok?"Richtig.":"Nicht ganz."}</strong> ${esc(p.q.e||"")}</div>
+        <button class="btn" id="nextQ">Nächste Frage</button>`
+      : (p.t!=="sc" ? `<button class="btn" id="check" style="margin-top:12px"${isAnswered(p,ans)?"":" disabled"}>Prüfen</button>` : "")}
     </div>`;
-  bindFilter(()=>{practice=null;renderPractice();});
-  if(!answered) document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
-    const i=+b.dataset.i; practice.chosen=i; const ok=i===p.correct;
-    grade(p.q.id, ok); track("od", ok); save(); renderPractice();
-  });
-  else $("#nextQ").onclick=()=>{ practice.p=prepQ(weightedPick(items,p.q.id)); practice.chosen=null; state.lastQ=practice.p.q.id; save(); renderPractice(); };
+  bindHead();
+  const check = () => { practice.done=true; const r=isRight(p,practice.ans); grade(p.q.id, r); track("od", r); save(); renderPractice(); };
+  if(!done){
+    bindAnswer(p, ()=>practice.ans, (a,instant,redraw)=>{
+      practice.ans=a;
+      if(instant && isAnswered(p,a)) return check();
+      if(redraw) renderPractice(); else { const b=$("#check"); if(b) b.disabled=!isAnswered(p,a); }
+    });
+    const b=$("#check"); if(b) b.onclick=check;
+  } else $("#nextQ").onclick=()=>{ practice={p:prepQ(weightedPick(items,p.q.id)), ans:null, done:false}; state.lastQ=practice.p.q.id; save(); renderPractice(); window.scrollTo(0,0); };
 }
 
 /* ===== Karteikarten ===== */
@@ -651,17 +760,25 @@ function renderCards(){
 }
 
 /* ===== Quiz-Simulation ===== */
+function blockOf(n){ return QUIZZES.find(z=>z.n===n); }
+function defaultBlock(){ const t=new Date(); t.setHours(0,0,0,0); const nx=QUIZZES.find(z=>new Date(z.open+"T00:00:00")>=t); return nx?nx.n:4; }
+function quizPool(b){ const qs=allQ(); return b==="alle" ? qs : qs.filter(x=>blockOf(b).s.includes(Number(x.s))); }
+function blockLabel(b){ if(b==="alle") return "Alle Sitzungen"; const z=blockOf(b); return `Quiz ${b} (Sitzung ${z.s[0]}–${z.s[z.s.length-1]})`; }
 function renderQuiz(){
   if(!quiz){
-    const n = allQ().filter(inFilter).length;
+    if(state.quizBlock===undefined) state.quizBlock=defaultBlock();
+    const b=state.quizBlock, pool=quizPool(b);
+    const have = b==="alle" ? null : blockOf(b).s.filter(n=>sessions()[n]);
     $("#app").innerHTML = `
-      <div class="row"><h1 class="grow">Quiz-Simulation</h1>${filterSelect()}</div>
-      <div class="block">
+      <h1>Quiz-Simulation</h1>
+      <label class="small muted">Stoff <select id="qb">${QUIZZES.map(z=>`<option value="${z.n}"${b===z.n?" selected":""}>${blockLabel(z.n)}</option>`).join("")}<option value="alle"${b==="alle"?" selected":""}>Alle Sitzungen</option></select></label>
+      <div class="block" style="margin-top:12px">
         <p>Wie auf Moodle: 12 Fragen, 15 Minuten, bestanden ab 7 richtigen Antworten. Du kannst zwischen den Fragen springen und erst am Ende abgeben.</p>
-        <p class="small muted">${n} Fragen im Pool${n<12?". Für eine volle Simulation braucht es mindestens 12.":"."}</p>
-        <button class="btn" id="start"${n?"":" disabled"}>Simulation starten</button>
+        ${have && have.length<blockOf(b).s.length ? `<p class="small" style="color:var(--bad)">Bisher ${have.length?`nur Sitzung ${have.join(", ")}`:"keine Sitzung"} von ${blockOf(b).s.length} in der App. Die Simulation deckt den Stoff also noch nicht ganz ab.</p>` : ""}
+        <p class="small muted">${pool.length} Fragen im Pool${pool.length<12?". Für eine volle Simulation braucht es mindestens 12.":"."}</p>
+        <button class="btn" id="start"${pool.length?"":" disabled"}>Simulation starten</button>
       </div>`;
-    bindFilter(renderQuiz);
+    $("#qb").onchange=e=>{ state.quizBlock=e.target.value==="alle"?"alle":Number(e.target.value); save(); renderQuiz(); };
     $("#start").onclick=startQuiz;
     return;
   }
@@ -669,8 +786,8 @@ function renderQuiz(){
   renderQuizResult();
 }
 function startQuiz(){
-  const pool = shuffle(allQ().filter(inFilter)).slice(0,12).map(prepQ);
-  quiz = {items:pool, answers:Array(pool.length).fill(null), cur:0, end:Date.now()+15*60*1000, running:true, scope:state.filter==="alle"?"alle":state.filter};
+  const b=state.quizBlock, pool = shuffle(quizPool(b)).slice(0,12).map(prepQ);
+  quiz = {items:pool, answers:Array(pool.length).fill(null), cur:0, end:Date.now()+15*60*1000, running:true, scope:b==="alle"?"alle":"q"+b};
   clearInterval(timerId); timerId=setInterval(tick,1000); renderQuiz();
 }
 function tick(){
@@ -680,30 +797,33 @@ function tick(){
   const el=$("#timer"); if(el){ el.textContent=fmt(left); el.classList.toggle("low",left<120000); }
 }
 const fmt = ms => { const s=Math.max(0,Math.ceil(ms/1000)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); };
+const qDone = i => isAnswered(quiz.items[i], quiz.answers[i]);
 function renderQuizRunning(){
   const it = quiz.items[quiz.cur], a = quiz.answers[quiz.cur];
-  const done = quiz.answers.filter(x=>x!==null).length;
+  const done = quiz.items.filter((_,i)=>qDone(i)).length;
   $("#app").innerHTML = `
-    <div class="row"><div class="grow"><div class="timer" id="timer">${fmt(quiz.end-Date.now())}</div><span class="small muted">${done} von ${quiz.items.length} beantwortet</span></div>
+    <div class="row"><div class="grow"><div class="timer" id="timer">${fmt(quiz.end-Date.now())}</div><span class="small muted" id="qCount">${done} von ${quiz.items.length} beantwortet</span></div>
       <button class="btn" id="submit">Abgeben</button></div>
-    <div class="coins">${quiz.items.map((_,i)=>`<button class="coin${quiz.answers[i]!==null?" done":""}${i===quiz.cur?" now":""}" data-i="${i}" aria-label="Frage ${i+1}">${i+1}</button>`).join("")}</div>
+    <div class="coins">${quiz.items.map((_,i)=>`<button class="coin${qDone(i)?" done":""}${i===quiz.cur?" now":""}" data-i="${i}" aria-label="Frage ${i+1}">${i+1}</button>`).join("")}</div>
     <div class="block">
-      <p class="small muted">Frage ${quiz.cur+1}</p>
+      <p class="small muted">Frage ${quiz.cur+1}${typeHint(it)?" · "+typeHint(it):""}</p>
       <div class="q">${esc(it.q.q)}</div>
-      <div class="opts">${it.order.map(i=>`<button class="opt${a===i?" sel":""}" data-o="${i}">${esc(it.q.o[i])}</button>`).join("")}</div>
+      ${answerHTML(it, a, false)}
     </div>
     <div class="row"><button class="btn ghost grow" id="prev"${quiz.cur===0?" disabled":""}>Zurück</button><button class="btn ghost grow" id="next"${quiz.cur===quiz.items.length-1?" disabled":""}>Weiter</button></div>`;
   document.querySelectorAll(".coin").forEach(b=>b.onclick=()=>{quiz.cur=+b.dataset.i;renderQuiz();});
-  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
-    quiz.answers[quiz.cur]=+b.dataset.o; track("od");
-    if(quiz.cur<quiz.items.length-1) quiz.cur++;
-    renderQuiz();
+  bindAnswer(it, ()=>quiz.answers[quiz.cur], (val,instant,redraw)=>{
+    quiz.answers[quiz.cur]=val; track("od");
+    if(instant && it.t==="sc" && quiz.cur<quiz.items.length-1){ quiz.cur++; return renderQuiz(); }
+    if(redraw) return renderQuiz();
+    const c=document.querySelector(`.coin[data-i="${quiz.cur}"]`); if(c) c.classList.toggle("done", qDone(quiz.cur));
+    const n=$("#qCount"); if(n) n.textContent=`${quiz.items.filter((_,i)=>qDone(i)).length} von ${quiz.items.length} beantwortet`;
   });
   $("#prev").onclick=()=>{quiz.cur--;renderQuiz();};
   $("#next").onclick=()=>{quiz.cur++;renderQuiz();};
   const sub=$("#submit");
   sub.onclick=()=>{
-    const open = quiz.items.length-quiz.answers.filter(x=>x!==null).length;
+    const open = quiz.items.length-quiz.items.filter((_,i)=>qDone(i)).length;
     if(open && !sub.dataset.armed){ sub.dataset.armed="1"; sub.textContent=`${open} offen. Trotzdem abgeben`; return; }
     finishQuiz();
   };
@@ -711,8 +831,9 @@ function renderQuizRunning(){
 function finishQuiz(){
   clearInterval(timerId);
   quiz.running=false;
-  quiz.score = quiz.items.reduce((s,it,i)=>s+(quiz.answers[i]===it.correct?1:0),0);
-  quiz.items.forEach((it,i)=>{ const ok=quiz.answers[i]===it.correct; grade(it.q.id, ok); countAnswer(ok); });
+  quiz.ok = quiz.items.map((it,i)=>isRight(it, quiz.answers[i]));
+  quiz.score = quiz.ok.filter(Boolean).length;
+  quiz.items.forEach((it,i)=>{ grade(it.q.id, quiz.ok[i]); countAnswer(quiz.ok[i]); });
   state.quizzes.push({date:Date.now(), score:quiz.score, total:quiz.items.length, scope:quiz.scope});
   save(); view="quiz"; render(); window.scrollTo(0,0);
 }
@@ -722,19 +843,19 @@ function renderQuizResult(){
     <h1>Ergebnis</h1>
     <div class="block">
       <div class="verdict ${pass?"pass":"fail"}">${quiz.score} von ${quiz.items.length}: ${pass?"bestanden":"nicht bestanden"}</div>
-      <div class="coins">${quiz.items.map((it,i)=>`<span class="coin ${quiz.answers[i]===it.correct?"ok":"no"}">${i+1}</span>`).join("")}</div>
+      <div class="coins">${quiz.items.map((it,i)=>`<span class="coin ${quiz.ok[i]?"ok":"no"}">${i+1}</span>`).join("")}</div>
       <p class="small muted">${pass?"Mit "+quiz.score+" Punkten liegst du "+(quiz.score>=8?"über":"unter")+" dem Schnitt von 7,5, den du für 30 Punkte insgesamt brauchst.":"Für das echte Quiz brauchst du mindestens 7. Übe die falschen Fragen, sie kommen jetzt öfter dran."}</p>
-      <div class="row"><button class="btn" id="again">Neue Simulation</button><button class="btn ghost" id="toPr">Fragen üben</button></div>
+      <div class="row"><button class="btn" id="again">Neue Simulation</button><button class="btn ghost" id="toPr">Fehler üben</button></div>
     </div>
     <h2>Durchsicht</h2>
-    ${quiz.items.map((it,i)=>{ const a=quiz.answers[i], ok=a===it.correct; return `<div class="review">
-      <p class="small" style="color:var(--${ok?"good":"bad"})">Frage ${i+1}: ${ok?"richtig":a===null?"nicht beantwortet":"falsch"}</p>
+    ${quiz.items.map((it,i)=>{ const a=quiz.answers[i], ok=quiz.ok[i]; return `<div class="review">
+      <p class="small" style="color:var(--${ok?"good":"bad"})">Frage ${i+1}: ${ok?"richtig":isAnswered(it,a)?"falsch":"nicht beantwortet"}</p>
       <p><strong>${esc(it.q.q)}</strong></p>
-      ${!ok && a!==null ? `<p class="small">Deine Antwort: ${esc(it.q.o[a])}</p>` : ""}
-      <p class="small">Richtig: ${esc(it.q.o[it.correct])}</p>
+      ${!ok && isAnswered(it,a) ? `<p class="small">Deine Antwort: ${esc(answerText(it,a))}</p>` : ""}
+      <p class="small">Richtig: ${esc(correctText(it))}</p>
       ${it.q.e?`<p class="small muted">${esc(it.q.e)}</p>`:""}</div>`; }).join("")}`;
   $("#again").onclick=()=>{quiz=null;renderQuiz();};
-  $("#toPr").onclick=()=>{quiz=null;go("practice");};
+  $("#toPr").onclick=()=>{quiz=null;state.errOnly=true;practice=null;save();go("practice");};
 }
 
 /* ===== Zoom (pro Gerät) ===== */
