@@ -377,6 +377,14 @@ document.getElementById("app").addEventListener("click",e=>{
   state.course=b.dataset.c; cards=null; practice=null; save(); view="home"; render(); window.scrollTo(0,0);
 });
 
+/* ===== Fortschrittsbalken: hell = schon richtig, dunkel = sicher ===== */
+function progRow(k, title, items){
+  const n=items.length||1, right=items.filter(x=>boxOf(x.id)>=2).length, sure=items.filter(x=>boxOf(x.id)>=4).length;
+  return `<div style="margin:12px 0"><div class="row"><span class="grow">${k}. ${esc(title)}</span></div>
+    <div class="bar" style="position:relative"><i style="position:absolute;width:${right/n*100}%;opacity:.35"></i><i style="position:absolute;width:${sure/n*100}%"></i></div>
+    <p class="small muted" style="margin:4px 0 0">${right} von ${items.length} schon richtig, ${sure} sicher</p></div>`;
+}
+
 /* ===== Übersicht ===== */
 function renderHome(){
   const s = sessions(), qs = allQ(), ks = allK();
@@ -385,9 +393,7 @@ function renderHome(){
   const days = next ? Math.round((new Date(next.open+"T00:00:00")-today)/864e5) : null;
   const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>{
     const items = qs.filter(x=>String(x.s)===k).concat(ks.filter(x=>String(x.s)===k));
-    const sure = items.filter(x=>boxOf(x.id)>=4).length;
-    const pct = items.length ? Math.round(sure/items.length*100) : 0;
-    return `<div style="margin:10px 0"><div class="row"><span class="grow">${k}. ${esc(s[k])}</span><span class="small muted">${pct} % sicher</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+    return progRow(k, s[k], items);
   }).join("");
   const last = state.quizzes.slice(-5).reverse();
   $("#app").innerHTML = `
@@ -400,7 +406,7 @@ function renderHome(){
       <div class="row"><button class="btn" id="goQuiz">Quiz simulieren</button><button class="btn ghost" id="goPr">Fragen üben</button></div>
     </div>
     <div class="block"><h3>Fortschritt pro Sitzung</h3>
-      <p class="small muted">„Sicher“ heißt: mindestens dreimal hintereinander richtig.</p>${rows}</div>
+      <p class="small muted">„Sicher“ heißt: dreimal hintereinander richtig. Dann kommt die Frage nur noch selten.</p>${rows}</div>
     <div class="block"><h3>Letzte Simulationen</h3>
       ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · Sitzung ${esc(z.scope)}</td><td style="color:var(--${z.score>=7?"good":"bad"})">${z.score} / ${z.total}</td></tr>`).join("")}</table>`
       : `<p class="small muted">Noch keine Simulation. Starte eine, sobald du die Karten einmal durch hast.</p>`}
@@ -419,9 +425,7 @@ function renderSozHome(){
   const s = sessions(), ks = allK();
   const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>{
     const items = ks.filter(x=>String(x.s)===k);
-    const sure = items.filter(x=>boxOf(x.id)>=4).length;
-    const pct = items.length ? Math.round(sure/items.length*100) : 0;
-    return `<div style="margin:10px 0"><div class="row"><span class="grow">${k}. ${esc(s[k])}</span><span class="small muted">${items.length} Karten, ${pct} % sicher</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+    return progRow(k, s[k], items);
   }).join("");
   $("#app").innerHTML = `
     <h1>Sozialstruktur</h1>
@@ -432,7 +436,7 @@ function renderSozHome(){
       <button class="btn" id="goCards">Karten starten</button>
     </div>
     <div class="block"><h3>Fortschritt pro Sitzung</h3>
-      <p class="small muted">„Sicher“ heißt: mindestens dreimal hintereinander gewusst.</p>${rows}</div>
+      <p class="small muted">„Sicher“ heißt: dreimal hintereinander gewusst. Dann kommt die Karte nur noch selten.</p>${rows}</div>
     ${storeNote()}`;
   bindBackup();
   $("#goCards").onclick=()=>go("cards");
@@ -442,12 +446,17 @@ function renderSozHome(){
 function renderPractice(){
   const items = allQ().filter(inFilter);
   if(!items.length){ $("#app").innerHTML=`<h1>Üben</h1>${filterSelect()}<p>Für diese Auswahl gibt es noch keine Fragen.</p>`; bindFilter(renderPractice); return; }
-  if(!practice || !items.find(x=>x.id===practice.p.q.id)) practice = {p:prepQ(weightedPick(items)), chosen:null, n:0, right:0};
+  if(!practice || !items.find(x=>x.id===practice.p.q.id)){
+    const last = items.find(x=>x.id===state.lastQ);
+    practice = {p:prepQ(last || weightedPick(items)), chosen:null};
+    state.lastQ = practice.p.q.id;
+  }
+  const rightAll = items.filter(x=>boxOf(x.id)>=2).length;
   const {p, chosen} = practice;
   const answered = chosen!==null;
   $("#app").innerHTML = `
     <div class="row"><h1 class="grow">Üben</h1>${filterSelect()}</div>
-    <p class="small muted">Diese Runde: ${practice.right} von ${practice.n} richtig. Falsche Fragen kommen öfter dran.</p>
+    <p class="small muted">${rightAll} von ${items.length} Fragen schon richtig beantwortet. Falsche kommen öfter dran.</p>
     <div class="block">
       <p class="small muted">Sitzung ${esc(p.q.s)}</p>
       <div class="q">${esc(p.q.q)}</div>
@@ -459,10 +468,10 @@ function renderPractice(){
     </div>`;
   bindFilter(()=>{practice=null;renderPractice();});
   if(!answered) document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
-    const i=+b.dataset.i; practice.chosen=i; practice.n++; const ok=i===p.correct; if(ok) practice.right++;
+    const i=+b.dataset.i; practice.chosen=i; const ok=i===p.correct;
     grade(p.q.id, ok); save(); renderPractice();
   });
-  else $("#nextQ").onclick=()=>{ practice.p=prepQ(weightedPick(items,p.q.id)); practice.chosen=null; renderPractice(); };
+  else $("#nextQ").onclick=()=>{ practice.p=prepQ(weightedPick(items,p.q.id)); practice.chosen=null; state.lastQ=practice.p.q.id; save(); renderPractice(); };
 }
 
 /* ===== Karteikarten ===== */
