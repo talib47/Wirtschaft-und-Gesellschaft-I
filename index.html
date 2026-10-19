@@ -17,8 +17,9 @@
     --accent:#6FB3A2; --accent-ink:#0F1A17; --good:#6CC28B; --bad:#E07A6B; --gold:#D9AE55; }
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
-main{max-width:640px;margin:0 auto;padding:20px 18px 110px}
+html{font-size:calc(100% * var(--z,1))}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+main{max-width:40rem;margin:0 auto;padding:20px 18px 110px}
 h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;margin:0 0 .4em}
 h1{font-size:1.75rem} h2{font-size:1.35rem} h3{font-size:1.08rem}
 p{margin:0 0 .8em}
@@ -74,12 +75,15 @@ td:last-child{text-align:right}
 .switch{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 18px}
 .switch button{background:transparent;border:0;padding:10px 6px;font-weight:600;color:var(--muted)}
 .switch button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.zoom{position:fixed;right:12px;bottom:calc(64px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;z-index:5}
+.zoom button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:22px;line-height:1;opacity:.85;box-shadow:0 1px 4px rgba(0,0,0,.15)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <main id="app"><p class="muted">Lade …</p></main>
 <nav><div class="wrap" id="nav"></div></nav>
+<div class="zoom" aria-label="Schriftgröße"><button id="zIn" aria-label="Größer">+</button><button id="zOut" aria-label="Kleiner">−</button></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -732,6 +736,15 @@ function renderQuizResult(){
   $("#again").onclick=()=>{quiz=null;renderQuiz();};
   $("#toPr").onclick=()=>{quiz=null;go("practice");};
 }
+
+/* ===== Zoom (pro Gerät) ===== */
+(function(){
+  let z = parseFloat(lsGet("od-zoom")) || 1;
+  const apply = () => { document.documentElement.style.setProperty("--z", z); lsSet("od-zoom", String(z)); };
+  apply();
+  document.getElementById("zIn").onclick = () => { z = Math.min(1.8, Math.round((z+0.1)*10)/10); apply(); };
+  document.getElementById("zOut").onclick = () => { z = Math.max(0.8, Math.round((z-0.1)*10)/10); apply(); };
+})();
 
 /* ===== Start ===== */
 load().then(render);
