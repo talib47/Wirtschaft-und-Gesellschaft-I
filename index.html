@@ -196,70 +196,115 @@ let state = {custom:{sitzungen:{},fragen:[],karten:[]}, soz:{sitzungen:{},karten
 let view = "home";
 let practice = null, cards = null, quiz = null, timerId = null, resetArmed = false;
 
-let store = "none";
-async function initStore(){
-  try{
-    if(window.storage){
-      await window.storage.set("od-test", String(Date.now()), false);
-      const r = await window.storage.get("od-test", false);
-      if(r && r.value){ store="claude"; return; }
-    }
-  }catch(e){}
-  try{ localStorage.setItem("od-test","1"); if(localStorage.getItem("od-test")==="1"){ store="local"; return; } }catch(e){}
-  store="none";
+/* ===== Speichern: lokal auf dem Gerät + Abgleich über GitHub (Zweig "fortschritt") ===== */
+const GH = {api:"https://api.github.com/repos/talib47/lernapp/contents/fortschritt.json", branch:"fortschritt", tokenKey:"od-gh-token"};
+let store="none", ghToken=null, remoteSha=null, syncStatus="aus", lastSync=null, pushTimer=null, pushing=false, pushAgain=false;
+
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
+function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+function initToken(){
+  const m = location.hash.match(/[#&]t=([A-Za-z0-9_]+)/);
+  if(m){ lsSet(GH.tokenKey, m[1]); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
+  ghToken = lsGet(GH.tokenKey);
 }
-async function load(){
-  await initStore();
-  let raw=null;
+const ghHeaders = () => ({"Authorization":"Bearer "+ghToken,"Accept":"application/vnd.github+json"});
+const b64enc = str => btoa(unescape(encodeURIComponent(str)));
+const b64dec = str => decodeURIComponent(escape(atob(str.replace(/\n/g,""))));
+
+async function pull(){
+  if(!ghToken) return null;
+  const r = await fetch(GH.api+"?ref="+GH.branch+"&_="+Date.now(), {headers:ghHeaders(), cache:"no-store"});
+  if(r.status===404){ remoteSha=null; return {}; }
+  if(r.status===401){ syncStatus="schluessel"; return null; }
+  if(!r.ok) throw new Error(r.status);
+  const d = await r.json(); remoteSha = d.sha;
+  return JSON.parse(b64dec(d.content));
+}
+async function push(){
+  if(!ghToken) return;
+  if(pushing){ pushAgain=true; return; }
+  pushing=true;
   try{
-    if(store==="claude"){ const r=await window.storage.get(KEY,false); raw=r&&r.value; }
-    else if(store==="local"){ raw=localStorage.getItem(KEY); }
-  }catch(e){ /* noch nichts gespeichert */ }
+    for(let attempt=0; attempt<2; attempt++){
+      const body={message:"Lernstand", branch:GH.branch, content:b64enc(JSON.stringify(state))};
+      if(remoteSha) body.sha=remoteSha;
+      const r = await fetch(GH.api, {method:"PUT", headers:ghHeaders(), body:JSON.stringify(body)});
+      if(r.ok){ const d=await r.json(); remoteSha=d.content.sha; syncStatus="ok"; lastSync=new Date(); break; }
+      if(r.status===401){ syncStatus="schluessel"; break; }
+      if(r.status===409||r.status===422){ await pull(); continue; }  // veraltete Version: neu holen und nochmal
+      syncStatus="fehler"; break;
+    }
+  }catch(e){ syncStatus="fehler"; }
+  pushing=false;
+  if(pushAgain){ pushAgain=false; push(); }
+}
+function schedulePush(){ if(!ghToken) return; clearTimeout(pushTimer); pushTimer=setTimeout(push, 4000); }
+function flushPush(){ if(pushTimer){ clearTimeout(pushTimer); pushTimer=null; push(); } }
+
+/* Neuerer Stand gewinnt: Vergleich über den Zeitstempel "updated" */
+async function syncFromRemote(){
+  if(!ghToken) return false;
+  try{
+    const remote = await pull();
+    if(remote===null) return false;
+    if(remote.updated && remote.updated > (state.updated||0)){
+      state = Object.assign(state, remote); lsSet(KEY, JSON.stringify(state));
+      syncStatus="ok"; lastSync=new Date(); return true;
+    }
+    if((state.updated||0) > (remote.updated||0)) await push();
+    else { syncStatus="ok"; lastSync=new Date(); }
+  }catch(e){ syncStatus="fehler"; }
+  return false;
+}
+
+async function load(){
+  initToken();
+  store = lsSet("od-test","1") ? "local" : "none";
+  const raw = lsGet(KEY);
   if(raw){ try{ state=Object.assign(state, JSON.parse(raw)); }catch(e){} }
   if(!state.soz) state.soz={sitzungen:{},karten:[]};
+  await syncFromRemote();
 }
 async function save(){
-  const raw=JSON.stringify(state);
-  try{
-    if(store==="claude") await window.storage.set(KEY, raw, false);
-    else if(store==="local") localStorage.setItem(KEY, raw);
-  }catch(e){ store="none"; toast("Speichern hat nicht geklappt."); }
+  state.updated = Date.now();
+  if(store==="local") lsSet(KEY, JSON.stringify(state));
+  schedulePush();
 }
-/* Sicherung per Code: funktioniert auch dort, wo die App beim Schließen alles vergisst */
-function makeCode(){
-  const box={}; Object.keys(state.box).forEach(k=>{ if(state.box[k]) box[k]=state.box[k]; });
-  const json=JSON.stringify({b:box,q:state.quizzes});
-  return "LA1-"+btoa(unescape(encodeURIComponent(json)));
-}
-function readCode(code){
-  const c=code.trim().replace(/^LA1-/,"");
-  const d=JSON.parse(decodeURIComponent(escape(atob(c))));
-  if(!d || typeof d.b!=="object") throw new Error();
-  state.box=Object.assign({}, state.box, d.b);
-  if(Array.isArray(d.q)) state.quizzes=d.q;
-}
+document.addEventListener("visibilitychange", async ()=>{
+  if(document.visibilityState==="hidden") flushPush();
+  else if(!(quiz && quiz.running) && await syncFromRemote()) render();
+});
+
 function storeNote(){
-  return `<div class="block"><h3>Fortschritt sichern</h3>
-    <p class="small muted">In der Claude-App geht dein Fortschritt beim Schließen verloren. Kopier ihn vor dem Schließen und leg ihn z. B. in deinen Notizen ab. Beim nächsten Mal fügst du ihn wieder ein. Das klappt auch auf einem anderen Gerät.</p>
-    <div class="row"><button class="btn" id="bkCopy">Fortschritt kopieren</button><button class="btn ghost" id="bkLoad">Fortschritt einfügen</button></div>
-    <div id="bkArea"></div></div>`;
+  if(!ghToken) return `<div class="block"><h3>Geräte verbinden</h3>
+    <p class="small muted">Damit dein Fortschritt auf iPhone, iPad und Laptop gleich ist, verbinde dieses Gerät einmal. Am einfachsten öffnest du dafür deinen Verbindungslink aus dem Claude-Chat.</p>
+    <p class="small muted">Oder füge hier deinen GitHub-Schlüssel ein (beginnt mit github_pat_):</p>
+    <textarea id="tkIn" style="min-height:70px"></textarea>
+    <button class="btn" id="tkGo" style="margin-top:8px">Gerät verbinden</button></div>`;
+  const msg = {ok:`Dein Fortschritt wird mit deinen anderen Geräten abgeglichen${lastSync?", zuletzt um "+lastSync.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}):""}.`,
+    fehler:"Abgleich gerade nicht möglich, z. B. ohne Internet. Dein Fortschritt bleibt auf diesem Gerät und wird später abgeglichen.",
+    schluessel:"Der Schlüssel funktioniert nicht mehr. Trenne das Gerät und verbinde es mit einem neuen Schlüssel.",
+    aus:"Wird abgeglichen …"}[syncStatus];
+  return `<div class="block"><h3>Geräte-Abgleich</h3>
+    <p class="small ${syncStatus==="ok"?"muted":""}" ${syncStatus==="ok"?"":'style="color:var(--bad)"'}>${msg}</p>
+    <div class="row"><button class="btn ghost" id="syNow">Jetzt abgleichen</button><button class="btn ghost" id="syOff">Gerät trennen</button></div></div>`;
 }
 function bindBackup(){
-  const area=$("#bkArea"); if(!area) return;
-  $("#bkCopy").onclick=async()=>{
-    const code=makeCode();
-    try{ await navigator.clipboard.writeText(code); toast("Kopiert. Jetzt in deinen Notizen einfügen."); area.innerHTML=""; }
-    catch(e){
-      area.innerHTML=`<p class="small" style="margin-top:10px">Kopieren ging nicht automatisch. Halte den Text gedrückt und kopiere ihn:</p><textarea readonly style="min-height:90px">${esc(code)}</textarea>`;
-      const t=area.querySelector("textarea"); t.focus(); t.select();
-    }
+  const go=$("#tkGo");
+  if(go) go.onclick=async()=>{
+    const t=$("#tkIn").value.trim();
+    if(!/^github_pat_\w+$/.test(t)){ toast("Das sieht nicht nach einem Schlüssel aus. Er beginnt mit github_pat_."); return; }
+    lsSet(GH.tokenKey,t); ghToken=t; toast("Verbinde …");
+    await syncFromRemote(); toast(syncStatus==="ok"?"Gerät verbunden":"Verbinden hat nicht geklappt"); render();
   };
-  $("#bkLoad").onclick=()=>{
-    area.innerHTML=`<textarea id="bkIn" style="min-height:90px;margin-top:10px" placeholder="Hier den kopierten Text einfügen (beginnt mit LA1-)"></textarea><button class="btn" id="bkGo" style="margin-top:8px">Laden</button>`;
-    $("#bkGo").onclick=()=>{
-      try{ readCode($("#bkIn").value); save(); toast("Fortschritt geladen"); render(); }
-      catch(e){ toast("Das hat nicht geklappt. Bitte den ganzen Text ab LA1- einfügen."); }
-    };
+  const now=$("#syNow");
+  if(now) now.onclick=async()=>{ flushPush(); await syncFromRemote(); toast(syncStatus==="ok"?"Abgeglichen":"Abgleich hat nicht geklappt"); render(); };
+  const off=$("#syOff");
+  if(off) off.onclick=()=>{
+    if(!off.dataset.armed){ off.dataset.armed="1"; off.textContent="Wirklich trennen"; return; }
+    lsDel(GH.tokenKey); ghToken=null; syncStatus="aus"; render();
   };
 }
 
