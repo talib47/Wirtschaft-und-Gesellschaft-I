@@ -1,0 +1,12 @@
+{
+  "name": "W&G I",
+  "short_name": "W&G I",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ECEFE8",
+  "theme_color": "#2F6F62",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
