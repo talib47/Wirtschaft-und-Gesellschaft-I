@@ -224,7 +224,7 @@ let view = "home";
 let practice = null, cards = null, quiz = null, write = null, timerId = null, resetArmed = false;
 
 /* ===== Speichern: lokal auf dem Gerät + Abgleich über GitHub (Zweig "fortschritt") ===== */
-const GH = {api:"https://api.github.com/repos/talib47/lernapp/contents/fortschritt.json", branch:"fortschritt", tokenKey:"od-gh-token"};
+const GH = {api:"https://api.github.com/repos/talib47/Wirtschaft-und-Gesellschaft-I/contents/fortschritt.json", branch:"fortschritt", tokenKey:"od-gh-token"};
 let store="none", ghToken=null, remoteSha=null, syncStatus="aus", lastSync=null, pushTimer=null, pushing=false, pushAgain=false;
 
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
