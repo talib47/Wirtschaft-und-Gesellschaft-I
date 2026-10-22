@@ -13,14 +13,15 @@
 <style>
 :root{
   --bg:#ECEFE8; --surface:#F8F9F5; --ink:#1C2B3A; --muted:#5B6873; --line:#C9D0C6;
-  --accent:#2F6F62; --accent-ink:#FFFFFF; --good:#2F7A4A; --bad:#A3392B; --gold:#B5862A;
+  --accent:#2F6F62; --accent-ink:#FFFFFF; --accent-soft:#DCEAE5; --good:#2F7A4A; --good-soft:#E1EFE5; --bad:#A3392B; --bad-soft:#F5E3E0; --gold:#9A6F1C; --gold-soft:#F3EAD5;
+  --mono:ui-monospace,Menlo,Consolas,monospace;
   --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root{ color-scheme:dark;
     --bg:#131A1F; --surface:#1C252C; --ink:#E3E8E2; --muted:#9AA6AE; --line:#33414B;
-    --accent:#6FB3A2; --accent-ink:#0F1A17; --good:#6CC28B; --bad:#E07A6B; --gold:#D9AE55; }
+    --accent:#6FB3A2; --accent-ink:#0F1A17; --accent-soft:#1F3631; --good:#6CC28B; --good-soft:#1C3325; --bad:#E07A6B; --bad-soft:#3A2220; --gold:#D9AE55; --gold-soft:#3A3020; }
 }
 *{box-sizing:border-box}
 html{font-size:calc(100% * var(--z,1))}
@@ -48,7 +49,8 @@ nav button{flex:1;background:none;border:0;padding:12px 4px 14px;font-size:.82re
 nav button[aria-current="page"]{color:var(--ink);border-top-color:var(--accent);font-weight:600}
 
 /* Münzleiste: 12 Fragen der Quiz-Simulation */
-.coins{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;margin:12px 0}
+.coins{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;margin:12px 0}
+@media (max-width:420px){.coins{grid-template-columns:repeat(6,minmax(0,1fr));max-width:18rem}}
 .coin{aspect-ratio:1;border-radius:50%;border:2px solid var(--line);background:transparent;padding:0;font-size:.7rem;color:var(--muted);display:grid;place-items:center}
 .coin.done{border-color:var(--ink);background:var(--ink);color:var(--surface)}
 .coin.now{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
@@ -66,9 +68,11 @@ nav button[aria-current="page"]{color:var(--ink);border-top-color:var(--accent);
 .expl{border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin:14px 0}
 .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent)}
-.card{min-height:220px;display:flex;flex-direction:column;justify-content:center;text-align:center;cursor:pointer;user-select:none}
-.card .front{font-family:var(--serif);font-size:1.45rem}
-.card .back{white-space:pre-line;text-align:left;line-height:1.55}
+.card{min-height:200px;display:flex;flex-direction:column;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left}
+.card .cctx{margin:0;font-size:.8rem;color:var(--muted);letter-spacing:.01em}
+.card .front{font-family:var(--serif);font-size:1.4rem;line-height:1.3;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+.card .back{border-top:1px solid var(--line);padding-top:10px;line-height:1.55}
+.card .tap{font-size:.78rem;color:var(--muted);margin:auto 0 0}
 textarea{width:100%;min-height:180px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:.82rem}
 .verdict{font-family:var(--serif);font-size:1.6rem}
 .verdict.pass{color:var(--good)} .verdict.fail{color:var(--bad)}
@@ -83,6 +87,76 @@ td:last-child{text-align:right}
 .switch button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
 .zoom{position:fixed;right:12px;bottom:calc(64px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;z-index:5}
 .zoom button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:22px;line-height:1;opacity:.85;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+/* ---- Textformat (aus Wirtschaft II übernommen) ---- */
+.back p,.ml p{margin:0 0 .5em}
+.back ul,.back ol,.ml ul,.ml ol{margin:0 0 .5em;padding-left:1.25em}
+.back li,.ml li{margin:.2em 0}
+.back>:last-child,.ml>:last-child{margin-bottom:0}
+.eq{font-family:var(--mono);font-size:.92rem;background:var(--bg);border-radius:8px;padding:8px 10px;margin:6px 0;white-space:normal;overflow-wrap:break-word;line-height:1.55}
+.pz{color:var(--muted);font-size:.9em}
+.dlist{display:grid;grid-template-columns:fit-content(42%) 1fr;margin:4px 0 8px}
+.dlist>b,.dlist>span{padding:6px 0;border-top:1px solid var(--line);min-width:0;overflow-wrap:break-word}
+.dlist>b{padding-right:14px;font-weight:600;hyphens:auto;-webkit-hyphens:auto}
+.dlist>b:first-child,.dlist>b:first-child+span{border-top:0}
+.cmp{width:100%;border-collapse:collapse;font-size:.92rem;margin:6px 0 10px;table-layout:auto}
+.cmp th,.cmp td{border-top:1px solid var(--line);border-bottom:0;padding:7px 8px;text-align:left;vertical-align:top;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+.cmp thead th{border-top:0;font-size:.78rem;letter-spacing:.04em;color:var(--muted);font-weight:600}
+.cmp tbody th{font-weight:600;padding-left:0}
+.cmp td:last-child{text-align:left}
+@media (max-width:560px){
+  .cmp:not(.tight) thead{display:none}
+  .cmp:not(.tight),.cmp:not(.tight) tbody,.cmp:not(.tight) tr,.cmp:not(.tight) th,.cmp:not(.tight) td{display:block;width:100%}
+  .cmp:not(.tight) tr{border-top:1px solid var(--line);padding:6px 0}
+  .cmp:not(.tight) tr:first-child{border-top:0}
+  .cmp:not(.tight) tbody th,.cmp:not(.tight) td{border:0;padding:2px 0}
+  .cmp:not(.tight) td{display:grid;grid-template-columns:fit-content(40%) 1fr;gap:10px}
+  .cmp:not(.tight) td::before{content:attr(data-l);color:var(--muted);font-size:.8rem;padding-top:1px}
+}
+.cinfo{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:.82rem;line-height:1.45;color:var(--muted)}
+.cinfo .cl{display:block} .cinfo .cl+.cl{margin-top:3px}
+.cinfo b{color:var(--ink);font-weight:600}
+.cinfo .ci{flex:none;width:18px;height:18px;border-radius:50%;border:1px solid var(--muted);font:600 .7rem/16px var(--serif);font-style:italic;text-align:center;margin-top:1px}
+.dots{display:inline-flex;gap:3px} .dots i{width:7px;height:7px;border-radius:50%;border:1px solid var(--muted)} .dots i.on{background:var(--accent);border-color:var(--accent)}
+.eyebrow{font-size:.8rem;color:var(--muted);margin:0}
+.between{justify-content:space-between}
+/* Rückmeldungen */
+.fb{margin-top:12px;border-left:3px solid var(--line);padding:2px 0 2px 12px;font-size:.95rem}
+.fb.good{border-color:var(--good)} .fb.bad{border-color:var(--bad)} .fb.idk{border-color:var(--gold)}
+.fb .fh{margin:0 0 4px;font-weight:600}
+.fb.good .fh{color:var(--good)} .fb.bad .fh{color:var(--bad)} .fb.idk .fh{color:var(--gold)}
+.fb .dlist{margin:0}
+.opt.miss{border-style:dashed;border-color:var(--gold);background:var(--gold-soft)}
+.opt .tag{display:block;font-size:.75rem;font-weight:600;margin-top:4px}
+.opt.right .tag{color:var(--good)} .opt.wrong .tag{color:var(--bad)} .opt.miss .tag{color:var(--gold)}
+.opt.right{background:var(--good-soft)} .opt.wrong{background:var(--bad-soft)}
+.idk{border-style:dashed!important;color:var(--muted)!important;background:transparent!important}
+/* Chips, Listen, Banner */
+.chip{display:inline-block;font-size:.75rem;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.unk{color:var(--gold);border-color:var(--gold)}
+.chip.err{color:var(--accent);border-color:var(--accent)}
+.tlist{display:flex;flex-direction:column}
+.titem{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;padding:12px 2px;border:0;border-top:1px solid var(--line);text-align:left;background:none;width:100%}
+.titem:first-child{border-top:0}
+.titem .t{font-weight:600;min-width:0;overflow-wrap:break-word}
+.titem .d{grid-column:1/-1;font-size:.85rem;color:var(--muted)}
+.due{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--accent-soft);border-color:var(--accent)}
+.unc{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.btn.small{padding:7px 12px;font-size:.85rem}
+.copybox{width:100%;min-height:8rem;margin-top:8px;font-size:.85rem}
+.exam ul{margin:.2em 0 .6em;padding-left:1.2em} .exam li{margin:.15em 0}
+.srow{padding:12px 0;border-top:1px solid var(--line)} .srow:first-of-type{border-top:0}
+/* Statistik: letzte 7 Tage */
+.week7{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:10px}
+.week7 .d{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;padding:4px 0}
+.week7 .bw{height:80px;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.week7 .bw i{display:block;width:70%;max-width:2.2rem;background:var(--accent);opacity:.5;border-radius:4px 4px 0 0;min-height:2px}
+.week7 .wd{font-size:.78rem;font-weight:600;margin-top:6px}
+.week7 .dt{font-size:.68rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.week7 .n{font-size:.85rem;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums}
+.week7 .u{font-size:.6rem;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.week7 .d.today{background:var(--accent-soft);border-radius:8px}
+.week7 .d.today .bw i{opacity:1} .week7 .d.today .wd{color:var(--accent)}
+main,.block{min-width:0;overflow-wrap:break-word}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
@@ -93,122 +167,181 @@ td:last-child{text-align:right}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-/* ===== Fragen und Karten: Sitzung 1 ===== */
-/* Bei Fragen steht die richtige Antwort immer an erster Stelle in "o"; die App mischt sie. */
+/* ===== Ökonomisches Denken: Inhalte (Regeln siehe README, „So kommen neue Sitzungen dazu“) ===== */
 const BASE = {
   sitzungen: { "1": "Grundlagen und Antike" },
   fragen: [
-    {id:"s1-01",s:1,q:"Wie wird ein Modell in der Vorlesung definiert?",o:["Eine vereinfachte Darstellung der Realität, mit der bestimmte Zusammenhänge isoliert untersucht werden","Eine möglichst vollständige Abbildung der Realität","Eine empirisch bewiesene Gesetzmäßigkeit","Eine normative Vorgabe, wie Wirtschaft funktionieren soll"],e:"Ein Modell kann und soll nicht die gesamte Realität abbilden, sondern bestimmte Mechanismen."},
-    {id:"s1-02",s:1,q:"Was veranschaulicht das Beispiel des U-Bahn-Plans?",o:["Ein Modell zeigt nur, was für seine Frage wichtig ist (Stationen, keine Straßen)","Modelle müssen maßstabsgetreu sein","Modelle sind immer geografisch","Je detaillierter ein Modell, desto besser"],e:"U-Bahn-Pläne zeigen nur die Stationen, keine Straßen."},
-    {id:"s1-03",s:1,q:"Welches Modell gehört NICHT zu den fünf Modellen des Kernlehrplans?",o:["Gefangenendilemma","Homo oeconomicus","Erweiterter Wirtschaftskreislauf","Modell des Konjunkturzyklus"],e:"Die fünf: Homo oeconomicus, Marktmodell, erweiterter Wirtschaftskreislauf, soziales Interaktionsmodell, Konjunkturzyklus."},
-    {id:"s1-04",s:1,q:"Welches der folgenden Modelle gehört zu den fünf Modellen des Kernlehrplans?",o:["Soziales Interaktionsmodell","Akerlofs Lemons-Modell","Modell der Spieltheorie","Modell der Geldschöpfung"],e:"Die fünf: Homo oeconomicus, Marktmodell, erweiterter Wirtschaftskreislauf, soziales Interaktionsmodell, Konjunkturzyklus."},
-    {id:"s1-05",s:1,q:"Welche Frage gehört NICHT zu den Fragen, die man laut Vorlesung immer an ein Modell stellen muss?",o:["Wer hat das Modell zuerst veröffentlicht?","Was nimmt es an?","Was blendet es aus?","Was können wir damit nicht erklären?"],e:"Die fünf Fragen: Welche Frage beantwortet es? Was nimmt es an? Was blendet es aus? Was können wir damit erklären? Was nicht?"},
-    {id:"s1-06",s:1,q:"Wie wurde das Fach Wirtschaftswissenschaften historisch bezeichnet?",o:["Politische Ökonomie","Kameralistik der Moderne","Chrematistik","Haushaltslehre"],e:"Der Begriff Politische Ökonomie macht die interdisziplinäre Perspektive deutlich: Wirtschaft im Zusammenhang mit Politik und Gesellschaft."},
-    {id:"s1-07",s:1,q:"Welche Inhaltsfelder des Kernlehrplans sind besonders ökonomisch ausgerichtet?",o:["Inhaltsfeld 1 (Marktwirtschaftliche Ordnung) und Inhaltsfeld 4 (Wirtschaftspolitik)","Inhaltsfeld 2 und Inhaltsfeld 3","Nur Inhaltsfeld 1","Inhaltsfeld 1 und Inhaltsfeld 5"],e:"IF 1: Marktwirtschaftliche Ordnung, IF 4: Wirtschaftspolitik."},
-    {id:"s1-08",s:1,q:"Was untersuchen Wirtschaftswissenschaften laut Vorlesung?",o:["Wie Menschen und Gesellschaften Güter und Ressourcen produzieren, verteilen und verwenden","Ausschließlich das Verhalten von Unternehmen auf Märkten","Nur die Geldpolitik von Zentralbanken","Wie man den Gewinn eines Betriebs maximiert"],e:"Dazu kommt die Frage, wie Wirtschaft, politische Institutionen, Macht und gesellschaftliche Interessen zusammenhängen."},
-    {id:"s1-09",s:1,q:"In welchen Zusammenhang waren wirtschaftliche Fragen in der Antike NICHT eingebettet?",o:["Finanzmärkte und Börsenhandel","Ethik/Philosophie","Haushaltsführung","Landwirtschaft"],e:"Eingebettet in Ethik/Philosophie, Politik, Haushaltsführung und Landwirtschaft."},
-    {id:"s1-10",s:1,q:"Was war in der Antike die zentrale Produktionseinheit?",o:["Haushalt bzw. Gutshof","Manufaktur","Fabrik","Handelsgesellschaft"],e:"Hintergrund: Agrargesellschaft, Gutshof, Sklaverei, begrenzte Märkte, zunehmende Monetarisierung."},
-    {id:"s1-11",s:1,q:"Wer betrachtet Arbeitsteilung als Organisation des Haushalts bzw. Gutshofs?",o:["Xenophon","Platon","Aristoteles","Cicero"],e:"Xenophons Fragestellung wirkt „betriebswirtschaftlich“: Wie lässt sich Arbeit sinnvoll organisieren?"},
-    {id:"s1-12",s:1,q:"Wer betrachtet Arbeitsteilung als gesellschaftliches Prinzip?",o:["Platon","Xenophon","Cato","Columella"],e:"Menschen können ihre Bedürfnisse nicht allein befriedigen; Arbeitsteilung erzeugt gegenseitige Abhängigkeit."},
-    {id:"s1-13",s:1,q:"Was erzeugt Arbeitsteilung nach Platon?",o:["Gegenseitige Abhängigkeit","Vollständige Autarkie jedes Haushalts","Steigenden Eigennutz","Sinkende Spezialisierung"],e:"Die Frage verschiebt sich vom einzelnen Haushalt zur Organisation der Gesellschaft."},
-    {id:"s1-14",s:1,q:"Wodurch wird Arbeitsteilung in der Antike (noch) NICHT primär erklärt?",o:["Durch Markt, Preise und individuellen Eigennutz","Durch eine Vorstellung gesellschaftlicher Ordnung","Durch unterschiedliche Fähigkeiten","Durch die Organisation des Gutshofs"],e:"Wirtschaftliches Handeln erscheint als Teil der Gesellschaft, nicht als eigenständige Sphäre."},
-    {id:"s1-15",s:1,q:"Was ist Arbeitsteilung?",o:["Aufteilung wirtschaftlicher Tätigkeiten auf unterschiedliche Personen, wodurch Spezialisierung und häufig höhere Produktivität möglich werden","Die gleichmäßige Verteilung des Einkommens","Die Trennung von Haushalt und Staat","Der Tausch von Gütern gegen Geld"],e:"Konzept-Folie zur Arbeitsteilung."},
-    {id:"s1-16",s:1,q:"Welche Funktion hat Geld nach Aristoteles?",o:["Es erleichtert den Austausch und macht unterschiedliche Güter vergleichbar","Es dient vor allem der Vermögensanhäufung","Es ist entstanden, weil der Staat Steuern eintreiben wollte","Es ersetzt den Wert der Arbeit"],e:"Wichtig: Das ist eine Aussage über den Nutzen von Geld, nicht über seine historische Entstehung."},
-    {id:"s1-17",s:1,q:"Worüber trifft Aristoteles mit seiner Erklärung von Geld eine Aussage?",o:["Über den Nutzen von Geld","Über die historische Entstehung von Geld","Über die Geldmenge","Über Zinsen"],e:"Die Folie betont: keine Aussage über die Entstehung, sondern eine Frage nach dem Nutzen."},
-    {id:"s1-18",s:1,q:"Was macht Geld nach Aristoteles NICHT wertvoll?",o:["Die Arbeitszeit, die zu seiner Herstellung nötig ist","Gebrauch","Seltenheit","Vergleichbarkeit"],e:"Wertbestimmend: Gebrauch, Austausch, Seltenheit, Vergleichbarkeit."},
-    {id:"s1-19",s:1,q:"Was bezeichnet Aristoteles als Oikonomia?",o:["Wirtschaften zur Bedarfsdeckung","Geldvermehrung zum Selbstzweck","Handel mit fremden Städten","Staatliche Steuerpolitik"],e:"Oikonomia = Bedarfsdeckung; Chrematistik = Geldvermehrung zum Selbstzweck."},
-    {id:"s1-20",s:1,q:"Was bezeichnet Aristoteles als Chrematistik?",o:["Geldvermehrung zum Selbstzweck","Wirtschaften zur Bedarfsdeckung","Die Lehre vom gerechten Preis","Die Führung des Gutshofs"],e:"Hintergrund: Ist jede Form des Gelderwerbs legitim?"},
-    {id:"s1-21",s:1,q:"Was ist eine normative Aussage?",o:["Eine Aussage darüber, wie etwas sein sollte","Eine Aussage darüber, wie etwas ist","Eine statistisch geprüfte Aussage","Eine Aussage über Normen in der Industrie"],e:"Beispiel der Folie: Was ist notwendig für eine gerechte Gesellschaft?"},
-    {id:"s1-22",s:1,q:"Was ist eine positive Aussage?",o:["Eine Aussage darüber, wie etwas ist bzw. funktioniert","Eine Aussage darüber, wie etwas sein sollte","Eine zustimmende Bewertung","Eine optimistische Prognose"],e:"„Positiv“ heißt hier beschreibend, nicht „gut“."},
-    {id:"s1-23",s:1,q:"Laut Folie ist „Ist die Gesellschaft gerecht?“ ein Beispiel für …",o:["… eine positive Aussage","… eine normative Aussage","… eine Informationsasymmetrie","… eine Modellannahme"],e:"Die Folie führt „Ist die Gesellschaft gerecht?“ und „Warum ist die Gesellschaft gerecht?“ als positive Beispiele. Normativ ist dagegen: Was ist notwendig für eine gerechte Gesellschaft?"},
-    {id:"s1-24",s:1,q:"Welcher Wandel des ökonomischen Denkens vollzieht sich von der Antike zur Moderne?",o:["Von einem normativen zu einem positiven Verständnis","Von einem positiven zu einem normativen Verständnis","Von der Theorie zur Praxis","Vom Markt zum Haushalt"],e:"In der Antike hängt wirtschaftliches Handeln an der Frage, was ein gutes Leben und eine gute Gesellschaft ausmacht."},
-    {id:"s1-25",s:1,q:"Ciceros Getreidehändler weiß, dass morgen viel Getreide eintrifft und der Preis fällt. Welcher moderne Begriff beschreibt das Problem?",o:["Informationsasymmetrie","Opportunitätskosten","Arbeitsteilung","Chrematistik"],e:"Die Beteiligten einer Transaktion sind unterschiedlich gut informiert."},
-    {id:"s1-26",s:1,q:"Mit welchem Beispiel ist Akerlofs „The Market for Lemons“ verbunden?",o:["Gebrauchtwagenmarkt","Getreidehandel im alten Rom","Arbeitsmarkt für Sklaven","Aktienmarkt"],e:"Akerlof (1970): Quality Uncertainty and the Market Mechanism."},
-    {id:"s1-27",s:1,q:"Was zeigt Ciceros Getreidehändler-Beispiel über Handel?",o:["Handel ist mehr als Preise und Mengen; es geht um Regeln, Wissen und Moral","Handel funktioniert nur mit vollständiger Information","Händler sollen den Preis maximieren","Preise sind immer gerecht"],e:"Folie: Handel ist mehr als Preise und Mengen."},
-    {id:"s1-28",s:1,q:"Wie hoch ist bei Platon das Maximalvermögen?",o:["Das Vierfache des Existenzminimums","Das Doppelte des Existenzminimums","Das Zehnfache des Existenzminimums","Es gibt keine Obergrenze"],e:"Der Staat legt ein Existenzminimum fest; alles über dem Vierfachen geht an den Staat bzw. die Schutzgötter."},
-    {id:"s1-29",s:1,q:"Was geschieht bei Platon mit Vermögen oberhalb des Maximalvermögens?",o:["Es geht an den Staat bzw. die Schutzgötter","Es wird an die Armen verteilt","Es wird verboten zu erwerben","Es wird in Land investiert"],e:"Platons Gerechtigkeitsmodell."},
-    {id:"s1-30",s:1,q:"Womit beschäftigt sich Cato in seiner Schrift zur Betriebsführung?",o:["Kosten, Arbeitsorganisation, Auslastung und Eigenproduktion vs. Einkauf","Geld als Tauschmittel","Gerechte Vermögensverteilung","Informationspflichten von Händlern"],e:"Der Gutshof wird kalkulatorisch betrachtet. Moderner Begriff: make or buy."},
-    {id:"s1-31",s:1,q:"Welcher moderne Begriff entspricht der Frage „Produktion selbst oder zukaufen?“",o:["Make or buy","Opportunitätskosten","Arbeitsteilung","Rendite"],e:"Tabelle „Antike und Moderne“."},
-    {id:"s1-32",s:1,q:"Wer betrachtet Investitionen als Verhältnis von Aufwand und erwartetem Ertrag und vergleicht sie mit Alternativen?",o:["Columella","Cato","Xenophon","Aristoteles"],e:"Daraus folgen die Konzepte Rendite und Opportunitätskosten."},
-    {id:"s1-33",s:1,q:"Ertrag 20 €, Kosten 5 €. Wie hoch ist die Rendite nach der Formel der Vorlesung?",o:["300 %","400 %","75 %","15 %"],e:"(20 − 5) / 5 = 3 = 300 %."},
-    {id:"s1-34",s:1,q:"Ertrag 30 €, Kosten 10 €. Wie hoch ist die Rendite?",o:["200 %","300 %","20 %","66 %"],e:"(30 − 10) / 10 = 2 = 200 %."},
-    {id:"s1-35",s:1,q:"Du kaufst einen Fernseher für 1.000 € statt das Geld zu 4 % p. a. anzulegen. Wie hoch sind die Opportunitätskosten (ein Jahr)?",o:["40 €","1.000 €","1.040 €","4 €"],e:"Entgangener Ertrag der besten Alternative: 4 % von 1.000 € = 40 €."},
-    {id:"s1-36",s:1,q:"Was sind Opportunitätskosten?",o:["Der entgangene Nutzen oder Ertrag der nicht gewählten Alternative","Die direkten Ausgaben für ein Gut","Die Kosten für Informationsbeschaffung","Die Steuern auf einen Gewinn"],e:"Kosten für entgangenen Nutzen bei anderer Verwendung eines Gutes oder Produktionsfaktors."},
-    {id:"s1-37",s:1,q:"Welcher moderne Begriff entspricht dem antiken Problem „Menschen reagieren auf Belohnungen“?",o:["Anreize","Geld und Wert","Informationsasymmetrie","Arbeitsteilung"],e:"Tabelle „Antike und Moderne“."},
-    {id:"s1-38",s:1,q:"Welcher moderne Begriff entspricht dem antiken Problem „Tausch benötigt Vergleichbarkeit“?",o:["Geld und Wert","Make or buy","Anreize","Steuer- und Transfersysteme"],e:"Tabelle „Antike und Moderne“."},
-    {id:"s1-39",s:1,q:"Welcher moderne Begriff entspricht der antiken Frage „Was ist eine gerechte Gesellschaft?“",o:["Steuer- und Transfersysteme","Rendite","Arbeitsteilung","Informationsasymmetrie"],e:"Tabelle „Antike und Moderne“."},
-    {id:"s1-40",s:1,q:"Welche Aussage über die Antike trifft laut Vorlesung zu?",o:["Antike Autoren stellen ähnliche Fragen, entwickeln aber noch keine geschlossenen ökonomischen Modelle","Die Antike kannte bereits ein ausgearbeitetes Marktmodell","Wirtschaftswissenschaft war in der Antike eine eigenständige Disziplin","Antike Autoren erklärten Arbeitsteilung über Preise und Eigennutz"],e:"Ähnliche Fragestellung ≠ gleiche Theorie."},
-    {id:"s1-41",s:1,q:"Was ist eine der Take-aways der ersten Sitzung?",o:["Ökonomische Modelle sind historisch entstandene Perspektiven auf Probleme, nicht die Probleme selbst","Ökonomische Probleme sind erst in der Moderne entstanden","Moderne Modelle bilden die Realität vollständig ab","Die Antike ist für heutige Wirtschaftsfragen irrelevant"],e:"Weitere Take-aways: Viele ökonomische Probleme sind sehr alt; keine eigenständige Disziplin in der Antike."},
-    {id:"s1-42",s:1,q:"Richtig oder falsch: Ökonomische Modelle entstehen unabhängig von historischen Ereignissen.",o:["Falsch","Richtig"],fix:true,a:0,e:"Grundidee der Vorlesung: Modelle entstehen nicht losgelöst von historischen und gesellschaftlichen Bedingungen."},
-    {id:"s1-43",s:1,typ:"multi",q:"Was macht Geld nach Aristoteles wertvoll? (Mehrere Antworten sind richtig.)",o:["Gebrauch","Austausch","Seltenheit","Vergleichbarkeit","Die zu seiner Herstellung nötige Arbeitszeit","Eine staatliche Goldgarantie"],a:[0,1,2,3],e:"Gebrauch, Austausch, Seltenheit, Vergleichbarkeit."},
-    {id:"s1-44",s:1,typ:"multi",q:"In welche Zusammenhänge waren wirtschaftliche Fragen in der Antike eingebettet? (Mehrere Antworten sind richtig.)",o:["Ethik/Philosophie","Politik","Haushaltsführung","Landwirtschaft","Finanzmärkte","Industrielle Produktion"],a:[0,1,2,3],e:"Ethik/Philosophie, Politik, Haushaltsführung, Landwirtschaft."},
-    {id:"s1-45",s:1,typ:"zuord",q:"Ordne den antiken Autoren ihr Thema zu.",paare:[["Xenophon","Arbeitsteilung als Organisation des Gutshofs"],["Platon","Arbeitsteilung als gesellschaftliches Prinzip"],["Aristoteles","Oikonomia und Chrematistik"],["Cicero","Getreidehändler und Informationsasymmetrie"],["Cato","Kosten, Auslastung, make or buy"],["Columella","Investition im Vergleich zu Alternativen"]],e:"Siehe Folien zu Produktion, Geld/Tausch und Entscheidungen."},
+    {id:"s1-01",s:1,q:"Wie wird ein Modell in der Vorlesung definiert?",o:["Eine vereinfachte Darstellung der Realität, mit der bestimmte Zusammenhänge isoliert untersucht werden","Eine möglichst vollständige Abbildung der Realität","Eine empirisch bewiesene Gesetzmäßigkeit","Eine normative Vorgabe, wie Wirtschaft funktionieren soll"],e:"Ein Modell kann und soll nicht die gesamte Realität abbilden, sondern bestimmte Mechanismen.",
+      w:{1:"Laut Folie soll ein Modell gerade **nicht** die ganze Realität abbilden.",2:"Ein Modell ist eine Vereinfachung, kein bewiesenes Gesetz. Es kann Wichtiges ausblenden.",3:"„Wie es sein soll“ wäre normativ. Ein Modell beschreibt vereinfacht, wie etwas funktioniert."}},
+    {id:"s1-02",s:1,q:"Was veranschaulicht das Beispiel des U-Bahn-Plans?",o:["Ein Modell zeigt nur, was für seine Frage wichtig ist (Stationen, keine Straßen)","Modelle müssen maßstabsgetreu sein","Modelle sind immer geografisch","Je detaillierter ein Modell, desto besser"],e:"U-Bahn-Pläne zeigen nur die Stationen, keine Straßen.",
+      w:{1:"Der U-Bahn-Plan ist gerade **nicht** maßstabsgetreu, und trotzdem nützlich.",2:"Der Plan ist nur ein Bild für Modelle allgemein. Ökonomische Modelle sind nicht geografisch.",3:"Das Gegenteil: Der Stadtplan mit allen Straßen hilft beim U-Bahn-Fahren weniger als der vereinfachte Plan."}},
+    {id:"s1-03",s:1,q:"Welches Modell gehört NICHT zu den fünf Modellen des Kernlehrplans?",o:["Gefangenendilemma","Homo oeconomicus","Erweiterter Wirtschaftskreislauf","Modell des Konjunkturzyklus"],e:"Die fünf: Homo oeconomicus, Marktmodell, erweiterter Wirtschaftskreislauf, soziales Interaktionsmodell, Konjunkturzyklus.",
+      w:{1:"Der Homo oeconomicus steht als erstes Modell auf der Folie, gehört also dazu.",2:"Der erweiterte Wirtschaftskreislauf ist eines der fünf Modelle.",3:"Das Modell des Konjunkturzyklus ist eines der fünf Modelle."}},
+    {id:"s1-04",s:1,q:"Welches der folgenden Modelle gehört zu den fünf Modellen des Kernlehrplans?",o:["Soziales Interaktionsmodell","Akerlofs Lemons-Modell","Modell der Spieltheorie","Modell der Geldschöpfung"],e:"Die fünf: Homo oeconomicus, Marktmodell, erweiterter Wirtschaftskreislauf, soziales Interaktionsmodell, Konjunkturzyklus.",
+      w:{1:"Akerlof kommt in der Sitzung vor, aber als Beispiel für Informationsasymmetrie, nicht als Lehrplanmodell.",2:"Spieltheorie steht nicht auf der Folie mit den fünf Modellen.",3:"Geldschöpfung steht nicht auf der Folie mit den fünf Modellen."}},
+    {id:"s1-05",s:1,q:"Welche Frage gehört NICHT zu den Fragen, die man laut Vorlesung immer an ein Modell stellen muss?",o:["Wer hat das Modell zuerst veröffentlicht?","Was nimmt es an?","Was blendet es aus?","Was können wir damit nicht erklären?"],e:"Die fünf Fragen: Welche Frage beantwortet es? Was nimmt es an? Was blendet es aus? Was können wir damit erklären? Was nicht?",
+      w:{1:"Nach den Annahmen zu fragen, ist eine der fünf Fragen.",2:"Was ein Modell ausblendet, ist eine der fünf Fragen.",3:"Auch die Grenzen („was nicht?“) gehören zu den fünf Fragen."}},
+    {id:"s1-06",s:1,q:"Wie wurde das Fach Wirtschaftswissenschaften historisch bezeichnet?",o:["Politische Ökonomie","Kameralistik der Moderne","Chrematistik","Haushaltslehre"],e:"Der Begriff Politische Ökonomie macht die interdisziplinäre Perspektive deutlich: Wirtschaft im Zusammenhang mit Politik und Gesellschaft.",
+      w:{1:"Diesen Begriff gibt es auf den Folien nicht.",2:"Chrematistik ist bei Aristoteles die Geldvermehrung zum Selbstzweck, kein Name des Fachs.",3:"Haushaltsführung ist ein Zusammenhang, in den antike Wirtschaftsfragen eingebettet waren, nicht der Name des Fachs."}},
+    {id:"s1-07",s:1,q:"Welche Inhaltsfelder des Kernlehrplans sind besonders ökonomisch ausgerichtet?",o:["Inhaltsfeld 1 (Marktwirtschaftliche Ordnung) und Inhaltsfeld 4 (Wirtschaftspolitik)","Inhaltsfeld 2 und Inhaltsfeld 3","Nur Inhaltsfeld 1","Inhaltsfeld 1 und Inhaltsfeld 5"],e:"IF 1: Marktwirtschaftliche Ordnung, IF 4: Wirtschaftspolitik.",
+      w:{1:"Die Folie nennt die Inhaltsfelder 1 und 4.",2:"Die Folie nennt **zwei** Bereiche, neben Inhaltsfeld 1 auch Inhaltsfeld 4 (Wirtschaftspolitik).",3:"Das zweite Feld ist Inhaltsfeld 4 (Wirtschaftspolitik), nicht 5."}},
+    {id:"s1-08",s:1,q:"Was untersuchen Wirtschaftswissenschaften laut Vorlesung?",o:["Wie Menschen und Gesellschaften Güter und Ressourcen produzieren, verteilen und verwenden","Ausschließlich das Verhalten von Unternehmen auf Märkten","Nur die Geldpolitik von Zentralbanken","Wie man den Gewinn eines Betriebs maximiert"],e:"Dazu kommt die Frage, wie Wirtschaft, politische Institutionen, Macht und gesellschaftliche Interessen zusammenhängen.",
+      w:{1:"„Ausschließlich“ ist zu eng. Es geht um Menschen und Gesellschaften, nicht nur um Unternehmen.",2:"„Nur“ ist zu eng. Geldpolitik ist höchstens ein Teilbereich.",3:"Das ist eine betriebswirtschaftliche Teilfrage, nicht die Definition des Fachs."}},
+    {id:"s1-09",s:1,q:"In welchen Zusammenhang waren wirtschaftliche Fragen in der Antike NICHT eingebettet?",o:["Finanzmärkte und Börsenhandel","Ethik/Philosophie","Haushaltsführung","Landwirtschaft"],e:"Eingebettet in Ethik/Philosophie, Politik, Haushaltsführung und Landwirtschaft.",
+      w:{1:"Ethik und Philosophie stehen auf der Folie, gehören also dazu.",2:"Haushaltsführung steht auf der Folie, gehört also dazu.",3:"Landwirtschaft steht auf der Folie, gehört also dazu."}},
+    {id:"s1-10",s:1,q:"Was war in der Antike die zentrale Produktionseinheit?",o:["Haushalt bzw. Gutshof","Manufaktur","Fabrik","Handelsgesellschaft"],e:"Hintergrund: Agrargesellschaft, Gutshof, Sklaverei, begrenzte Märkte, zunehmende Monetarisierung.",
+      w:{1:"Manufakturen gehören in eine spätere Epoche. Die Folie nennt Haushalt und Gutshof.",2:"Fabriken entstehen erst mit der Industrialisierung.",3:"Handel nimmt zu, aber die Märkte sind begrenzt. Produziert wird im Haushalt bzw. auf dem Gutshof."}},
+    {id:"s1-11",s:1,q:"Wer betrachtet Arbeitsteilung als Organisation des Haushalts bzw. Gutshofs?",o:["Xenophon","Platon","Aristoteles","Cicero"],e:"Xenophons Fragestellung wirkt „betriebswirtschaftlich“: Wie lässt sich Arbeit sinnvoll organisieren?",
+      w:{1:"Platon sieht Arbeitsteilung als **gesellschaftliches** Prinzip, nicht als Organisation eines Hofs.",2:"Aristoteles steht in dieser Sitzung für Geld, Wert und Tausch.",3:"Cicero steht für den Getreidehändler, also für Informationsasymmetrie."}},
+    {id:"s1-12",s:1,q:"Wer betrachtet Arbeitsteilung als gesellschaftliches Prinzip?",o:["Platon","Xenophon","Cato","Columella"],e:"Menschen können ihre Bedürfnisse nicht allein befriedigen; Arbeitsteilung erzeugt gegenseitige Abhängigkeit.",
+      w:{1:"Xenophon schaut auf den einzelnen Gutshof, also auf die Organisation, nicht auf die Gesellschaft.",2:"Cato steht für kalkulatorische Betriebsführung.",3:"Columella steht für Investitionen im Vergleich zu Alternativen."}},
+    {id:"s1-13",s:1,q:"Was erzeugt Arbeitsteilung nach Platon?",o:["Gegenseitige Abhängigkeit","Vollständige Autarkie jedes Haushalts","Steigenden Eigennutz","Sinkende Spezialisierung"],e:"Die Frage verschiebt sich vom einzelnen Haushalt zur Organisation der Gesellschaft.",
+      w:{1:"Autarkie heißt Selbstversorgung. Platon sagt gerade, dass niemand alles allein kann.",2:"Eigennutz als Erklärung kommt erst später. Die Antike erklärt Arbeitsteilung (noch) nicht so.",3:"Arbeitsteilung bedeutet mehr Spezialisierung, nicht weniger."}},
+    {id:"s1-14",s:1,q:"Wodurch wird Arbeitsteilung in der Antike (noch) NICHT primär erklärt?",o:["Durch Markt, Preise und individuellen Eigennutz","Durch eine Vorstellung gesellschaftlicher Ordnung","Durch unterschiedliche Fähigkeiten","Durch die Organisation des Gutshofs"],e:"Wirtschaftliches Handeln erscheint als Teil der Gesellschaft, nicht als eigenständige Sphäre.",
+      w:{1:"Laut Folie ist Arbeitsteilung in der Antike gerade in eine Vorstellung gesellschaftlicher Ordnung eingebettet.",2:"Bei Xenophon erfolgt Arbeitsteilung nach Fähigkeiten und Aufgaben. Das ist also eine antike Erklärung.",3:"Die Organisation des Gutshofs ist Xenophons Erklärung, also antik."}},
+    {id:"s1-15",s:1,q:"Was ist Arbeitsteilung?",o:["Aufteilung wirtschaftlicher Tätigkeiten auf unterschiedliche Personen, wodurch Spezialisierung und häufig höhere Produktivität möglich werden","Die gleichmäßige Verteilung des Einkommens","Die Trennung von Haushalt und Staat","Der Tausch von Gütern gegen Geld"],e:"Konzept-Folie zur Arbeitsteilung.",
+      w:{1:"Verteilt werden Tätigkeiten, nicht Einkommen.",2:"Das hat mit Arbeitsteilung nichts zu tun. In der Antike gehen Haushalt und Politik sogar ineinander über.",3:"Das beschreibt Geld als Tauschmittel (Aristoteles), nicht Arbeitsteilung."}},
+    {id:"s1-16",s:1,q:"Welche Funktion hat Geld nach Aristoteles?",o:["Es erleichtert den Austausch und macht unterschiedliche Güter vergleichbar","Es dient vor allem der Vermögensanhäufung","Es ist entstanden, weil der Staat Steuern eintreiben wollte","Es ersetzt den Wert der Arbeit"],e:"Wichtig: Das ist eine Aussage über den Nutzen von Geld, nicht über seine historische Entstehung.",
+      w:{1:"Geld nur zum Anhäufen nennt Aristoteles Chrematistik und sieht das kritisch.",2:"Aristoteles sagt nichts über die Entstehung, sondern fragt nach dem Nutzen.",3:"Davon steht nichts auf den Folien."}},
+    {id:"s1-17",s:1,q:"Worüber trifft Aristoteles mit seiner Erklärung von Geld eine Aussage?",o:["Über den Nutzen von Geld","Über die historische Entstehung von Geld","Über die Geldmenge","Über Zinsen"],e:"Die Folie betont: keine Aussage über die Entstehung, sondern eine Frage nach dem Nutzen.",
+      w:{1:"Genau das betont die Folie: **keine** Aussage über die historische Entstehung.",2:"Die Geldmenge spielt in dieser Sitzung keine Rolle.",3:"Zinsen kommen in dieser Sitzung nicht vor."}},
+    {id:"s1-18",s:1,q:"Was macht Geld nach Aristoteles NICHT wertvoll?",o:["Die Arbeitszeit, die zu seiner Herstellung nötig ist","Gebrauch","Seltenheit","Vergleichbarkeit"],e:"Wertbestimmend: Gebrauch, Austausch, Seltenheit, Vergleichbarkeit.",
+      w:{1:"Gebrauch steht auf der Folie, macht Geld also wertvoll.",2:"Seltenheit steht auf der Folie, macht Geld also wertvoll.",3:"Vergleichbarkeit steht auf der Folie, macht Geld also wertvoll."}},
+    {id:"s1-19",s:1,q:"Was bezeichnet Aristoteles als Oikonomia?",o:["Wirtschaften zur Bedarfsdeckung","Geldvermehrung zum Selbstzweck","Handel mit fremden Städten","Staatliche Steuerpolitik"],e:"Oikonomia = Bedarfsdeckung; Chrematistik = Geldvermehrung zum Selbstzweck.",
+      w:{1:"Das ist das Gegenstück, die Chrematistik.",2:"Davon steht nichts auf den Folien.",3:"Davon steht nichts auf den Folien."}},
+    {id:"s1-20",s:1,q:"Was bezeichnet Aristoteles als Chrematistik?",o:["Geldvermehrung zum Selbstzweck","Wirtschaften zur Bedarfsdeckung","Die Lehre vom gerechten Preis","Die Führung des Gutshofs"],e:"Hintergrund: Ist jede Form des Gelderwerbs legitim?",
+      w:{1:"Das ist das Gegenstück, die Oikonomia.",2:"Den Begriff „gerechter Preis“ gibt es auf den Folien dieser Sitzung nicht.",3:"Gutshofführung ist das Thema von Xenophon und Cato."}},
+    {id:"s1-21",s:1,q:"Was ist eine normative Aussage?",o:["Eine Aussage darüber, wie etwas sein sollte","Eine Aussage darüber, wie etwas ist","Eine statistisch geprüfte Aussage","Eine Aussage über Normen in der Industrie"],e:"Beispiel der Folie: Was ist notwendig für eine gerechte Gesellschaft?",
+      w:{1:"Das ist die **positive** Aussage.",2:"Ob statistisch geprüft, spielt für die Unterscheidung keine Rolle.",3:"Wortfalle: „normativ“ meint Wertung (sollen), nicht technische Normen."}},
+    {id:"s1-22",s:1,q:"Was ist eine positive Aussage?",o:["Eine Aussage darüber, wie etwas ist bzw. funktioniert","Eine Aussage darüber, wie etwas sein sollte","Eine zustimmende Bewertung","Eine optimistische Prognose"],e:"„Positiv“ heißt hier beschreibend, nicht „gut“.",
+      w:{1:"Das ist die **normative** Aussage.",2:"Wortfalle: „positiv“ heißt beschreibend, nicht zustimmend.",3:"Wortfalle: „positiv“ hat hier nichts mit Optimismus zu tun."}},
+    {id:"s1-23",s:1,q:"Laut Folie ist „Ist die Gesellschaft gerecht?“ ein Beispiel für …",o:["… eine positive Aussage","… eine normative Aussage","… eine Informationsasymmetrie","… eine Modellannahme"],e:"Die Folie führt „Ist die Gesellschaft gerecht?“ und „Warum ist die Gesellschaft gerecht?“ als positive Beispiele. Normativ ist dagegen: Was ist notwendig für eine gerechte Gesellschaft?",
+      w:{1:"Das Wort „gerecht“ verleitet dazu. Die Folie ordnet die Frage aber als positiv ein, weil sie fragt, wie es **ist**.",2:"Hier geht es nicht um ungleich verteiltes Wissen bei einem Tausch.",3:"Hier geht es um die Art der Aussage, nicht um ein Modell."}},
+    {id:"s1-24",s:1,q:"Welcher Wandel des ökonomischen Denkens vollzieht sich von der Antike zur Moderne?",o:["Von einem normativen zu einem positiven Verständnis","Von einem positiven zu einem normativen Verständnis","Von der Theorie zur Praxis","Vom Markt zum Haushalt"],e:"In der Antike hängt wirtschaftliches Handeln an der Frage, was ein gutes Leben und eine gute Gesellschaft ausmacht.",
+      w:{1:"Genau umgekehrt: Die Antike fragt, wie es sein **soll** (normativ).",2:"Das steht so nicht auf den Folien.",3:"Eher umgekehrt: In der Antike ist der Haushalt zentral."}},
+    {id:"s1-25",s:1,q:"Ciceros Getreidehändler weiß, dass morgen viel Getreide eintrifft und der Preis fällt. Welcher moderne Begriff beschreibt das Problem?",o:["Informationsasymmetrie","Opportunitätskosten","Arbeitsteilung","Chrematistik"],e:"Die Beteiligten einer Transaktion sind unterschiedlich gut informiert.",
+      w:{1:"Opportunitätskosten sind der entgangene Nutzen einer Alternative. Hier geht es um ungleiches Wissen.",2:"Arbeitsteilung meint Spezialisierung, nicht ungleiches Wissen.",3:"Chrematistik ist Geldvermehrung zum Selbstzweck. Das Kernproblem hier ist aber das Wissen, nicht der Erwerb."}},
+    {id:"s1-26",s:1,q:"Mit welchem Beispiel ist Akerlofs „The Market for Lemons“ verbunden?",o:["Gebrauchtwagenmarkt","Getreidehandel im alten Rom","Arbeitsmarkt für Sklaven","Aktienmarkt"],e:"Akerlof (1970): Quality Uncertainty and the Market Mechanism.",
+      w:{1:"Der Getreidehandel ist Ciceros Beispiel. Akerlof steht für Gebrauchtwagen.",2:"Davon steht nichts auf den Folien.",3:"Davon steht nichts auf den Folien."}},
+    {id:"s1-27",s:1,q:"Was zeigt Ciceros Getreidehändler-Beispiel über Handel?",o:["Handel ist mehr als Preise und Mengen; es geht um Regeln, Wissen und Moral","Handel funktioniert nur mit vollständiger Information","Händler sollen den Preis maximieren","Preise sind immer gerecht"],e:"Folie: Handel ist mehr als Preise und Mengen.",
+      w:{1:"Handel findet trotzdem statt. Das Beispiel zeigt nur, dass das Wissen ungleich ist.",2:"Cicero fragt gerade, was ein Händler moralisch darf. Eine Antwort „maximieren“ gibt die Folie nicht.",3:"Die Folie stellt die Frage nach der Moral, sie behauptet keine Gerechtigkeit von Preisen."}},
+    {id:"s1-28",s:1,q:"Wie hoch ist bei Platon das Maximalvermögen?",o:["Das Vierfache des Existenzminimums","Das Doppelte des Existenzminimums","Das Zehnfache des Existenzminimums","Es gibt keine Obergrenze"],e:"Der Staat legt ein Existenzminimum fest; alles über dem Vierfachen geht an den Staat bzw. die Schutzgötter.",
+      w:{1:"Der Faktor auf der Folie ist vier, nicht zwei.",2:"Der Faktor auf der Folie ist vier, nicht zehn.",3:"Doch: Alles über dem Vierfachen geht an den Staat."}},
+    {id:"s1-29",s:1,q:"Was geschieht bei Platon mit Vermögen oberhalb des Maximalvermögens?",o:["Es geht an den Staat bzw. die Schutzgötter","Es wird an die Armen verteilt","Es wird verboten zu erwerben","Es wird in Land investiert"],e:"Platons Gerechtigkeitsmodell.",
+      w:{1:"Die Folie nennt den Staat bzw. die Schutzgötter als Empfänger, nicht die Armen.",2:"Von einem Verbot steht nichts auf der Folie. Das Vermögen wird abgegeben.",3:"Davon steht nichts auf der Folie."}},
+    {id:"s1-30",s:1,q:"Womit beschäftigt sich Cato in seiner Schrift zur Betriebsführung?",o:["Kosten, Arbeitsorganisation, Auslastung und Eigenproduktion vs. Einkauf","Geld als Tauschmittel","Gerechte Vermögensverteilung","Informationspflichten von Händlern"],e:"Der Gutshof wird kalkulatorisch betrachtet. Moderner Begriff: make or buy.",
+      w:{1:"Das ist Aristoteles.",2:"Das ist Platon.",3:"Das ist Cicero."}},
+    {id:"s1-31",s:1,q:"Welcher moderne Begriff entspricht der Frage „Produktion selbst oder zukaufen?“",o:["Make or buy","Opportunitätskosten","Arbeitsteilung","Rendite"],e:"Tabelle „Antike und Moderne“.",
+      w:{1:"Opportunitätskosten gehören zur Frage „Lohnt sich eine Investition?“.",2:"Arbeitsteilung gehört zu „Spezialisierung von Tätigkeiten“.",3:"Rendite gehört zur Frage „Lohnt sich eine Investition?“."}},
+    {id:"s1-32",s:1,q:"Wer betrachtet Investitionen als Verhältnis von Aufwand und erwartetem Ertrag und vergleicht sie mit Alternativen?",o:["Columella","Cato","Xenophon","Aristoteles"],e:"Daraus folgen die Konzepte Rendite und Opportunitätskosten.",
+      w:{1:"Cato rechnet auch, aber bei ihm geht es um Kosten, Auslastung und make or buy. Den Vergleich mit Alternativen bringt Columella.",2:"Xenophon steht für die Organisation des Gutshofs.",3:"Aristoteles steht für Geld und Tausch."}},
+    {id:"s1-33",s:1,q:"Ertrag 20 €, Kosten 5 €. Wie hoch ist die Rendite nach der Formel der Vorlesung?",o:["300 %","400 %","75 %","15 %"],e:"(20 − 5) / 5 = 3 = 300 %.",
+      w:{1:"400 % wäre Ertrag geteilt durch Kosten (20 / 5). Die Kosten müssen erst abgezogen werden.",2:"75 % wäre (20 − 5) / 20. Geteilt wird aber durch die Kosten, nicht durch den Ertrag.",3:"15 ist der Gewinn in Euro (20 − 5), noch nicht ins Verhältnis zu den Kosten gesetzt."}},
+    {id:"s1-34",s:1,q:"Ertrag 30 €, Kosten 10 €. Wie hoch ist die Rendite?",o:["200 %","300 %","20 %","66 %"],e:"(30 − 10) / 10 = 2 = 200 %.",
+      w:{1:"300 % wäre 30 / 10. Die Kosten müssen erst abgezogen werden.",2:"20 ist der Gewinn in Euro, noch nicht durch die Kosten geteilt.",3:"Rund 66 % wäre (30 − 10) / 30. Geteilt wird durch die Kosten."}},
+    {id:"s1-35",s:1,q:"Du kaufst einen Fernseher für 1.000 € statt das Geld zu 4 % p. a. anzulegen. Wie hoch sind die Opportunitätskosten (ein Jahr)?",o:["40 €","1.000 €","1.040 €","4 €"],e:"Entgangener Ertrag der besten Alternative: 4 % von 1.000 € = 40 €.",
+      w:{1:"1.000 € ist der Kaufpreis. Opportunitätskosten sind nur der **entgangene Ertrag** der Alternative.",2:"Das wäre Kaufpreis plus Zinsen. Gefragt ist nur der entgangene Ertrag.",3:"4 % von 1.000 € sind 40 €, nicht 4 €."}},
+    {id:"s1-36",s:1,q:"Was sind Opportunitätskosten?",o:["Der entgangene Nutzen oder Ertrag der nicht gewählten Alternative","Die direkten Ausgaben für ein Gut","Die Kosten für Informationsbeschaffung","Die Steuern auf einen Gewinn"],e:"Kosten für entgangenen Nutzen bei anderer Verwendung eines Gutes oder Produktionsfaktors.",
+      w:{1:"Direkte Ausgaben sind der Preis. Opportunitätskosten entstehen durch den Verzicht auf die Alternative.",2:"Davon steht nichts auf der Folie.",3:"Davon steht nichts auf der Folie."}},
+    {id:"s1-37",s:1,q:"Welcher moderne Begriff entspricht dem antiken Problem „Menschen reagieren auf Belohnungen“?",o:["Anreize","Geld und Wert","Informationsasymmetrie","Arbeitsteilung"],e:"Tabelle „Antike und Moderne“.",
+      w:{1:"„Geld und Wert“ gehört zu „Tausch benötigt Vergleichbarkeit“.",2:"Informationsasymmetrie gehört zu „Verkäufer wissen mehr als Käufer“.",3:"Arbeitsteilung gehört zu „Spezialisierung von Tätigkeiten“."}},
+    {id:"s1-38",s:1,q:"Welcher moderne Begriff entspricht dem antiken Problem „Tausch benötigt Vergleichbarkeit“?",o:["Geld und Wert","Make or buy","Anreize","Steuer- und Transfersysteme"],e:"Tabelle „Antike und Moderne“.",
+      w:{1:"Make or buy gehört zu „Produktion selbst oder zukaufen?“.",2:"Anreize gehören zu „Menschen reagieren auf Belohnungen“.",3:"Steuer- und Transfersysteme gehören zu „Was ist eine gerechte Gesellschaft?“."}},
+    {id:"s1-39",s:1,q:"Welcher moderne Begriff entspricht der antiken Frage „Was ist eine gerechte Gesellschaft?“",o:["Steuer- und Transfersysteme","Rendite","Arbeitsteilung","Informationsasymmetrie"],e:"Tabelle „Antike und Moderne“.",
+      w:{1:"Rendite gehört zu „Lohnt sich eine Investition?“.",2:"Arbeitsteilung gehört zu „Spezialisierung von Tätigkeiten“.",3:"Informationsasymmetrie gehört zu „Verkäufer wissen mehr als Käufer“."}},
+    {id:"s1-40",s:1,q:"Welche Aussage über die Antike trifft laut Vorlesung zu?",o:["Antike Autoren stellen ähnliche Fragen, entwickeln aber noch keine geschlossenen ökonomischen Modelle","Die Antike kannte bereits ein ausgearbeitetes Marktmodell","Wirtschaftswissenschaft war in der Antike eine eigenständige Disziplin","Antike Autoren erklärten Arbeitsteilung über Preise und Eigennutz"],e:"Ähnliche Fragestellung ≠ gleiche Theorie.",
+      w:{1:"Laut Folie gibt es (noch) keine geschlossenen Modelle des Marktes.",2:"Laut Take-aways gab es sie noch **nicht** als eigenständige Disziplin.",3:"Genau das tun sie (noch) nicht. Arbeitsteilung ist in eine gesellschaftliche Ordnung eingebettet."}},
+    {id:"s1-41",s:1,q:"Was ist eine der Take-aways der ersten Sitzung?",o:["Ökonomische Modelle sind historisch entstandene Perspektiven auf Probleme, nicht die Probleme selbst","Ökonomische Probleme sind erst in der Moderne entstanden","Moderne Modelle bilden die Realität vollständig ab","Die Antike ist für heutige Wirtschaftsfragen irrelevant"],e:"Weitere Take-aways: Viele ökonomische Probleme sind sehr alt; keine eigenständige Disziplin in der Antike.",
+      w:{1:"Umgekehrt: Viele grundlegende Probleme sind sehr alt.",2:"Kein Modell bildet die Realität vollständig ab, das soll es auch nicht.",3:"Die Antike stellt laut Folie Fragen, die die Wirtschaftswissenschaften bis heute beschäftigen."}},
+    {id:"s1-42",s:1,q:"Richtig oder falsch: Ökonomische Modelle entstehen unabhängig von historischen Ereignissen.",o:["Falsch","Richtig"],fix:true,a:0,e:"Grundidee der Vorlesung: Modelle entstehen nicht losgelöst von historischen und gesellschaftlichen Bedingungen.",
+      w:{1:"Die Grundidee der Vorlesung sagt das Gegenteil: Modelle sind Reaktionen auf konkrete Probleme ihrer Zeit."}},
+    {id:"s1-43",s:1,typ:"multi",q:"Was macht Geld nach Aristoteles wertvoll? (Mehrere Antworten sind richtig.)",o:["Gebrauch","Austausch","Seltenheit","Vergleichbarkeit","Die zu seiner Herstellung nötige Arbeitszeit","Eine staatliche Goldgarantie"],a:[0,1,2,3],e:"Gebrauch, Austausch, Seltenheit, Vergleichbarkeit.",
+      w:{4:"Arbeitszeit als Wertquelle steht nicht auf der Folie.",5:"Eine Goldgarantie steht nicht auf der Folie."}},
+    {id:"s1-44",s:1,typ:"multi",q:"In welche Zusammenhänge waren wirtschaftliche Fragen in der Antike eingebettet? (Mehrere Antworten sind richtig.)",o:["Ethik/Philosophie","Politik","Haushaltsführung","Landwirtschaft","Finanzmärkte","Industrielle Produktion"],a:[0,1,2,3],e:"Ethik/Philosophie, Politik, Haushaltsführung, Landwirtschaft.",
+      w:{4:"Die Märkte der Antike waren begrenzt. Finanzmärkte stehen nicht auf der Folie.",5:"Industrie gibt es erst viel später. Die Antike ist eine Agrargesellschaft."}},
+    {id:"s1-45",s:1,typ:"zuord",q:"Ordne den antiken Autoren ihr Thema zu.",paare:[["Xenophon","Arbeitsteilung als Organisation des Gutshofs"],["Platon","Arbeitsteilung als gesellschaftliches Prinzip"],["Aristoteles","Oikonomia und Chrematistik"],["Cicero","Getreidehändler und Informationsasymmetrie"],["Cato","Kosten, Auslastung, make or buy"],["Columella","Investition im Vergleich zu Alternativen"]],e:"Eselsbrücke: Xenophon und Cato schauen auf den **Hof**, Platon auf die **Gesellschaft**, Columella auf die **Alternative**."},
     {id:"s1-46",s:1,typ:"zuord",q:"Ordne dem antiken Problem den modernen Begriff zu.",paare:[["Spezialisierung von Tätigkeiten","Arbeitsteilung"],["Menschen reagieren auf Belohnungen","Anreize"],["Tausch benötigt Vergleichbarkeit","Geld und Wert"],["Verkäufer wissen mehr als Käufer","Informationsasymmetrie"],["Lohnt sich eine Investition?","Rendite/Opportunitätskosten"],["Was ist eine gerechte Gesellschaft?","Steuer- und Transfersysteme"]],e:"Tabelle „Antike und Moderne“."},
-    {id:"s1-47",s:1,typ:"zahl",q:"Ertrag 50 €, Kosten 10 €. Wie hoch ist die Rendite in Prozent?",a:400,einheit:"%",e:"(50 − 10) / 10 = 4 = 400 %."},
-    {id:"s1-48",s:1,typ:"zahl",q:"Statt 2.500 € zu 2 % p. a. anzulegen, kaufst du ein E-Bike. Wie hoch sind die Opportunitätskosten für ein Jahr in Euro?",a:50,einheit:"€",e:"2 % von 2.500 € = 50 €."}
+    {id:"s1-47",s:1,typ:"zahl",q:"Ertrag 50 €, Kosten 10 €. Wie hoch ist die Rendite in Prozent?",a:400,einheit:"%",e:"(50 − 10) / 10 = 4 = 400 %.",w:"Häufiger Fehler: 500 % (50 / 10, Kosten nicht abgezogen) oder 80 % (durch den Ertrag statt durch die Kosten geteilt)."},
+    {id:"s1-48",s:1,typ:"zahl",q:"Statt 2.500 € zu 2 % p. a. anzulegen, kaufst du ein E-Bike. Wie hoch sind die Opportunitätskosten für ein Jahr in Euro?",a:50,einheit:"€",e:"2 % von 2.500 € = 50 €.",w:"Gefragt ist nur der entgangene Zinsertrag, nicht der Kaufpreis und nicht Kaufpreis plus Zinsen."},
+    {id:"s1-49",s:1,typ:"zahl",q:"Platons Gedankenexperiment: Das Existenzminimum für eine erwachsene, alleinstehende Person liegt bei 1.008 € im Monat. Wie hoch ist danach das Maximalvermögen pro Monat in Euro?",a:4032,einheit:"€",e:"4 × 1.008 € = 4.032 € (Zahl von der Folie).",w:"Das Maximalvermögen ist das **Vierfache** des Existenzminimums."}
   ],
   karten: [
-    {id:"s1-k01",s:1,f:"Modell",b:"Vereinfachte Darstellung der Realität, mit der bestimmte Zusammenhänge isoliert untersucht werden.\nBeispiel: U-Bahn-Plan zeigt nur Stationen, keine Straßen."},
-    {id:"s1-k02",s:1,f:"Fünf Fragen an jedes Modell",b:"Welche Frage beantwortet es?\nWas nimmt es an?\nWas blendet es aus?\nWas können wir damit erklären?\nWas können wir damit nicht erklären?"},
-    {id:"s1-k03",s:1,f:"Fünf Modelle des Kernlehrplans",b:"Homo oeconomicus\nMarktmodell\nErweiterter Wirtschaftskreislauf\nSoziales Interaktionsmodell\nModell des Konjunkturzyklus"},
-    {id:"s1-k04",s:1,f:"Politische Ökonomie",b:"Historische Bezeichnung des Fachs. Wirtschaft wird im Zusammenhang mit Politik und Gesellschaft gedacht (interdisziplinär)."},
-    {id:"s1-k05",s:1,f:"Antike: Einbettung der Wirtschaft",b:"Ethik/Philosophie, Politik, Haushaltsführung, Landwirtschaft.\nHintergrund: Agrargesellschaft, Gutshof als Produktionseinheit, Sklaverei, begrenzte Märkte, zunehmende Monetarisierung."},
-    {id:"s1-k06",s:1,f:"Xenophon (~400 v. Chr.)",b:"Arbeitsteilung als Organisation von Haushalt/Gutshof, nach Fähigkeiten und Aufgaben. Führung und Anreize. „Betriebswirtschaftliche“ Perspektive."},
-    {id:"s1-k07",s:1,f:"Platon: Arbeitsteilung",b:"Gesellschaftliches Prinzip: Niemand kann alle Bedürfnisse allein befriedigen. Spezialisierung verteilt Aufgaben und erzeugt gegenseitige Abhängigkeit."},
-    {id:"s1-k08",s:1,f:"Platon: gerechte Gesellschaft",b:"Staat legt Existenzminimum fest. Maximalvermögen = 4 × Existenzminimum. Alles darüber geht an den Staat bzw. die Schutzgötter."},
-    {id:"s1-k09",s:1,f:"Arbeitsteilung",b:"Aufteilung wirtschaftlicher Tätigkeiten auf unterschiedliche Personen → Spezialisierung, häufig höhere Produktivität.\nIn der Antike noch nicht über Markt, Preise und Eigennutz erklärt."},
-    {id:"s1-k10",s:1,f:"Aristoteles: Geld",b:"Erleichtert den Austausch und macht Güter vergleichbar. Aussage über den Nutzen, nicht über die Entstehung.\nWert durch: Gebrauch, Austausch, Seltenheit, Vergleichbarkeit."},
-    {id:"s1-k11",s:1,f:"Oikonomia vs. Chrematistik",b:"Oikonomia: Bedarfsdeckung.\nChrematistik: Geldvermehrung zum Selbstzweck.\n(Aristoteles: Ist jeder Gelderwerb legitim?)"},
-    {id:"s1-k12",s:1,f:"Normativ vs. positiv",b:"Normativ: wie etwas sein sollte („Was ist notwendig für eine gerechte Gesellschaft?“).\nPositiv: wie etwas ist bzw. funktioniert („Ist die Gesellschaft gerecht?“).\nAntike → Moderne: von normativ zu positiv."},
-    {id:"s1-k13",s:1,f:"Cicero (~100 v. Chr.)",b:"Getreidehändler: Muss er sagen, dass der Preis morgen fällt?\nHandel ist mehr als Preise und Mengen: Regeln, Wissen, Moral → Informationsasymmetrie."},
-    {id:"s1-k14",s:1,f:"Informationsasymmetrie",b:"Beteiligte einer Transaktion sind unterschiedlich gut informiert.\nAkerlof (1970): The Market for Lemons → Gebrauchtwagenmarkt."},
-    {id:"s1-k15",s:1,f:"Cato (~50 v. Chr.)",b:"Kalkulatorische Betriebsführung: Kosten, Arbeitsorganisation, Auslastung, Eigenproduktion vs. Einkauf (make or buy)."},
-    {id:"s1-k16",s:1,f:"Columella (~50 n. Chr.)",b:"Investition als Verhältnis von Aufwand und erwartetem Ertrag, Vergleich mit alternativen Verwendungen → Rendite, Opportunitätskosten."},
-    {id:"s1-k17",s:1,f:"Rendite",b:"(Ertrag − Kosten) / Kosten\nBeispiel: (20 − 5) / 5 = 300 %"},
-    {id:"s1-k18",s:1,f:"Opportunitätskosten",b:"Entgangener Nutzen/Ertrag der nicht gewählten Alternative.\nBeispiel: Fernseher für 1.000 € statt Anlage zu 4 % → 40 €."},
-    {id:"s1-k19",s:1,f:"Antikes Problem → moderner Begriff",b:"Spezialisierung → Arbeitsteilung\nBelohnungen → Anreize\nVergleichbarkeit im Tausch → Geld und Wert\nVerkäufer weiß mehr → Informationsasymmetrie\nSelbst produzieren oder zukaufen → make or buy\nLohnt sich Investition → Rendite/Opportunitätskosten\nGerechte Gesellschaft → Steuer- und Transfersysteme"},
-    {id:"s1-k20",s:1,f:"Take-aways Sitzung 1",b:"Viele ökonomische Probleme sind sehr alt.\nModelle sind historisch entstandene Perspektiven auf Probleme, nicht die Probleme selbst.\nIn der Antike keine eigenständige Wirtschaftswissenschaft.\nÄhnliche Fragestellung ≠ gleiche Theorie."}
+    {id:"s1-k01",s:1,ctx:"Was ist ein Modell?",f:"Modell",b:"Vereinfachte Darstellung der Realität, mit der bestimmte Zusammenhänge isoliert untersucht werden.\n- soll **nicht** die ganze Realität abbilden\n- soll bestimmte Mechanismen abbilden\nBeispiel: Der U-Bahn-Plan zeigt nur die Stationen, keine Straßen."},
+    {id:"s1-k02",s:1,ctx:"Wie man jedes Modell prüft",f:"Fünf Fragen an jedes Modell",b:"1. Welche Frage beantwortet es?\n2. Was nimmt es an?\n3. Was blendet es aus?\n4. Was können wir damit erklären?\n5. Was können wir damit nicht erklären?"},
+    {id:"s1-k03",s:1,ctx:"Kernlehrplan SoWi NRW",f:"Fünf Modelle des Kernlehrplans",b:"- Homo oeconomicus\n- Marktmodell\n- Erweiterter Wirtschaftskreislauf\n- Soziales Interaktionsmodell\n- Modell des Konjunkturzyklus\nBesonders ökonomisch: Inhaltsfeld 1 (Marktwirtschaftliche Ordnung) und Inhaltsfeld 4 (Wirtschaftspolitik).",i:"Homo oeconomicus: lateinisch für „wirtschaftender Mensch“."},
+    {id:"s1-k04",s:1,ctx:"Der alte Name des Fachs",f:"Politische Ökonomie",b:"Historische Bezeichnung der Wirtschaftswissenschaften.\n- Wirtschaft wird **nicht isoliert** betrachtet\n- sondern im Zusammenhang mit Politik und Gesellschaft (interdisziplinär)",i:"Ökonomie: von griechisch oikos, „Haus“, und nomos, „Gesetz, Regel“."},
+    {id:"s1-k05",s:1,ctx:"Wirtschaft in der Antike",f:"Antike: Worin war Wirtschaft eingebettet?",b:"- Ethik/Philosophie\n- Politik\n- Haushaltsführung\n- Landwirtschaft\nHintergrund: Agrargesellschaft, Haushalt bzw. Gutshof als zentrale Produktionseinheit, Sklaverei, begrenzte Märkte, zunehmende Monetarisierung und Handel."},
+    {id:"s1-k06",s:1,ctx:"Produktion: Warum spezialisieren sich Menschen?",f:"Xenophon (~400 v. Chr.)",b:"Arbeitsteilung als **Organisation** von Haushalt und Gutshof.\n- nach Fähigkeiten und Aufgaben\n- Führung und Anreize für Beschäftigte bzw. Sklaven\nFrage wirkt „betriebswirtschaftlich“: Wie kann ein Gutshof besser funktionieren?",i:"Eselsbrücke: Xenophon schaut auf den Hof, Platon auf die Gesellschaft."},
+    {id:"s1-k07",s:1,ctx:"Produktion: Warum spezialisieren sich Menschen?",f:"Platon: Arbeitsteilung",b:"Arbeitsteilung als **gesellschaftliches Prinzip**.\n- Niemand kann alle Bedürfnisse allein befriedigen.\n- Spezialisierung verteilt Aufgaben in der Gesellschaft.\n- Folge: gegenseitige Abhängigkeit\nDie Frage verschiebt sich vom einzelnen Haushalt zur Gesellschaft."},
+    {id:"s1-k08",s:1,ctx:"Gerechtigkeit: Wann ist eine Gesellschaft gerecht?",f:"Platon: gerechte Gesellschaft",b:"1. Der Staat legt ein Existenzminimum fest.\n2. Maximalvermögen = Existenzminimum × 4\n3. Alles darüber geht an den Staat (bzw. die Schutzgötter)."},
+    {id:"s1-k09",s:1,ctx:"Konzept",f:"Arbeitsteilung",b:"Aufteilung wirtschaftlicher Tätigkeiten auf unterschiedliche Personen. Dadurch werden Spezialisierung und häufig höhere Produktivität möglich.\nIn der Antike: eingebettet in eine Vorstellung gesellschaftlicher Ordnung, (noch) **nicht** über Markt, Preise und Eigennutz erklärt."},
+    {id:"s1-k10",s:1,ctx:"Geld, Wert und gerechter Tausch",f:"Aristoteles: Geld",b:"Warum gibt es Geld?\n- erleichtert den Austausch\n- macht unterschiedliche Güter vergleichbar\nWas macht Geld wertvoll? Gebrauch, Austausch, Seltenheit, Vergleichbarkeit.\nAchtung: Aussage über den **Nutzen**, nicht über die historische Entstehung.",i:"Leseempfehlung der Folie: Graeber, Schulden. Die ersten 5000 Jahre (auf der Folie „Graber“ geschrieben)."},
+    {id:"s1-k11",s:1,ctx:"Aristoteles: Ist jeder Gelderwerb legitim?",f:"Oikonomia vs. Chrematistik",b:"| | Oikonomia | Chrematistik\n| Ziel | Bedarfsdeckung | Geldvermehrung zum Selbstzweck\n| Bewertung | legitim | fragwürdig",i:"Oikonomia: von griechisch oikos, „Haus“. Daher kommt „Ökonomie“.\nChrematistik: von griechisch chrēmata, „Geld, Güter“."},
+    {id:"s1-k12",s:1,ctx:"Zwei Arten von Aussagen",f:"Normativ vs. positiv",b:"| | Normativ | Positiv\n| Frage | Wie soll es sein? | Wie ist es, wie funktioniert es?\n| Beispiel | Was ist notwendig für eine gerechte Gesellschaft? | Ist die Gesellschaft gerecht?\nWandel von der Antike zur Moderne: von **normativ** zu **positiv**.",i:"Positiv: von lateinisch ponere, „setzen, feststellen“. Gemeint ist beschreibend, nicht „gut“."},
+    {id:"s1-k13",s:1,ctx:"Was darf ein Verkäufer verschweigen?",f:"Cicero (~100 v. Chr.)",b:"Ein Getreidehändler weiß: Morgen kommt viel Getreide, der Preis fällt. Muss er das dem heutigen Käufer sagen?\n- Handel ist mehr als Preise und Mengen.\n- Es geht um Regeln, Wissen, Moral.\n- Es herrscht eine **Informationsasymmetrie**."},
+    {id:"s1-k14",s:1,ctx:"Konzept",f:"Informationsasymmetrie",b:"Die Beteiligten einer wirtschaftlichen Transaktion sind unterschiedlich gut informiert.\nBeispiel: Gebrauchtwagenmarkt, Akerlof (1970), The Market for Lemons.",i:"Asymmetrie: griechisch „Ungleichmäßigkeit“.\nLemon: englisch für einen schlechten Gebrauchtwagen."},
+    {id:"s1-k15",s:1,ctx:"Entscheidungen: Wie führt man einen Gutshof?",f:"Cato (~50 v. Chr.)",b:"Wirtschaftliche Betriebsführung, der Gutshof wird kalkulatorisch betrachtet:\n- Kosten\n- Arbeitsorganisation\n- Auslastung vorhandener Ressourcen\n- Eigenproduktion oder Einkauf (make or buy)\nZentrale Frage: Wie setzt man vorhandene Ressourcen möglichst wirtschaftlich ein?"},
+    {id:"s1-k16",s:1,ctx:"Entscheidungen: Lohnt sich eine Investition?",f:"Columella (~50 n. Chr.)",b:"Investition als Verhältnis von:\n- eingesetztem Aufwand und\n- erwartetem Ertrag\nVergleich mit **alternativen** Verwendungen des Kapitals.\nDaraus: Rendite und Opportunitätskosten."},
+    {id:"s1-k17",s:1,ctx:"Konzept",f:"Rendite",b:"Ertrag einer Anlage im Verhältnis zu ihren Kosten.\n$ Rendite = (Ertrag − Kosten) / Kosten\nBeispiel: Ertrag: 20 €, Kosten: 5 €\n$ (20 − 5) / 5 = 3 = 300 %"},
+    {id:"s1-k18",s:1,ctx:"Konzept",f:"Opportunitätskosten",b:"Entgangener Nutzen oder Ertrag, den ein anderer Einsatz eines Gutes oder Produktionsfaktors gebracht hätte.\nBeispiel: Fernseher für 1.000 € statt Anlage zu 4 % p. a.\n$ 4 % × 1.000 € = 40 €",i:"Opportunität: von lateinisch opportunitas, „Gelegenheit“. Gemeint ist die verpasste Gelegenheit."},
+    {id:"s1-k19",s:1,ctx:"Tabelle „Antike und Moderne“",f:"Antikes Problem → moderner Begriff",b:"| Antikes Problem | Moderner Begriff\n| Spezialisierung von Tätigkeiten | Arbeitsteilung\n| Menschen reagieren auf Belohnungen | Anreize\n| Tausch benötigt Vergleichbarkeit | Geld und Wert\n| Verkäufer wissen mehr als Käufer | Informationsasymmetrie\n| Selbst produzieren oder zukaufen? | make or buy\n| Lohnt sich eine Investition? | Rendite/Opportunitätskosten\n| Was ist eine gerechte Gesellschaft? | Steuer- und Transfersysteme"},
+    {id:"s1-k20",s:1,ctx:"Zusammenfassung der Sitzung",f:"Take-aways Sitzung 1",b:"- Viele ökonomische Probleme sind sehr alt.\n- Modelle sind historisch entstandene Perspektiven auf Probleme, nicht die Probleme selbst.\n- In der Antike gab es keine eigenständige Wirtschaftswissenschaft.\n- Moderne Begriffe ≠ moderne Theorie: Ähnliche Fragestellung heißt nicht gleiche Theorie."},
+    {id:"s1-k21",s:1,ctx:"Gerechtigkeit: Gedankenexperiment der Folie",f:"Platons Grenze, auf heute übertragen",b:"Existenzminimum (Art. 1 Abs. 1 GG):\n- Erwachsene: 12.096 € im Jahr (1.008 € im Monat)\n- Kind: 6.828 € im Jahr (569 € im Monat)\nMaximalvermögen nach Platon (× 4):\n- Erwachsene: 4.032 € im Monat\n- Kind: 2.279 € im Monat (laut Folie)\nFrage der Folie: Ist das gerecht?",i:"Hinweis: 4 × 569 € ergibt 2.276 €. Die Folie nennt 2.279 €; hier gilt die Folie."}
   ]
 };
 
-/* ===== Sozialstruktur: Karteikarten Sitzung 1 ===== */
+/* ===== Sozialstruktur: Inhalte (Regeln siehe README, „So kommen neue Sitzungen dazu“) ===== */
 const BASE_SOZ = {
   sitzungen: { "1": "Einführung (15.10.)" },
   karten: [
-    {id:"soz1-k01",s:1,f:"Struktur (Glatzer 2002)",b:"Eine Mehrzahl von Einheiten ist nicht zufällig angeordnet bzw. verbunden. Es gibt Regelmäßigkeiten oder Muster: Was an einer Stelle auftritt, kehrt an einer anderen wieder."},
-    {id:"soz1-k02",s:1,f:"Soziologie als Verhaltenswissenschaft",b:"Ziel: soziale Phänomene erklären und vorhersagen.\nNicht: Verhalten einzelner Menschen (Warum läuft Herr K. Amok?).\nSondern: strukturierende Einflüsse, die Handeln systematisch beeinflussen (Welche gesellschaftlichen Bedingungen fördern die Häufigkeit von Amokläufen?)."},
-    {id:"soz1-k03",s:1,f:"Ziel jeder Sozialstrukturanalyse",b:"Faktoren bestimmen, die Verhalten systematisch beeinflussen.\nFokus: Muster, verursacht durch offene oder verdeckte soziale Regeln.\nKein Interesse am Einzelfall, sondern an Durchschnittswerten bzw. Wahrscheinlichkeiten.\nSoziale Regeln manifestieren sich in sozialen Strukturen."},
-    {id:"soz1-k04",s:1,f:"Goldene Regel",b:"Keine Argumentation mit Einzelfällen!\nBeispiel: „Raucher sterben nicht früher“ (Helmut Schmidt, ca. 40 Zigaretten am Tag, wurde 96).\nGegenbeleg: Überlebensraten britischer Ärzte, Raucher vs. Nichtraucher (Doll et al. 2004)."},
-    {id:"soz1-k05",s:1,f:"Wie entsteht Sozialstruktur?",b:"Von Menschen gemacht: Grundlage und Ergebnis menschlichen Handelns.\nEntsteht durch bewusst oder unbewusst geschaffene, dauerhafte und durchsetzbare Regeln.\nRegeln steuern, ordnen und stabilisieren soziale Prozesse.\nBegrenzte Reichweite, historisch und kulturell wandelbar.\nBestand und Wandel hängen von der Verteilung von Ressourcen (Macht) ab."},
-    {id:"soz1-k06",s:1,f:"Restriktionen",b:"Beschränkungen des individuellen Handlungsspielraums.\nKönnen enger oder weiter sein.\nNatürlich (Schwerkraft, Klima) oder sozial (Normen, Gesetze)."},
-    {id:"soz1-k07",s:1,f:"Ressourcen",b:"Mehr (weniger) Ressourcen = mehr (weniger) Macht.\nRessourcen wirken in Kombination mit Restriktionen auf den Handlungsspielraum."},
-    {id:"soz1-k08",s:1,f:"Lebensverlaufsansatz: drei Wechselwirkungen",b:"1. Zwischen Lebensbereichen (Beruf im Kontext von Familie).\n2. Vorher-nachher: frühere Erfahrungen strukturieren aktuelles Verhalten (frühere Arbeitslosigkeit → Angst vor Jobverlust).\n3. Mit dem Verhalten anderer, „linked lives“ (Partnerschaft braucht Zustimmung beider)."},
-    {id:"soz1-k09",s:1,f:"Drei generelle Faktoren der Sozialstrukturanalyse",b:"Restriktionen – Ressourcen – Lebensverlauf"},
-    {id:"soz1-k10",s:1,f:"Sozialordnung",b:"Gesellschaften müssen Verhaltensregeln („Spielregeln“) und Kriterien der Ressourcenverteilung festlegen.\nDie Sozialordnung soll sorgen für:\nEffizienz (keine Ressourcen verschwenden)\nGerechtigkeit (Ressourcen gerecht verteilen)"},
-    {id:"soz1-k11",s:1,f:"Soziale Ungleichheit",b:"Eng verbunden mit Sozialstruktur und Sozialordnung.\nNicht per se gut oder schlecht.\nImmer verbunden mit Fragen der Motivation und Gerechtigkeit.\nRelevant für die praktische Sozialpolitik."},
-    {id:"soz1-k12",s:1,f:"Seit wann gibt es Sozialstruktur?",b:"In frühen Gruppen: unterschiedliche Funktionen und Ressourcenverteilung, aber eher interne Gruppenstruktur.\nVon Sozialstruktur spricht man erst mit größeren, komplexeren Gesellschaften seit der Antike."},
-    {id:"soz1-k13",s:1,f:"Stände (Schäfers/Kopp 2006)",b:"Soziale Gruppierungen mit spezifischen Rechten (Privilegien) und Pflichten, deren ungleicher Status rechtlich abgesichert ist.\nEntscheidend für Standeszugehörigkeit und Lebenschancen: soziale Herkunft.\nUm 1795: Adel, Geistlichkeit, Bürgertum (z. B. Handwerker), einfaches Volk (Bauern, Arbeiter)."},
-    {id:"soz1-k14",s:1,f:"Merkmale moderner Gesellschaften",b:"Rationale Lebensführung / Selbstkontrolle\nErfahrungswissenschaftlicher und technischer Fortschritt\nSoziale Mobilität\nSäkularisierung\nAusdifferenzierung von Subsystemen\nPluralisierung\nIndividualisierung\nspäter: Industrialisierung"},
-    {id:"soz1-k15",s:1,f:"Voraussetzungen der Industrialisierung in Deutschland",b:"Bauernbefreiung (Ende feudaler Abhängigkeit)\nBerufs- und Niederlassungsfreiheit, mehr Mobilität\nBevölkerungswachstum\nSteigender Bildungsstand\nTrennung von Arbeits- und Wohnort, Wandel der Familie\n(Späte) Nationalstaatsgründung bzw. Zollunion\n(Späte) Demokratisierung, Sozialversicherungen"},
-    {id:"soz1-k16",s:1,f:"Modernisierung",b:"(Vormoderne) Agrargesellschaft → (moderne) Industriegesellschaft → (postmoderne?) Dienstleistungsgesellschaft (?)\nSpätestens seit dem 19. Jh. grundlegender Wandel der Sozialstruktur.\nOffene Frage: Wie beschreibt man die (post-)moderne Gesellschaft am besten?"},
-    {id:"soz1-k17",s:1,f:"Karl Marx (1818–1883): Klassengesellschaft",b:"Hintergrund: Industrialisierung, wenige Fabrikanten vs. viele arme Arbeiter.\nEine Ungleichheitsdimension: Besitz von Produktionsmitteln (Kapital).\nZwei Klassen: Bourgeoisie vs. Proletariat.\nArbeiter müssen ihre Arbeitskraft verkaufen, werden ausgebeutet, sind fremdbestimmt.\nKlassen stehen sich antagonistisch gegenüber (Klassenkonflikt)."},
-    {id:"soz1-k18",s:1,f:"Max Weber (1864–1920)",b:"Drei Ungleichheitsdimensionen:\nKlasse: Besitz von Kapital und Wissen\nStand: soziales Prestige (Ansehen)\nPartei: Potenzial, Gruppeninteressen zu organisieren (Konfliktfähigkeit)"},
-    {id:"soz1-k19",s:1,f:"Schichtmodelle",b:"Bolte-Zwiebel: Schichtung Westdeutschlands, 1960er (Bolte/Kappe/Neidhardt 1967)\nHaus-Modell von Dahrendorf: Westdeutschland, 1960er (1965)\nHaus-Modell für Deutschland 2000 (Geißler 2008)"},
-    {id:"soz1-k20",s:1,f:"Grenzen von Klassen- und Schichtmodellen",b:"Nur vertikale Ungleichheit (Beruf, Qualifikation, ökonomische Lage).\nHorizontale Ungleichheit fehlt (Geschlecht, Alter, Generation, Region).\nMentalitäten und Lebensstile innerhalb von Klassen/Schichten kaum berücksichtigt.\nDaher seit den 1970er/80er Jahren: Lebenslage – Lebensstil – Milieu."},
-    {id:"soz1-k21",s:1,f:"Traditionelle vs. Neue Sozialstrukturanalyse",b:"Traditionell: identifiziert Großgruppen (Klassen, Schichten, Lebenslagen). Prämisse: Handeln ist Produkt gesellschaftlicher Strukturen.\nNeu: identifiziert Indikatoren (Alter, Bildung, Geschlecht), die individuelles Handeln strukturieren. Prämisse: Gesellschaftliches Handeln ist Produkt strukturierten individuellen Handelns."},
-    {id:"soz1-k22",s:1,f:"Homo sociologicus vs. Homo oeconomicus",b:"Homo sociologicus: „Rädchen im Getriebe“, Spielball sozialer Gegebenheiten, Position durch Rollenerwartungen bestimmt. Sozialstruktur reproduziert sich selbst bzw. wird von Eliten bestimmt.\nHomo oeconomicus: „seines Glückes Schmied“, vollkommen rationaler Akteur, Position durch Talent und Präferenzen. Sozialstruktur ergibt sich aus freien Handlungen.\nBeide: Pole eines idealtypischen Kontinuums."},
-    {id:"soz1-k23",s:1,f:"Einordnung auf dem Kontinuum",b:"Gruppenzentriert → akteurszentriert:\nTraditionelle Sozialstrukturanalyse (Klasse, Schicht, Lebenslage, Lebensstil, Milieu) → Neue Sozialstrukturanalyse → neoklassische bzw. neoliberale Ökonomie"},
-    {id:"soz1-k24",s:1,f:"Was ist klausurrelevant?",b:"Vor allem die Ausführungen in der Vorlesung und die Folien.\nDringend empfohlen: parallel das Lehrbuch Erlinghagen & Hank (2018), Neue Sozialstrukturanalyse."}
+    {id:"soz1-k01",s:1,ctx:"Was meint „Sozialstruktur“?",f:"Struktur (Glatzer 2002)",b:"Eine Mehrzahl von Einheiten ist **nicht zufällig** angeordnet bzw. verbunden.\n- Es gibt Regelmäßigkeiten oder Muster.\n- Was an einer Stelle auftritt, kehrt an einer anderen wieder."},
+    {id:"soz1-k02",s:1,ctx:"Wofür sich die Soziologie interessiert",f:"Soziologie als Verhaltenswissenschaft",b:"Ziel: soziale Phänomene erklären und vorhersagen.\n| | Nicht | Sondern\n| Blick | Verhalten einzelner Menschen | strukturierende Einflüsse, die Handeln systematisch prägen\n| Beispiel | Warum läuft Herr K. Amok? | Welche Bedingungen fördern die Häufigkeit von Amokläufen?"},
+    {id:"soz1-k03",s:1,ctx:"Was meint „Sozialstruktur“?",f:"Ziel jeder Sozialstrukturanalyse",b:"Faktoren bestimmen, die Verhalten **systematisch** beeinflussen.\n- Fokus: Muster, verursacht durch offene oder verdeckte soziale Regeln\n- kein Interesse am Einzelfall, sondern an Durchschnittswerten bzw. Wahrscheinlichkeiten\n- Soziale Regeln manifestieren sich in sozialen Strukturen.",i:"Manifestieren: von lateinisch manifestus, „handgreiflich, offenkundig“. Regeln werden in Strukturen sichtbar."},
+    {id:"soz1-k04",s:1,ctx:"Wie man in der Sozialstrukturanalyse argumentiert",f:"Goldene Regel",b:"Keine Argumentation mit Einzelfällen!\nUnzulässig: „Raucher sterben nicht früher“, weil Helmut Schmidt (ca. 40 Zigaretten am Tag) 96 wurde.\nZulässig: Überlebensraten britischer Ärzte, Raucher vs. Nichtraucher (Doll et al. 2004)."},
+    {id:"soz1-k05",s:1,ctx:"Was meint „Sozialstruktur“?",f:"Wie entsteht Sozialstruktur?",b:"- von Menschen gemacht: Grundlage **und** Ergebnis menschlichen Handelns\n- entsteht durch bewusst oder unbewusst geschaffene, dauerhafte, durchsetzbare Regeln\n- Regeln steuern, ordnen und stabilisieren soziale Prozesse\n- begrenzte Reichweite, historisch und kulturell wandelbar\n- Bestand und Wandel hängen von der Verteilung von Ressourcen (Macht) ab"},
+    {id:"soz1-k06",s:1,ctx:"Faktor 1 von 3",f:"Restriktionen",b:"Beschränkungen des individuellen Handlungsspielraums.\n- können enger oder weiter sein\nNatürlich: z. B. Schwerkraft, Klima\nSozial: soziale Regeln, also Normen und Gesetze",i:"Restriktion: von lateinisch restringere, „zurückbinden, einschränken“."},
+    {id:"soz1-k07",s:1,ctx:"Faktor 2 von 3",f:"Ressourcen",b:"- mehr (weniger) Ressourcen = mehr (weniger) Macht\n- Restriktionen wirken **in Kombination** mit Ressourcen auf den Handlungsspielraum"},
+    {id:"soz1-k08",s:1,ctx:"Faktor 3 von 3",f:"Lebensverlaufsansatz: drei Wechselwirkungen",b:"1. Zwischen Lebensbereichen: Berufliche Entscheidungen fallen im Kontext familialer Entscheidungen.\n2. Vorher-nachher: Frühere Erfahrungen strukturieren aktuelles Verhalten (frühere Arbeitslosigkeit → Angst vor Jobverlust).\n3. Mit dem Verhalten anderer („linked lives“): Eine Partnerschaft besteht nur, wenn beide zustimmen.",i:"Interdependenz: wechselseitige Abhängigkeit.\nLinked lives: englisch für „verbundene Leben“."},
+    {id:"soz1-k09",s:1,ctx:"Die drei generellen Faktoren",f:"Drei Faktoren der Sozialstrukturanalyse",b:"1. Restriktionen\n2. Ressourcen\n3. Lebensverlauf",i:"Eselsbrücke: „R-R-L“: Was darf ich? Was habe ich? Was habe ich schon erlebt?"},
+    {id:"soz1-k10",s:1,ctx:"Was meint „Sozialordnung“?",f:"Sozialordnung",b:"Gesellschaften müssen festlegen:\n- Verhaltensregeln („Spielregeln“)\n- Kriterien der Ressourcenverteilung\nDie Sozialordnung soll sorgen für:\nEffizienz: keine Ressourcen verschwenden\nGerechtigkeit: Ressourcen gerecht verteilen"},
+    {id:"soz1-k11",s:1,ctx:"Sozialstruktur, Sozialordnung und Ungleichheit",f:"Soziale Ungleichheit",b:"Eng verbunden mit Sozialstruktur und Sozialordnung.\n- nicht per se gut oder schlecht\n- immer verbunden mit Fragen der Motivation und Gerechtigkeit\n- relevant für die praktische Sozialpolitik"},
+    {id:"soz1-k12",s:1,ctx:"Ursprung der Sozialstrukturanalyse",f:"Seit wann gibt es Sozialstruktur?",b:"- In frühen Gruppen: unterschiedliche Funktionen und eine Verteilung von Ressourcen, aber eher **interne Gruppenstruktur**.\n- Von Sozialstruktur spricht man erst mit größeren, komplexeren Gesellschaften seit der Antike."},
+    {id:"soz1-k13",s:1,ctx:"Vormoderne Gesellschaften",f:"Stände (Schäfers/Kopp 2006)",b:"Soziale Gruppierungen mit spezifischen Rechten (Privilegien) und Pflichten, deren ungleicher Status **rechtlich abgesichert** ist.\nEntscheidend für Stand und Lebenschancen: die soziale Herkunft.\nUm 1795: Adel, Geistlichkeit, Bürgertum (z. B. Handwerker), einfaches Volk (Bauern, Arbeiter).",i:"Privileg: von lateinisch privilegium, „Sonderrecht“."},
+    {id:"soz1-k14",s:1,ctx:"Ursprung der Sozialstrukturanalyse",f:"Merkmale moderner Gesellschaften",b:"- rationale Lebensführung, zunehmende Selbstkontrolle\n- erfahrungswissenschaftlicher und technischer Fortschritt\n- soziale Mobilität\n- Säkularisierung\n- Ausdifferenzierung funktionsspezifischer Subsysteme\n- Pluralisierung\n- Individualisierung\n- später: Industrialisierung",i:"Säkularisierung: von lateinisch saeculum, „Zeitalter, Welt“. Religion verliert an gesellschaftlichem Einfluss."},
+    {id:"soz1-k15",s:1,ctx:"Deutschland im 19. Jahrhundert",f:"Voraussetzungen der Industrialisierung",b:"- Aufhebung feudaler Abhängigkeiten („Bauernbefreiung“)\n- Berufs- und Niederlassungsfreiheit, mehr Mobilität\n- Bevölkerungswachstum\n- steigender Bildungsstand\n- Trennung von Arbeits- und Wohnort, Wandel der Familie\n- (späte) Nationalstaatsgründung bzw. Zollunion\n- (späte) Demokratisierung, Sozialversicherungen"},
+    {id:"soz1-k16",s:1,ctx:"Ursprung der Sozialstrukturanalyse",f:"Modernisierung",b:"1. (vormoderne) Agrargesellschaft\n2. (moderne) Industriegesellschaft\n3. (postmoderne?) Dienstleistungsgesellschaft (?)\nSpätestens seit dem 19. Jh. ändert sich die Sozialstruktur grundlegend.\nOffene Frage: Wie beschreibt man die (post-)moderne Gesellschaft am besten?"},
+    {id:"soz1-k17",s:1,ctx:"Traditionelle Sozialstrukturanalyse",f:"Karl Marx (1818–1883): Klassengesellschaft",b:"Hintergrund: Industrialisierung, wenige wohlhabende Fabrikanten, viele arme Arbeiter.\n- **eine** Ungleichheitsdimension: Besitz von Produktionsmitteln („Kapital“)\n- zwei Klassen: Bourgeoisie vs. Proletariat\n- Arbeiter müssen ihre Arbeitskraft verkaufen, werden ausgebeutet, sind fremdbestimmt\n- Klassen stehen sich antagonistisch gegenüber (Klassenkonflikt)",i:"Bourgeoisie: französisch „Bürgertum“.\nProletariat: von lateinisch proles, „Nachkommen“; die Ärmsten besaßen nur ihre Kinder.\nAntagonistisch: unversöhnlich gegensätzlich."},
+    {id:"soz1-k18",s:1,ctx:"Traditionelle Sozialstrukturanalyse",f:"Max Weber (1864–1920)",b:"**Drei** Ungleichheitsdimensionen:\nKlasse: Besitz von Kapital und Wissen\nStand: Grad des sozialen Prestiges (Ansehen)\nPartei: Potenzial, Gruppeninteressen zu organisieren (soziale Konfliktfähigkeit)",i:"Eselsbrücke: Marx zählt eins, Weber zählt drei."},
+    {id:"soz1-k19",s:1,ctx:"Traditionelle Sozialstrukturanalyse",f:"Schichtmodelle",b:"| Modell | Bezug\n| Bolte-Zwiebel (Bolte/Kappe/Neidhardt 1967) | Westdeutschland, 1960er\n| Haus-Modell von Dahrendorf (1965) | Westdeutschland, 1960er\n| Haus-Modell (Geißler 2008) | Deutschland, 2000"},
+    {id:"soz1-k20",s:1,ctx:"Traditionelle Sozialstrukturanalyse",f:"Grenzen von Klassen- und Schichtmodellen",b:"- nur **vertikale** Ungleichheit: Beruf, Qualifikation, ökonomische Lage\n- **horizontale** Ungleichheit fehlt: Geschlecht, Alter, Generation, Region\n- Mentalitäten und Lebensstile innerhalb von Klassen/Schichten kaum berücksichtigt\nDaher seit den 1970er/80er Jahren: Lebenslage – Lebensstil – Milieu.",i:"Vertikal: oben und unten. Horizontal: nebeneinander, ohne Rangfolge."},
+    {id:"soz1-k21",s:1,ctx:"Zwei Strömungen der Sozialstrukturanalyse",f:"Traditionelle vs. Neue Sozialstrukturanalyse",b:"| | Traditionell | Neu\n| Zentral | Großgruppen (Klassen, Schichten, Lebenslagen) | Indikatoren (Alter, Bildung, Geschlecht), die individuelles Handeln strukturieren\n| Prämisse | Handeln ist Produkt gesellschaftlicher Strukturen | gesellschaftliches Handeln ist Produkt strukturierten individuellen Handelns",i:"Prämisse: Grundannahme, von der man ausgeht."},
+    {id:"soz1-k22",s:1,ctx:"Handlungstheoretische Kontroverse",f:"Homo sociologicus vs. Homo oeconomicus",b:"| | Homo sociologicus | Homo oeconomicus\n| Bild | „Rädchen im Getriebe“ | „seines Glückes Schmied“\n| Mensch | Spielball sozialer Gegebenheiten | vollkommen rationaler Akteur\n| Position | durch Rollenerwartungen | durch Talent und Präferenzen\n| Sozialstruktur | reproduziert sich selbst bzw. wird von Eliten bestimmt | ergibt sich aus freien Handlungen\nBeide sind Pole eines **idealtypischen Kontinuums**.",i:"Idealtypisch: gedanklich zugespitzt, in Reinform kommt das in der Wirklichkeit nicht vor."},
+    {id:"soz1-k23",s:1,ctx:"Handlungstheoretische Kontroverse",f:"Einordnung auf dem Kontinuum",b:"Von gruppenzentriert nach akteurszentriert:\n1. Traditionelle Sozialstrukturanalyse (Klasse, Schicht, Lebenslage, Lebensstil, Milieu)\n2. Neue Sozialstrukturanalyse\n3. Neoklassische bzw. neoliberale Ökonomie"},
+    {id:"soz1-k24",s:1,ctx:"Organisatorisches",f:"Was ist klausurrelevant?",b:"Vor allem die Ausführungen in der Vorlesung und die Folien.\nDringend empfohlen: parallel das Lehrbuch Erlinghagen & Hank (2018), Neue Sozialstrukturanalyse (zu Sitzung 1: Kapitel 1, S. 13–28)."}
   ],
-  /* Schreibaufgaben: {id:"soz2-a01", s:2, q:"Aufgabe", k:["Kriterium = 1 Punkt", ...], m:"Musterlösung"} */
+  /* Schreibaufgaben: k = Erwartungshorizont (je 1 Punkt), m = Musterlösung gegliedert mit 1) 2) 3), Kernbegriffe **fett** */
   aufgaben: [
-    {"id": "soz1-a01", "s": 1, "q": "Erläutern Sie, was in der Soziologie unter „Sozialstruktur“ verstanden wird und warum die Sozialstrukturanalyse nicht mit Einzelfällen argumentiert.", "k": ["Struktur als nicht zufällige Anordnung bzw. Verbindung von Einheiten; Regelmäßigkeiten und Muster (Glatzer)", "Soziologie interessiert sich nicht für das Verhalten Einzelner, sondern für strukturierende Einflüsse (z. B. Amok-Beispiel)", "Ziel: Faktoren bestimmen, die Verhalten systematisch beeinflussen", "Interesse an Durchschnittswerten bzw. Wahrscheinlichkeiten statt am Einzelfall", "Soziale Regeln manifestieren sich in sozialen Strukturen", "Beispiel: Helmut Schmidt als unzulässiger Einzelfall vs. Überlebensraten von Rauchern (Doll et al. 2004)"], "m": "Sozialstruktur bezeichnet Regelmäßigkeiten und Muster: Einheiten sind nicht zufällig angeordnet, sodass Wiederkehrendes erwartbar ist (Glatzer 2002). Die Soziologie fragt nicht, warum ein Einzelner handelt, sondern welche gesellschaftlichen Bedingungen Handeln systematisch beeinflussen. Die Sozialstrukturanalyse sucht deshalb nach Faktoren, die Verhalten im Durchschnitt bzw. mit bestimmter Wahrscheinlichkeit prägen. Die sichtbare Struktur ist Ausdruck wirksamer sozialer Regeln. Ein Einzelfall widerlegt solche Zusammenhänge nicht: Dass Helmut Schmidt trotz starken Rauchens alt wurde, sagt nichts gegen die höhere Sterblichkeit von Rauchern, die etwa die Ärztestudie von Doll et al. zeigt."},
-    {"id": "soz1-a02", "s": 1, "q": "Erklären Sie die drei generellen Faktoren der Sozialstrukturanalyse und wie sie zusammenwirken.", "k": ["Restriktionen als Begrenzung des Handlungsspielraums; enger oder weiter", "Restriktionen natürlicher Art (Schwerkraft, Klima) und sozialer Art (Normen, Gesetze)", "Ressourcen: mehr Ressourcen bedeuten mehr Macht", "Restriktionen und Ressourcen wirken in Kombination auf den Handlungsspielraum", "Lebensverlauf: Wechselwirkungen zwischen Lebensbereichen (z. B. Beruf und Familie)", "Lebensverlauf: Vorher-nachher-Wechselwirkungen und „linked lives“"], "m": "Die drei Faktoren sind Restriktionen, Ressourcen und Lebensverlauf. Restriktionen begrenzen den Handlungsspielraum und können natürlich (Klima, Schwerkraft) oder sozial (Normen, Gesetze) sein, enger oder weiter. Ressourcen bedeuten Macht: Wer mehr hat, kann Restriktionen eher überwinden. Beide wirken also zusammen. Der Lebensverlaufsansatz ergänzt die zeitliche und soziale Verflechtung: Entscheidungen in einem Lebensbereich hängen mit anderen zusammen (Beruf und Familie), frühere Erfahrungen prägen aktuelles Verhalten (frühere Arbeitslosigkeit und Angst vor Jobverlust), und Entscheidungen hängen vom Handeln anderer ab (linked lives, z. B. Partnerschaft)."},
-    {"id": "soz1-a03", "s": 1, "q": "Vergleichen Sie die Klassenkonzepte von Karl Marx und Max Weber.", "k": ["Marx: historischer Kontext Industrialisierung, wenige Fabrikanten vs. viele arme Arbeiter", "Marx: eine Ungleichheitsdimension, Besitz von Produktionsmitteln", "Marx: zwei Klassen, Bourgeoisie und Proletariat", "Marx: Ausbeutung, Fremdbestimmung, antagonistischer Klassenkonflikt", "Weber: drei Ungleichheitsdimensionen", "Weber: Klasse = Besitz von Kapital und Wissen", "Weber: Stand = soziales Prestige; Partei = Organisation von Gruppeninteressen", "Fazit: Marx eindimensional, Weber mehrdimensional und differenzierter"], "m": "Marx entwickelt sein Modell vor dem Hintergrund der Industrialisierung im 19. Jahrhundert. Die soziale Position bestimmt sich bei ihm über eine einzige Dimension, den Besitz von Produktionsmitteln. Daraus folgen zwei Klassen: die Bourgeoisie, die besitzt und herrscht, und das Proletariat, das nur seine Arbeitskraft verkaufen kann und ausgebeutet wird. Die Klassen stehen sich antagonistisch gegenüber. Weber dagegen unterscheidet drei Dimensionen: Klasse (Besitz von Kapital und Wissen), Stand (soziales Prestige) und Partei (Fähigkeit, Gruppeninteressen zu organisieren). Weber erfasst Ungleichheit damit mehrdimensional und differenzierter als Marx, bei dem allein die ökonomische Lage zählt."},
-    {"id": "soz1-a04", "s": 1, "q": "Erläutern Sie die Grenzen von Klassen- und Schichtmodellen und welche Ansätze daraus hervorgegangen sind.", "k": ["Klassen- und Schichtmodelle erfassen vor allem vertikale Ungleichheit (Beruf, Qualifikation, ökonomische Lage)", "Horizontale Ungleichheiten fehlen (Geschlecht, Alter, Generation, Region)", "Mentalitäten und Lebensstile innerhalb von Klassen/Schichten werden kaum berücksichtigt", "Beispiele für Schichtmodelle: Bolte-Zwiebel, Haus-Modell von Dahrendorf bzw. Geißler", "Neuere Ansätze seit den 1970er/80er Jahren: Lebenslage, Lebensstil, Milieu"], "m": "Schichtmodelle wie die Bolte-Zwiebel oder das Haus-Modell von Dahrendorf ordnen die Bevölkerung vertikal nach Beruf, Qualifikation und ökonomischer Lage. Damit bleiben horizontale Ungleichheiten wie Geschlecht, Alter, Generation oder Region unberücksichtigt. Außerdem unterscheiden sich Menschen innerhalb einer Schicht in Mentalitäten und Lebensstilen, was die Modelle kaum abbilden. Seit den 1970er/80er Jahren wurden deshalb Konzepte der Lebenslage, des Lebensstils und des Milieus entwickelt."},
-    {"id": "soz1-a05", "s": 1, "q": "Stellen Sie die traditionelle und die Neue Sozialstrukturanalyse gegenüber und ordnen Sie beide auf dem Kontinuum zwischen Homo sociologicus und Homo oeconomicus ein.", "k": ["Traditionell: Identifikation gesellschaftlich relevanter Großgruppen (Klassen, Schichten, Lebenslagen)", "Traditionell: Prämisse, Handeln ist Produkt gesellschaftlicher Strukturen", "Neu: Identifikation von Indikatoren (Alter, Bildung, Geschlecht), die individuelles Handeln strukturieren", "Neu: Prämisse, gesellschaftliches Handeln ist Produkt strukturierten individuellen Handelns", "Homo sociologicus: „Rädchen im Getriebe“, Position durch Rollenerwartungen bestimmt", "Homo oeconomicus: „seines Glückes Schmied“, rationaler Akteur, Position durch Talent und Präferenzen", "Einordnung: traditionelle SSA gruppenzentriert nahe Homo sociologicus, Neue SSA dazwischen, neoklassische Ökonomie am akteurszentrierten Pol", "Hinweis, dass es sich um ein idealtypisches Kontinuum handelt"], "m": "Die traditionelle Sozialstrukturanalyse sucht nach gesellschaftlich relevanten Großgruppen wie Klassen, Schichten oder Milieus und geht davon aus, dass Handeln ein Produkt gesellschaftlicher Strukturen ist. Die Neue Sozialstrukturanalyse sucht dagegen nach Indikatoren wie Alter, Bildung oder Geschlecht, die individuelles Handeln strukturieren. Gesellschaftliches Handeln ist hier Produkt strukturierten individuellen Handelns. Auf dem idealtypischen Kontinuum steht am einen Pol der Homo sociologicus, das „Rädchen im Getriebe“, dessen Position durch Rollenerwartungen festgelegt ist. Am anderen Pol steht der Homo oeconomicus, der rationale Akteur und „seines Glückes Schmied“. Die traditionelle Analyse liegt nahe am gruppenzentrierten Pol, die Neue Sozialstrukturanalyse in der Mitte, die neoklassische Ökonomie am akteurszentrierten Pol."},
-    {"id": "soz1-a06", "s": 1, "q": "Erläutern Sie, was eine Sozialordnung leisten muss und in welchem Verhältnis sie zu sozialer Ungleichheit steht.", "k": ["Gesellschaften müssen Verhaltensregeln („Spielregeln“) festlegen", "Gesellschaften müssen Kriterien der Ressourcenverteilung festlegen", "Ziel Effizienz: keine Ressourcen verschwenden", "Ziel Gerechtigkeit: Ressourcen gerecht verteilen", "Soziale Ungleichheit ist nicht per se gut oder schlecht; verbunden mit Motivation und Gerechtigkeit; relevant für Sozialpolitik"], "m": "Jede Gesellschaft muss Spielregeln für das Verhalten und Kriterien für die Verteilung von Ressourcen festlegen. Diese Sozialordnung soll zwei Ziele erfüllen: Effizienz, also keine Verschwendung von Ressourcen, und Gerechtigkeit, also eine gerechte Verteilung. Sozialstruktur, Sozialordnung und soziale Ungleichheit hängen eng zusammen. Ungleichheit ist dabei nicht automatisch gut oder schlecht: Sie berührt Fragen der Motivation (Anreize) und der Gerechtigkeit. Als Ausdruck sozialer Ungleichheit ist die Sozialstruktur deshalb für die praktische Sozialpolitik relevant."},
-    {"id": "soz1-a07", "s": 1, "q": "Beschreiben Sie den Wandel von der vormodernen Ständegesellschaft zur modernen Gesellschaft in Deutschland.", "k": ["Stände: Gruppen mit rechtlich abgesichertem ungleichem Status, Rechten und Pflichten", "In der Ständegesellschaft entscheidet die soziale Herkunft über die Lebenschancen", "Merkmale der Moderne, z. B. soziale Mobilität, Säkularisierung, Individualisierung, Pluralisierung, Ausdifferenzierung", "Voraussetzungen der Industrialisierung, z. B. Bauernbefreiung, Berufs- und Niederlassungsfreiheit, Bevölkerungswachstum, Bildung", "Trennung von Arbeits- und Wohnort, späte Nationalstaatsgründung, Sozialversicherungen", "Abfolge Agrargesellschaft → Industriegesellschaft → (Dienstleistungsgesellschaft?)"], "m": "In der vormodernen Ständegesellschaft gehörten Menschen Ständen wie Adel, Geistlichkeit, Bürgertum oder einfachem Volk an. Diese hatten rechtlich abgesicherte, ungleiche Rechte und Pflichten, und die soziale Herkunft bestimmte die Lebenschancen. Moderne Gesellschaften sind dagegen durch soziale Mobilität, rationale Lebensführung, wissenschaftlichen Fortschritt, Säkularisierung, Ausdifferenzierung, Pluralisierung und Individualisierung geprägt. In Deutschland war die Industrialisierung an Voraussetzungen gebunden, etwa an die Bauernbefreiung, die Berufs- und Niederlassungsfreiheit, das Bevölkerungswachstum, den steigenden Bildungsstand und die Trennung von Arbeits- und Wohnort. Später kamen Nationalstaat bzw. Zollunion, Demokratisierung und Sozialversicherungen hinzu. Spätestens seit dem 19. Jahrhundert wandelt sich die Agrar- zur Industriegesellschaft. Ob heute von einer Dienstleistungsgesellschaft zu sprechen ist, bleibt offen."}
+    {id:"soz1-a01",s:1,q:"Erläutern Sie, was in der Soziologie unter „Sozialstruktur“ verstanden wird und warum die Sozialstrukturanalyse nicht mit Einzelfällen argumentiert.",
+      k:["Struktur als nicht zufällige Anordnung bzw. Verbindung von Einheiten; Regelmäßigkeiten und Muster (Glatzer)","Soziologie interessiert sich nicht für das Verhalten Einzelner, sondern für strukturierende Einflüsse (z. B. Amok-Beispiel)","Ziel: Faktoren bestimmen, die Verhalten systematisch beeinflussen","Interesse an Durchschnittswerten bzw. Wahrscheinlichkeiten statt am Einzelfall","Soziale Regeln manifestieren sich in sozialen Strukturen","Beispiel: Helmut Schmidt als unzulässiger Einzelfall vs. Überlebensraten von Rauchern (Doll et al. 2004)"],
+      m:"1) **Begriff:** Sozialstruktur meint **Regelmäßigkeiten und Muster**. Einheiten sind nicht zufällig angeordnet, sodass Wiederkehrendes erwartbar ist (Glatzer 2002).\n2) **Blickrichtung:** Die Soziologie fragt nicht, warum ein Einzelner handelt (Herr K.), sondern welche gesellschaftlichen Bedingungen Handeln **systematisch** beeinflussen (Häufigkeit von Amokläufen).\n3) **Ziel:** Die Sozialstrukturanalyse sucht Faktoren, die Verhalten im **Durchschnitt** bzw. mit bestimmter **Wahrscheinlichkeit** prägen. Die sichtbare Struktur ist Ausdruck wirksamer **sozialer Regeln**.\n4) **Keine Einzelfälle:** Ein Einzelfall widerlegt keinen Zusammenhang. Dass Helmut Schmidt trotz starken Rauchens alt wurde, sagt nichts gegen die höhere Sterblichkeit von Rauchern (Ärztestudie, Doll et al. 2004)."},
+    {id:"soz1-a02",s:1,q:"Erklären Sie die drei generellen Faktoren der Sozialstrukturanalyse und wie sie zusammenwirken.",
+      k:["Restriktionen als Begrenzung des Handlungsspielraums; enger oder weiter","Restriktionen natürlicher Art (Schwerkraft, Klima) und sozialer Art (Normen, Gesetze)","Ressourcen: mehr Ressourcen bedeuten mehr Macht","Restriktionen und Ressourcen wirken in Kombination auf den Handlungsspielraum","Lebensverlauf: Wechselwirkungen zwischen Lebensbereichen (z. B. Beruf und Familie)","Lebensverlauf: Vorher-nachher-Wechselwirkungen und „linked lives“"],
+      m:"1) **Restriktionen** begrenzen den Handlungsspielraum. Sie sind **natürlich** (Klima, Schwerkraft) oder **sozial** (Normen, Gesetze), enger oder weiter.\n2) **Ressourcen** bedeuten **Macht**: Wer mehr hat, hat mehr Spielraum.\n3) **Zusammenwirken:** Restriktionen wirken **in Kombination** mit Ressourcen. Mit vielen Ressourcen lassen sich Beschränkungen eher überwinden.\n4) **Lebensverlauf:** Entscheidungen hängen **zwischen Lebensbereichen** zusammen (Beruf und Familie), **frühere Erfahrungen** prägen heutiges Verhalten (frühere Arbeitslosigkeit, Angst vor Jobverlust), und sie hängen vom Handeln **anderer** ab (linked lives, z. B. Partnerschaft)."},
+    {id:"soz1-a03",s:1,q:"Vergleichen Sie die Klassenkonzepte von Karl Marx und Max Weber.",
+      k:["Marx: historischer Kontext Industrialisierung, wenige Fabrikanten vs. viele arme Arbeiter","Marx: eine Ungleichheitsdimension, Besitz von Produktionsmitteln","Marx: zwei Klassen, Bourgeoisie und Proletariat","Marx: Ausbeutung, Fremdbestimmung, antagonistischer Klassenkonflikt","Weber: drei Ungleichheitsdimensionen","Weber: Klasse = Besitz von Kapital und Wissen","Weber: Stand = soziales Prestige; Partei = Organisation von Gruppeninteressen","Fazit: Marx eindimensional, Weber mehrdimensional und differenzierter"],
+      m:"1) **Marx – Kontext:** Industrialisierung im 19. Jahrhundert, wenige wohlhabende Fabrikanten, viele arme Arbeiter.\n2) **Marx – Modell:** Die Position bestimmt sich über **eine** Dimension, den **Besitz von Produktionsmitteln**. Daraus folgen zwei Klassen: **Bourgeoisie** und **Proletariat**. Die Arbeiter müssen ihre Arbeitskraft verkaufen und werden ausgebeutet. Die Klassen stehen sich **antagonistisch** gegenüber.\n3) **Weber – Modell:** **Drei** Dimensionen: **Klasse** (Kapital und Wissen), **Stand** (soziales Prestige) und **Partei** (Fähigkeit, Gruppeninteressen zu organisieren).\n4) **Vergleich:** Marx erfasst Ungleichheit **eindimensional** über die ökonomische Lage, Weber **mehrdimensional** und damit differenzierter."},
+    {id:"soz1-a04",s:1,q:"Erläutern Sie die Grenzen von Klassen- und Schichtmodellen und welche Ansätze daraus hervorgegangen sind.",
+      k:["Klassen- und Schichtmodelle erfassen vor allem vertikale Ungleichheit (Beruf, Qualifikation, ökonomische Lage)","Horizontale Ungleichheiten fehlen (Geschlecht, Alter, Generation, Region)","Mentalitäten und Lebensstile innerhalb von Klassen/Schichten werden kaum berücksichtigt","Beispiele für Schichtmodelle: Bolte-Zwiebel, Haus-Modell von Dahrendorf bzw. Geißler","Neuere Ansätze seit den 1970er/80er Jahren: Lebenslage, Lebensstil, Milieu"],
+      m:"1) **Beispiele:** Schichtmodelle wie die **Bolte-Zwiebel** oder das **Haus-Modell** (Dahrendorf, Geißler) ordnen die Bevölkerung nach oben und unten.\n2) **Grenze 1:** Sie erfassen nur **vertikale** Ungleichheit (Beruf, Qualifikation, ökonomische Lage).\n3) **Grenze 2:** **Horizontale** Ungleichheiten wie Geschlecht, Alter, Generation oder Region fehlen.\n4) **Grenze 3:** **Mentalitäten und Lebensstile** innerhalb einer Schicht werden kaum abgebildet.\n5) **Folge:** Seit den 1970er/80er Jahren entstehen Konzepte der **Lebenslage**, des **Lebensstils** und des **Milieus**."},
+    {id:"soz1-a05",s:1,q:"Stellen Sie die traditionelle und die Neue Sozialstrukturanalyse gegenüber und ordnen Sie beide auf dem Kontinuum zwischen Homo sociologicus und Homo oeconomicus ein.",
+      k:["Traditionell: Identifikation gesellschaftlich relevanter Großgruppen (Klassen, Schichten, Lebenslagen)","Traditionell: Prämisse, Handeln ist Produkt gesellschaftlicher Strukturen","Neu: Identifikation von Indikatoren (Alter, Bildung, Geschlecht), die individuelles Handeln strukturieren","Neu: Prämisse, gesellschaftliches Handeln ist Produkt strukturierten individuellen Handelns","Homo sociologicus: „Rädchen im Getriebe“, Position durch Rollenerwartungen bestimmt","Homo oeconomicus: „seines Glückes Schmied“, rationaler Akteur, Position durch Talent und Präferenzen","Einordnung: traditionelle SSA gruppenzentriert nahe Homo sociologicus, Neue SSA dazwischen, neoklassische Ökonomie am akteurszentrierten Pol","Hinweis, dass es sich um ein idealtypisches Kontinuum handelt"],
+      m:"1) **Traditionelle Sozialstrukturanalyse:** sucht **Großgruppen** (Klassen, Schichten, Lebenslagen). Prämisse: Handeln ist ein Produkt **gesellschaftlicher Strukturen**.\n2) **Neue Sozialstrukturanalyse:** sucht **Indikatoren** wie Alter, Bildung oder Geschlecht, die individuelles Handeln strukturieren. Prämisse: Gesellschaftliches Handeln ist ein Produkt **strukturierten individuellen Handelns**.\n3) **Pole:** Der **Homo sociologicus** ist das „Rädchen im Getriebe“, seine Position ist durch Rollenerwartungen festgelegt. Der **Homo oeconomicus** ist der rationale Akteur und „seines Glückes Schmied“.\n4) **Einordnung:** Die traditionelle Analyse liegt am **gruppenzentrierten** Pol, die Neue Sozialstrukturanalyse **in der Mitte**, die neoklassische Ökonomie am **akteurszentrierten** Pol. Das Kontinuum ist **idealtypisch**."},
+    {id:"soz1-a06",s:1,q:"Erläutern Sie, was eine Sozialordnung leisten muss und in welchem Verhältnis sie zu sozialer Ungleichheit steht.",
+      k:["Gesellschaften müssen Verhaltensregeln („Spielregeln“) festlegen","Gesellschaften müssen Kriterien der Ressourcenverteilung festlegen","Ziel Effizienz: keine Ressourcen verschwenden","Ziel Gerechtigkeit: Ressourcen gerecht verteilen","Soziale Ungleichheit ist nicht per se gut oder schlecht; verbunden mit Motivation und Gerechtigkeit; relevant für Sozialpolitik"],
+      m:"1) **Aufgabe:** Jede Gesellschaft muss **Spielregeln** für das Verhalten und **Kriterien der Ressourcenverteilung** festlegen.\n2) **Ziele der Sozialordnung:** **Effizienz** (keine Ressourcen verschwenden) und **Gerechtigkeit** (gerecht verteilen).\n3) **Verhältnis zur Ungleichheit:** Sozialstruktur, Sozialordnung und **soziale Ungleichheit** hängen eng zusammen. Ungleichheit ist **nicht per se gut oder schlecht**, sie berührt Fragen der **Motivation** und der **Gerechtigkeit**.\n4) **Bedeutung:** Als Ausdruck sozialer Ungleichheit ist die Sozialstruktur für die praktische **Sozialpolitik** relevant."},
+    {id:"soz1-a07",s:1,q:"Beschreiben Sie den Wandel von der vormodernen Ständegesellschaft zur modernen Gesellschaft in Deutschland.",
+      k:["Stände: Gruppen mit rechtlich abgesichertem ungleichem Status, Rechten und Pflichten","In der Ständegesellschaft entscheidet die soziale Herkunft über die Lebenschancen","Merkmale der Moderne, z. B. soziale Mobilität, Säkularisierung, Individualisierung, Pluralisierung, Ausdifferenzierung","Voraussetzungen der Industrialisierung, z. B. Bauernbefreiung, Berufs- und Niederlassungsfreiheit, Bevölkerungswachstum, Bildung","Trennung von Arbeits- und Wohnort, späte Nationalstaatsgründung, Sozialversicherungen","Abfolge Agrargesellschaft → Industriegesellschaft → (Dienstleistungsgesellschaft?)"],
+      m:"1) **Ständegesellschaft:** Stände wie Adel, Geistlichkeit, Bürgertum und einfaches Volk haben **rechtlich abgesicherte**, ungleiche Rechte und Pflichten. Die **soziale Herkunft** bestimmt die Lebenschancen.\n2) **Merkmale der Moderne:** rationale Lebensführung, wissenschaftlicher Fortschritt, **soziale Mobilität**, **Säkularisierung**, Ausdifferenzierung, Pluralisierung, **Individualisierung**.\n3) **Voraussetzungen der Industrialisierung:** **Bauernbefreiung**, Berufs- und Niederlassungsfreiheit, Bevölkerungswachstum, steigende Bildung, **Trennung von Arbeits- und Wohnort**; später Nationalstaat bzw. Zollunion, Demokratisierung und **Sozialversicherungen**.\n4) **Ergebnis:** Spätestens seit dem 19. Jahrhundert wird aus der **Agrar-** eine **Industriegesellschaft**. Ob heute von einer Dienstleistungsgesellschaft zu sprechen ist, bleibt offen."}
   ]
 };
 
@@ -291,7 +424,7 @@ async function load(){
   store = lsSet("od-test","1") ? "local" : "none";
   const raw = lsGet(KEY);
   if(raw){ try{ state=Object.assign(state, JSON.parse(raw)); }catch(e){} }
-  if(!state.soz) state.soz={sitzungen:{},karten:[]};
+  norm();   // vor dem ersten Speichern: alte Leitner-Fächer bekommen Termine ab dem letzten Lerntag
   await syncFromRemote();
   visit();
 }
@@ -302,7 +435,7 @@ async function save(){
 }
 /* Automatischer Abgleich: beim Öffnen, beim Zurückkehren in die App und alle 30 Sekunden */
 async function autoPull(){
-  if(!ghToken || document.visibilityState!=="visible" || (quiz && quiz.running) || (write && write.id) || pushTimer || pushing) return;
+  if(!ghToken || document.visibilityState!=="visible" || (quiz && quiz.running) || (write && write.id) || (view==="cards" && cards && cards.i<cards.deck.length) || (view==="practice" && practice && !practice.done && practice.ans!=null) || pushTimer || pushing) return;
   if(await syncFromRemote()){ practice=null; cards=null; render(); }
 }
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") flushPush(); else { visit(); autoPull(); } });
@@ -348,6 +481,57 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">"
 const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
 function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),2600); }
 
+/* ===== Textformat (aus Wirtschaft II übernommen, aufs Fach angepasst) =====
+   Schreibweise in Karten-Rückseiten (b), Musterlösungen (m), Erklärungen:
+   - "- " Aufzählung, "1. " oder "1) " nummerierte Schritte
+   - "Begriff: Erklärung" (Begriff höchstens 42 Zeichen) wird Begriff fett, Erklärung daneben
+   - "$ Formel" wird Formelbox, die umbricht
+   - "| Kopf | A | B" (mehrere Zeilen) wird Vergleichstabelle, auf dem Handy gestapelt
+   - **fett**; Klammern mit Wörtern werden leiser gesetzt; Zahl und Einheit bleiben zusammen */
+const nb=s=>String(s).replace(/v\. Chr\./g,"v.&nbsp;Chr.").replace(/n\. Chr\./g,"n.&nbsp;Chr.").replace(/(\d) (%|€|Euro|Prozentpunkte|Punkte|Punkten|Tage|Tagen|Minuten|Min\.|Jahre|Jh\.|v\.&nbsp;Chr\.|n\.&nbsp;Chr\.)/g,"$1&nbsp;$2").replace(/([×=−+/]) (\d)/g,"$1&nbsp;$2");
+const quietParens=s=>s.replace(/\(([^()]{2,})\)/g,(m,x)=>/^[A-Za-zÄÖÜäöüß„]/.test(x)&&/[A-Za-zÄÖÜäöüß]{3,}/.test(x)&&!/[=+−·<>\/]/.test(x)?`<span class="pz">(${x})</span>`:m);
+const inl=s=>quietParens(nb(String(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")));
+const TERM=/^([^:=⇒?|]{1,42}): (.+)$/;
+function cmpTable(rows){
+  const h=rows[0], body=rows.slice(1);
+  const tight=rows.every(r=>r.every(c=>String(c).replace(/\*\*/g,"").length<=18));
+  return `<table class="cmp${tight?" tight":""}"><thead><tr>${h.map(x=>`<th>${inl(x)}</th>`).join("")}</tr></thead><tbody>${body.map(r=>`<tr><th scope="row">${inl(r[0])}</th>${r.slice(1).map((c,j)=>`<td data-l="${esc(String(h[j+1]||"").replace(/\*\*/g,""))}"><span>${inl(c)}</span></td>`).join("")}</tr>`).join("")}</tbody></table>`;
+}
+function termInline(x){ const m=x.match(TERM); return m?`<b>${inl(m[1])}:</b> ${inl(m[2])}`:inl(x); }
+function richText(b){
+  const L=String(b).split("\n"); let out="", kind=null, items=[];
+  const flush=()=>{ if(!kind) return;
+    if(kind==="dl") out+=`<div class="dlist">${items.join("")}</div>`;
+    else out+=`<${kind}>${items.map(x=>`<li>${x}</li>`).join("")}</${kind}>`;
+    kind=null; items=[]; };
+  const open=k=>{ if(kind!==k){ flush(); kind=k; } };
+  for(let i=0;i<L.length;i++){ const l=L[i].trim(); let m;
+    if(!l){ flush(); continue; }
+    if((m=l.match(/^\$ ?(.*)$/))){ const box=`<div class="eq">${nb(m[1])}</div>`;
+      if((kind==="ol"||kind==="ul")&&items.length) items[items.length-1]+=box; else { flush(); out+=box; } continue; }
+    if(l.startsWith("|")){ flush(); const rows=[];
+      while(i<L.length&&L[i].trim().startsWith("|")){ rows.push(L[i].trim().replace(/^\||\|$/g,"").split("|").map(x=>x.trim())); i++; }
+      i--; out+=cmpTable(rows); continue; }
+    if((m=l.match(/^[-•] (.*)$/))){ open("ul"); items.push(termInline(m[1])); continue; }
+    if((m=l.match(/^\d+[.)] (.*)$/))){ open("ol"); items.push(termInline(m[1])); continue; }
+    if((m=l.match(TERM))){ open("dl"); items.push(`<b>${inl(m[1])}</b><span>${inl(m[2])}</span>`); continue; }
+    flush(); out+=`<p>${inl(l)}</p>`;
+  }
+  flush(); return out;
+}
+/* Dezentes „i“: Herkunft eines Begriffs oder Eselsbrücke */
+function infoHTML(t){
+  if(!t) return "";
+  const lines=String(t).split("\n").map(l=>{ const m=l.match(/^([^:]{1,32}): (.*)$/); return m?`<span class="cl"><b>${inl(m[1])}</b> ${inl(m[2])}</span>`:`<span class="cl">${inl(l)}</span>`; }).join("");
+  return `<div class="cinfo"><span class="ci" aria-hidden="true">i</span><div>${lines}</div></div>`;
+}
+/* Text in die Zwischenablage, sonst zum Markieren anzeigen */
+async function copyText(text,holder){
+  try{ await navigator.clipboard.writeText(text); toast("Kopiert. Jetzt in einen Claude-Chat einfügen."); return true; }
+  catch(x){ const h=$(holder); if(h){ h.innerHTML=`<textarea class="copybox" readonly>${esc(text)}</textarea>`; const t=h.querySelector("textarea"); t.focus(); t.select(); } toast("Text markiert. Jetzt kopieren."); return false; }
+}
+const plain=s=>String(s).replace(/\*\*/g,"").replace(/^\$ ?/gm,"").replace(/^\| ?/gm,"").replace(/ ?\| ?/g," | ");
+
 const isSoz = () => state.course==="soz";
 function sessions(){ return isSoz() ? Object.assign({}, BASE_SOZ.sitzungen, state.soz.sitzungen) : Object.assign({}, BASE.sitzungen, state.custom.sitzungen); }
 function mergeById(a,b){ const m=new Map(); a.forEach(x=>m.set(x.id,x)); b.forEach(x=>m.set(x.id,x)); return [...m.values()]; }
@@ -357,6 +541,30 @@ function getF(){ return isSoz() ? state.sozFilter : state.filter; }
 function setF(v){ if(isSoz()) state.sozFilter=v; else state.filter=v; }
 function inFilter(x){ return getF()==="alle" || String(x.s)===String(getF()); }
 function boxOf(id){ return state.box[id]||0; }
+
+/* ===== Wiederholungsplan für Karten (wie Anki) =====
+   Fach (state.box) 1–5 wie bisher. Gewusst: Fach +1, nächste Abfrage nach INTERVAL[Fach] Tagen;
+   in Fach 5 erneut gewusst: 35 Tage. Nicht gewusst: Fach 1, sofort noch einmal. */
+const INTERVAL=[0,0,1,3,7,16];
+const dayStart=(t=Date.now())=>{ const d=new Date(t); d.setHours(0,0,0,0); return d.getTime(); };
+function allCardsBoth(){ return mergeById(BASE.karten,state.custom.karten).concat(mergeById(BASE_SOZ.karten,state.soz.karten)); }
+function norm(){
+  for(const k of ["box","due","err","unclear","schreiben","entwurf"]) if(!state[k]||typeof state[k]!=="object") state[k]={};
+  if(!state.soz) state.soz={sitzungen:{},karten:[]};
+  /* Übernahme der alten Leitner-Fächer: Karten ohne Termin bekommen einen Termin passend zu ihrem Fach,
+     gerechnet ab dem letzten Lerntag. Nichts wird gelöscht. */
+  const base=dayStart(state.updated||Date.now());
+  allCardsBoth().forEach(c=>{ const b=state.box[c.id]; if(b && state.due[c.id]==null) state.due[c.id]=base+INTERVAL[Math.min(b,5)]*864e5; });
+}
+const isSeen=id=>!!state.box[id];
+const isDue=id=>isSeen(id) && (state.due[id]||0)<=Date.now();
+function dueCards(items){ return (items||allK()).filter(x=>isDue(x.id)).sort((a,b)=>(state.due[a.id]||0)-(state.due[b.id]||0)); }
+function gradeCard(c,ok,free){
+  const b0=boxOf(c.id), b1=ok?Math.min(5,Math.max(b0,1)+1):1;
+  state.box[c.id]=b1;
+  if(!free||!ok||b1<b0) state.due[c.id]= ok ? dayStart()+(b0===5?35:INTERVAL[b1])*864e5 : Date.now();
+}
+const whenText=t=>{ const d=Math.round((dayStart(t)-dayStart())/864e5); return d<=0?"heute":d===1?"morgen":"in "+d+" Tagen"; };
 function grade(id, ok){
   const b=boxOf(id); state.box[id] = ok ? Math.min(5, Math.max(b,1)+1) : 1;
   if(!state.err) state.err={};
@@ -407,25 +615,52 @@ function answerText(p,a){
   return p.q.o[a];
 }
 const typeHint = p => ({multi:"Mehrere Antworten können richtig sein.",zuord:"Ordne jedem Begriff das Passende zu.",zahl:"Gib eine Zahl ein."})[p.t]||"";
-function answerHTML(p,a,reveal){
+function answerHTML(p,a,reveal,idk){
   const dis=reveal?" disabled":"";
   if(p.t==="zuord"){
     a=a||[];
     return `<div class="opts">${p.order.map(i=>{ const pr=p.q.paare[i], ok=a[i]===pr[1];
-      return `<label class="opt${reveal?(ok?" right":" wrong"):""}" style="display:block"><span class="small">${esc(pr[0])}</span>
+      return `<label class="opt${reveal?(idk?"":ok?" right":" wrong"):""}" style="display:block"><span class="small">${inl(pr[0])}</span>
         <select data-z="${i}" style="width:100%;margin-top:6px"${dis}><option value="">Bitte wählen</option>${p.rights.map(r=>`<option${a[i]===r?" selected":""}>${esc(r)}</option>`).join("")}</select>
-        ${reveal&&!ok?`<span class="small" style="display:block;margin-top:4px">Richtig: ${esc(pr[1])}</span>`:""}</label>`; }).join("")}</div>`;
+        ${reveal&&!ok?`<span class="small" style="display:block;margin-top:4px">Richtig: ${inl(pr[1])}</span>`:""}</label>`; }).join("")}</div>`;
   }
   if(p.t==="zahl"){
     const ok=isRight(p,a);
-    return `<div class="row"><input id="zahlIn" inputmode="decimal" value="${a==null?"":esc(a)}"${dis} style="font:inherit;font-size:1.2rem;padding:10px 12px;border-radius:10px;border:1.5px solid ${reveal?(ok?"var(--good)":"var(--bad)"):"var(--line)"};background:var(--surface);color:var(--ink);width:10rem">
-      <span>${esc(p.q.einheit||"")}</span></div>${reveal&&!ok?`<p class="small" style="margin-top:6px">Richtig: ${esc(correctText(p))}</p>`:""}`;
+    return `<div class="row"><input id="zahlIn" inputmode="decimal" aria-label="Antwort als Zahl" value="${a==null?"":esc(a)}"${dis} style="font:inherit;font-size:1.2rem;padding:10px 12px;border-radius:10px;border:1.5px solid ${reveal&&!idk?(ok?"var(--good)":"var(--bad)"):"var(--line)"};background:var(--surface);color:var(--ink);width:10rem;max-width:100%">
+      <span>${esc(p.q.einheit||"")}</span></div>`;
   }
   const multi=p.t==="multi", sel=multi?(a||[]):[a];
   return `<div class="opts">${p.order.map(i=>{
     const isSel=sel.includes(i), isC=multi?p.correct.includes(i):i===p.correct;
-    let c="opt"; if(reveal){ if(isC) c+=" right"; else if(isSel) c+=" wrong"; } else if(isSel) c+=" sel";
-    return `<button class="${c}" data-o="${i}"${dis}>${multi?(isSel?"☑ ":"☐ "):""}${esc(p.q.o[i])}</button>`; }).join("")}</div>`;
+    let c="opt", tag="";
+    if(reveal){
+      if(idk){ if(isC) c+=" right"; }
+      else if(multi){
+        if(isSel&&isC){ c+=" right"; tag="richtig angekreuzt"; }
+        else if(isSel){ c+=" wrong"; tag="falsch angekreuzt"; }
+        else if(isC){ c+=" miss"; tag="nicht angekreuzt, gehört aber dazu"; }
+      } else { if(isC) c+=" right"; else if(isSel) c+=" wrong"; }
+    } else if(isSel) c+=" sel";
+    return `<button class="${c}" data-o="${i}"${dis}>${multi?(isSel?"☑ ":"☐ "):""}${inl(p.q.o[i])}${tag?`<span class="tag">${tag}</span>`:""}</button>`; }).join("")}</div>`;
+}
+/* Rückmeldung: warum genau diese Wahl falsch ist und was den Unterschied macht.
+   q.w = {Index der falschen Option: Begründung} (Index wie in q.o), bei Zahlenfragen ein Text zum typischen Fehler. */
+function fbHTML(p,a,idk){
+  const q=p.q, w=q.w||{}, why=q.e?inl(q.e):"";
+  const right=`<b>Richtig</b><span>${inl(correctText(p))}</span>`;
+  if(idk) return `<div class="fb idk"><p class="fh">Kein Problem, die Frage kommt gleich noch einmal.</p><div class="dlist">${right}${why?`<b>Warum</b><span>${why}</span>`:""}</div></div>`;
+  if(isRight(p,a)) return `<div class="fb good"><p class="fh">Richtig.</p>${why?`<p style="margin:0">${why}</p>`:""}</div>`;
+  let rows="";
+  if(p.t==="sc" && a!=null && w[a]) rows+=`<b>Deine Wahl</b><span>${inl(w[a])}</span>`;
+  if(p.t==="multi"){
+    const wrongSel=(a||[]).filter(i=>!p.correct.includes(i)), missed=p.correct.filter(i=>!(a||[]).includes(i));
+    wrongSel.forEach(i=>{ rows+=`<b>Falsch angekreuzt</b><span>${inl(p.q.o[i])}${w[i]?`: ${inl(w[i])}`:""}</span>`; });
+    if(missed.length) rows+=`<b>Gefehlt hat</b><span>${missed.map(i=>inl(p.q.o[i])).join("; ")}</span>`;
+  }
+  if(p.t==="zahl" && typeof q.w==="string") rows+=`<b>Typischer Fehler</b><span>${inl(q.w)}</span>`;
+  if(p.t!=="multi") rows+=right;
+  if(why) rows+=`<b>${rows.includes("Deine Wahl")?"Der Unterschied":"Warum"}</b><span>${why}</span>`;
+  return `<div class="fb bad"><p class="fh">Nicht ganz.</p><div class="dlist">${rows}</div></div>`;
 }
 /* onSet(neueAntwort, sofortPruefen, neuZeichnen) */
 function bindAnswer(p,getA,onSet){
@@ -460,6 +695,7 @@ function go(v){
   view=v; resetArmed=false; render(); window.scrollTo(0,0);
 }
 function render(){
+  norm();
   if(!tabs().some(t=>t[0]===view)) view="home";
   renderNav();
   ({home:isSoz()?renderSozHome:renderHome,practice:renderPractice,cards:renderCards,quiz:renderQuiz,write:renderWrite,stats:renderStats})[view]();
@@ -531,7 +767,10 @@ function renderStats(){
   if(allN) tips.push(`Insgesamt ${allN} Antworten, davon ${Math.round(allR/allN*100)} % richtig.`);
   $("#app").innerHTML=`<h1>Statistik</h1>
     ${days.length?"":`<p class="muted">Noch keine Daten. Ab jetzt wird jede Lernsitzung mitgezählt.</p>`}
-    <div class="block"><h3>Letzte 7 Tage</h3><table>
+    <div class="block"><h3>Letzte 7 Tage</h3>
+      <p class="small muted" style="margin:0">Aktionen pro Tag: jede beantwortete Frage oder Karte, jedes „Weiß ich nicht“ und jede bewertete Schreibaufgabe.</p>
+      ${week7()}
+      <table style="margin-top:12px">
       <tr><td>Lernzeit</td><td>${fmtMin(wkSec)}</td></tr>
       <tr><td>Lernsitzungen</td><td>${wkSess}</td></tr>
       <tr><td>App geöffnet</td><td>${wkVis}-mal</td></tr>
@@ -546,6 +785,16 @@ function renderStats(){
     <p class="small muted">Lernzeit zählt nur, solange du aktiv bist. Pausen über 2 Minuten zählen nicht mit. Nach 15 Minuten Pause beginnt eine neue Sitzung.</p>`;
 }
 
+function week7(){
+  const log=state.log||{}, wdn=["So","Mo","Di","Mi","Do","Fr","Sa"];
+  const days=[...Array(7)].map((_,i)=>{ const d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-6+i); const L=log[dayKey(d)]; return [d,L?(L.n||0)+(L.x||0):0]; });
+  const mx=Math.max(1,...days.map(x=>x[1]));
+  return `<div class="week7">${days.map(([d,n],i)=>`<div class="d${i===6?" today":""}" title="${n===1?"1 Aktion":n+" Aktionen"}">
+    <div class="bw"><i style="height:${n?Math.max(4,Math.round(n/mx*100)):0}%"></i></div>
+    <span class="wd">${wdn[d.getDay()]}</span><span class="dt">${String(d.getDate()).padStart(2,"0")}.${String(d.getMonth()+1).padStart(2,"0")}.</span>
+    <span class="n">${n||"–"}</span><span class="u">${n?(n===1?"Aktion":"Aktionen"):""}</span></div>`).join("")}</div>`;
+}
+
 /* ===== Fortschrittsbalken: hell = schon richtig, dunkel = sicher ===== */
 function progRow(k, title, items){
   const n=items.length||1, right=items.filter(x=>boxOf(x.id)>=2).length, sure=items.filter(x=>boxOf(x.id)>=4).length;
@@ -554,41 +803,106 @@ function progRow(k, title, items){
     <p class="small muted" style="margin:4px 0 0">${right} von ${items.length} schon richtig, ${sure} sicher</p></div>`;
 }
 
+/* ===== Übersicht: Bausteine ===== */
+const COURSE_NAME={od:"Ökonomisches Denken",soz:"Sozialstruktur"};
+const uKey=k=>state.course+":"+k;
+const isUnclear=k=>!!state.unclear[uKey(k)];
+function unclearPrompt(k){
+  const t=sessions()[k], od=!isSoz();
+  const ks=allK().filter(x=>String(x.s)===String(k));
+  const body=ks.map(c=>`- ${c.f}: ${plain(c.b).replace(/\n/g,"; ")}`).join("\n");
+  return `Ich lerne für ${od?"die Moodle-Quiz in „Ökonomisches Denken“ (Becker/Weber)":"die Klausur „Sozialstruktur“ (Prof. Erlinghagen)"} im Modul Wirtschaft und Gesellschaft I (UDE, Lehramt GyGe). Diese Sitzung verstehe ich noch nicht.
+
+Sitzung ${k}: ${t}
+
+Inhalt der Sitzung (aus meiner Lern-App, nach den Folien):
+${body}
+
+Bitte erkläre mir das einfacher: kurze Sätze, Fachbegriffe kurz erklärt, mit einem Beispiel aus dem Alltag oder aus der Schule. Bleib bei den Begriffen der Vorlesung und erfinde nichts dazu. Stell mir danach zwei Kontrollfragen. Die Lösungen bitte erst, wenn ich geantwortet habe.`;
+}
+/* Eine Sitzung in der Übersicht: Fortschritt + „Verstehe ich nicht“ */
+function sessionRow(k, title, items){
+  const n=items.length||1, right=items.filter(x=>boxOf(x.id)>=2).length, sure=items.filter(x=>boxOf(x.id)>=4).length;
+  const u=isUnclear(k);
+  return `<div class="srow"><div class="row between"><span class="grow" style="font-weight:600">${k}. ${esc(title)}</span>${u?'<span class="chip unk">unklar</span>':""}</div>
+    <div class="bar" style="position:relative;margin-top:6px"><i style="position:absolute;width:${right/n*100}%;opacity:.35"></i><i style="position:absolute;width:${sure/n*100}%"></i></div>
+    <p class="small muted" style="margin:4px 0 0">${right} von ${items.length} schon richtig, ${sure} sicher</p>
+    <div class="unc">${u?`<button class="btn ghost small" data-ucopy="${k}">Prompt nochmal kopieren</button><button class="btn small" data-uok="${k}">Jetzt verstanden</button>`
+      :`<button class="btn ghost small" data-uset="${k}">Verstehe ich nicht</button>`}</div><div id="ubox${k}"></div></div>`;
+}
+function bindSessionRows(again){
+  document.querySelectorAll("[data-uset]").forEach(b=>b.onclick=()=>{ const k=b.dataset.uset; state.unclear[uKey(k)]=Date.now(); save(); again(); copyText(unclearPrompt(k),"#ubox"+k); });
+  document.querySelectorAll("[data-ucopy]").forEach(b=>b.onclick=()=>copyText(unclearPrompt(b.dataset.ucopy),"#ubox"+b.dataset.ucopy));
+  document.querySelectorAll("[data-uok]").forEach(b=>b.onclick=()=>{ delete state.unclear[uKey(b.dataset.uok)]; save(); toast("Markierung entfernt"); again(); });
+}
+/* „Nochmal anschauen“: als unklar markierte Sitzungen und Sitzungen mit offenen Fehlern */
+function reviewBlock(){
+  const s=sessions(), rows=[];
+  Object.keys(s).sort((a,b)=>a-b).forEach(k=>{
+    if(isUnclear(k)) rows.push({k,lab:"unklar",cls:"unk",d:"Als unklar markiert. Karten der Sitzung wiederholen.",go:"cards"});
+    const errs=isSoz() ? allK().filter(x=>String(x.s)===k&&boxOf(x.id)===1).length : allQ().filter(x=>String(x.s)===k&&state.err[x.id]&&boxOf(x.id)<4).length;
+    if(errs) rows.push({k,lab:errs+(isSoz()?" Karten":" Fehler"),cls:"err",d:isSoz()?"Karten, die du zuletzt nicht wusstest.":"Fragen, die du falsch hattest und die noch nicht sitzen.",go:isSoz()?"cards":"errors"});
+  });
+  if(!rows.length) return "";
+  return `<div class="block"><h3>Nochmal anschauen</h3><div class="tlist">${rows.map(r=>`<button class="titem rv" data-k="${r.k}" data-go="${r.go}"><span class="t">${r.k}. ${esc(s[r.k])}</span><span class="chip ${r.cls}">${r.lab}</span><span class="d">${r.d}</span></button>`).join("")}</div></div>`;
+}
+function bindReview(){
+  document.querySelectorAll(".rv").forEach(b=>b.onclick=()=>{ setF(b.dataset.k);
+    if(b.dataset.go==="errors"){ state.errOnly=true; practice=null; save(); go("practice"); } else { cards=null; save(); go("cards"); } });
+}
+function dueBanner(){
+  const n=dueCards().length; if(!n) return "";
+  return `<div class="block due"><span><b>Heute fällig: ${n} Karte${n===1?"":"n"}</b><br><span class="small muted">Zuerst wiederholen, dann Neues lernen.</span></span><button class="btn" id="goDue">Wiederholen</button></div>`;
+}
+function bindDue(){ const b=$("#goDue"); if(b) b.onclick=()=>{ setF("alle"); cards=null; go("cards"); }; }
+function examBlock(){
+  if(!isSoz()){
+    return `<details class="block exam"><summary><b>So ist die Prüfung gebaut</b></summary>
+      <ul><li>4 Quiz auf Moodle, je 12 Fragen, 15 Minuten</li><li>Jedes Quiz einzeln bestehen: mindestens 7 von 12</li><li>Über alle vier zusammen mindestens 30 Punkte</li><li>Jedes Quiz nur <b>einmal</b> möglich</li>
+      <li>Freischaltung: Quiz 1 ab 16.11., Quiz 2 ab 07.12., Quiz 3 ab 25.01., Quiz 4 ab 07.02.</li><li>Abgabe aller vier bis 21.02.2027</li></ul>
+      <p class="small muted" style="margin:0">Quelle: Syllabus und Folien der ersten Sitzung.</p></details>`;
+  }
+  return `<details class="block exam"><summary><b>So ist die Prüfung gebaut</b></summary>
+    <ul><li>Modulklausur zur Vorlesung</li><li>Klausurrelevant: vor allem die Ausführungen in der Vorlesung und die Folien</li><li>Dringend empfohlen: parallel Erlinghagen &amp; Hank (2018), Neue Sozialstrukturanalyse</li><li>Format nach deiner Angabe: Textaufgaben</li></ul>
+    <p class="small muted" style="margin:0">Termin und genaue Aufgabenform stehen noch nicht auf den Folien.</p></details>`;
+}
+
 /* ===== Übersicht ===== */
 function renderHome(){
   const s = sessions(), qs = allQ(), ks = allK();
   const today = new Date(); today.setHours(0,0,0,0);
   const next = QUIZZES.find(z=>new Date(z.open+"T00:00:00")>today);
   const days = next ? Math.round((new Date(next.open+"T00:00:00")-today)/864e5) : null;
-  const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>{
-    const items = qs.filter(x=>String(x.s)===k).concat(ks.filter(x=>String(x.s)===k));
-    return progRow(k, s[k], items);
-  }).join("");
+  const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>sessionRow(k, s[k], qs.filter(x=>String(x.s)===k).concat(ks.filter(x=>String(x.s)===k)))).join("");
   const last = state.quizzes.slice(-5).reverse();
   $("#app").innerHTML = `
     <h1>Ökonomisches Denken</h1>
     <p class="muted">${qs.length} Fragen und ${ks.length} Karten aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}.</p>
+    ${dueBanner()}
     <div class="block">
       ${next ? `<h2>${days===0?"Quiz "+next.n+" öffnet heute":"Noch "+days+" Tage bis Quiz "+next.n}</h2>
-      <p class="small muted">Öffnet am ${new Date(next.open).toLocaleDateString("de-DE")}, Abgabe bis 21.02.2027. 12 Fragen, 15 Minuten, bestanden ab 7. Insgesamt mindestens 30 Punkte aus allen vier Quiz.</p>`
+      <p class="small muted">Öffnet am ${new Date(next.open+"T00:00:00").toLocaleDateString("de-DE")}.</p>`
       : `<h2>Alle Quiz sind geöffnet</h2><p class="small muted">Abgabe bis 21.02.2027.</p>`}
       <div class="row"><button class="btn" id="goQuiz">Quiz simulieren</button><button class="btn ghost" id="goPr">Fragen üben</button></div>
     </div>
+    ${examBlock()}
+    ${reviewBlock()}
     ${readinessBlock()}
-    <div class="block"><h3>Fortschritt pro Sitzung</h3>
-      <p class="small muted">„Sicher“ heißt: dreimal hintereinander richtig. Dann kommt die Frage nur noch selten.</p>${rows}</div>
+    <div class="block"><h3>Sitzungen</h3>
+      <p class="small muted">„Sicher“ heißt: dreimal hintereinander richtig. Etwas unklar? „Verstehe ich nicht“ markiert die Sitzung und kopiert einen fertigen Prompt für Claude.</p>${rows}</div>
     <div class="block"><h3>Letzte Simulationen</h3>
-      ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · ${/^q\d$/.test(z.scope)?"Quiz "+z.scope.slice(1):z.scope==="alle"?"alle Sitzungen":"Sitzung "+esc(z.scope)}</td><td style="color:var(--${z.score>=7?"good":"bad"})">${z.score} / ${z.total}</td></tr>`).join("")}</table>`
+      ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · ${/^q\d$/.test(z.scope)?"Quiz "+z.scope.slice(1):z.scope==="alle"?"alle Sitzungen":"Sitzung "+esc(z.scope)}</td><td style="color:var(--${z.score>=7?"good":"bad"})">${z.score}&nbsp;/&nbsp;${z.total}</td></tr>`).join("")}</table>`
       : `<p class="small muted">Noch keine Simulation. Starte eine, sobald du die Karten einmal durch hast.</p>`}
     </div>
     ${storeNote()}
-    <div class="block"><h3>Fortschritt zurücksetzen</h3>
-      <p class="small muted">Löscht Lernstand und Simulationen beider Fächer. Die Fragen und Karten bleiben.</p>
-      <button class="btn warn" id="reset">${resetArmed?"Wirklich zurücksetzen":"Zurücksetzen"}</button></div>`;
-  bindBackup();
+    ${resetBlock()}`;
+  bindBackup(); bindDue(); bindReview(); bindSessionRows(renderHome); bindReset(renderHome);
   $("#goQuiz").onclick=()=>go("quiz"); $("#goPr").onclick=()=>go("practice");
-  $("#reset").onclick=()=>{ if(!resetArmed){resetArmed=true;renderHome();return;} state.box={}; state.quizzes=[]; resetArmed=false; save(); toast("Fortschritt zurückgesetzt"); renderHome(); };
 }
+function resetBlock(){ return `<div class="block"><h3>Fortschritt zurücksetzen</h3>
+  <p class="small muted">Löscht Lernstand, Termine und Simulationen beider Fächer, auch auf den verbundenen Geräten. Die Fragen und Karten bleiben.</p>
+  <button class="btn warn" id="reset">${resetArmed?"Wirklich zurücksetzen":"Zurücksetzen"}</button></div>`; }
+function bindReset(again){ $("#reset").onclick=()=>{ if(!resetArmed){resetArmed=true;again();return;} state.box={}; state.due={}; state.err={}; state.unclear={}; state.quizzes=[]; resetArmed=false; save(); toast("Fortschritt zurückgesetzt"); again(); }; }
 
 /* ===== Bereitschaft pro Quiz ===== */
 function readiness(z){
@@ -601,12 +915,12 @@ function readiness(z){
 }
 function readinessBlock(){
   return `<div class="block"><h3>Bereit fürs echte Quiz?</h3>
-    <p class="small muted">Jedes Quiz kannst du nur einmal schreiben, Abgabe für alle bis 21.02.2027. „Bereit“ heißt: Der Stoff ist komplett in der App, mindestens 70 % sitzen sicher, und die letzten drei Simulationen hatten jeweils mindestens 9 von 12.</p>
+    <p class="small muted">Jedes Quiz kannst du nur einmal schreiben, Abgabe für alle bis 21.02.2027. „Bereit“ heißt: Der Stoff ist komplett in der App, mindestens 70&nbsp;% sitzen sicher, und die letzten drei Simulationen hatten jeweils mindestens 9 von 12.</p>
     ${QUIZZES.map(z=>{ const r=readiness(z);
       if(r.empty) return `<div class="review"><strong>Quiz ${z.n}</strong> <span class="small muted">· Sitzung ${z.s[0]}–${z.s[z.s.length-1]} · noch keine Inhalte</span></div>`;
       return `<div class="review"><div class="row"><strong class="grow">Quiz ${z.n}</strong><span class="small" style="color:var(--${r.ready?"good":"muted"});font-weight:600">${r.ready?"Bereit":"Noch nicht"}</span></div>
         <p class="small" style="margin:4px 0 0">${r.have.length===z.s.length?"✓":"○"} Inhalte: ${r.have.length} von ${z.s.length} Sitzungen in der App</p>
-        <p class="small" style="margin:2px 0 0">${r.sure>=70?"✓":"○"} Sicher: ${r.sure} % (Ziel 70 %)</p>
+        <p class="small" style="margin:2px 0 0">${r.sure>=70?"✓":"○"} Sicher: ${r.sure}&nbsp;% (Ziel 70&nbsp;%)</p>
         <p class="small" style="margin:2px 0 0">${r.good===3?"✓":"○"} Simulationen mit mind. 9 Punkten: ${r.good} von 3</p></div>`; }).join("")}
   </div>`;
 }
@@ -614,16 +928,14 @@ function readinessBlock(){
 /* ===== Übersicht Sozialstruktur ===== */
 function renderSozHome(){
   const s = sessions(), ks = allK();
-  const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>{
-    const items = ks.filter(x=>String(x.s)===k);
-    return progRow(k, s[k], items);
-  }).join("");
+  const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>sessionRow(k, s[k], ks.filter(x=>String(x.s)===k))).join("");
   $("#app").innerHTML = `
     <h1>Sozialstruktur</h1>
-    <p class="muted">${ks.length} Karten aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}. Abschluss ist die Modulklausur.</p>
+    <p class="muted">${ks.length} Karten und ${allA().length} Schreibaufgaben aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}.</p>
+    ${dueBanner()}
     <div class="block">
       <h2>Karten lernen</h2>
-      <p class="small muted">Erst selbst erklären, dann umdrehen. Was du nicht wusstest, kommt öfter dran. Klausurrelevant sind vor allem Vorlesung und Folien.</p>
+      <p class="small muted">Erst selbst erklären, dann umdrehen. Gewusste Karten kommen nach 1, 3, 7, 16 und 35 Tagen wieder.</p>
       <button class="btn" id="goCards">Karten starten</button>
     </div>
     <div class="block">
@@ -631,11 +943,14 @@ function renderSozHome(){
       <p class="small muted">${wStat()}</p>
       <button class="btn ghost" id="goWrite">Aufgabe schreiben</button>
     </div>
-    <div class="block"><h3>Fortschritt pro Sitzung</h3>
-      <p class="small muted">„Sicher“ heißt: dreimal hintereinander gewusst. Dann kommt die Karte nur noch selten.</p>${rows}</div>
-    ${storeNote()}`;
-  bindBackup();
-  $("#goCards").onclick=()=>go("cards");
+    ${examBlock()}
+    ${reviewBlock()}
+    <div class="block"><h3>Sitzungen</h3>
+      <p class="small muted">„Sicher“ heißt: dreimal hintereinander gewusst. Etwas unklar? „Verstehe ich nicht“ markiert die Sitzung und kopiert einen fertigen Prompt für Claude.</p>${rows}</div>
+    ${storeNote()}
+    ${resetBlock()}`;
+  bindBackup(); bindDue(); bindReview(); bindSessionRows(renderSozHome); bindReset(renderSozHome);
+  $("#goCards").onclick=()=>{ cards=null; go("cards"); };
   $("#goWrite").onclick=()=>go("write");
 }
 
@@ -656,17 +971,17 @@ function renderWrite(){
     $("#app").innerHTML=`<div class="row"><h1 class="grow">Schreiben</h1>${filterSelect()}</div>
       <p class="small muted">Schreib so, wie du es in der Klausur tun würdest. Danach siehst du den Erwartungshorizont und hakst ab, was du drin hattest.</p>
       ${items.length?items.map(x=>{const res=r[x.id], d=wDraft()[x.id];
-        return `<div class="review"><button class="opt" style="width:100%" data-w="${x.id}"><span class="small muted">Sitzung ${x.s} · ${x.k.length} Punkte${res?` · zuletzt ${res.p}/${res.max}`:d?" · Entwurf":""}</span><br>${esc(x.q)}</button></div>`;}).join("")
+        return `<div class="review"><button class="opt" style="width:100%" data-w="${x.id}"><span class="small muted">Sitzung ${x.s} · ${x.k.length} Punkte${res?` · zuletzt ${res.p}/${res.max}`:d?" · Entwurf":""}</span><br>${inl(x.q)}</button></div>`;}).join("")
       :`<p>Für diese Auswahl gibt es noch keine Aufgaben.</p>`}`;
     bindFilter(renderWrite);
-    document.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{ write={id:b.dataset.w, phase:"schreiben", checks:[]}; renderWrite(); window.scrollTo(0,0); });
+    document.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{ write={id:b.dataset.w, phase:"schreiben", checks:[], prev:wRes()[b.dataset.w]||null}; renderWrite(); window.scrollTo(0,0); });
     return;
   }
   const a=allA().find(x=>x.id===write.id); if(!a){ write=null; return renderWrite(); }
   const text=wDraft()[a.id]||"";
   if(write.phase==="schreiben"){
     $("#app").innerHTML=`<button class="btn ghost" id="wBack">Zur Liste</button>
-      <div class="block" style="margin-top:12px"><p class="small muted">Sitzung ${a.s} · ${a.k.length} Punkte</p><div class="q">${esc(a.q)}</div>
+      <div class="block" style="margin-top:12px"><p class="eyebrow">Sitzung ${a.s} · ${a.k.length} Punkte${write.prev?` · zuletzt ${write.prev.p}/${write.prev.max}`:""}</p><div class="q">${inl(a.q)}</div>
       <textarea id="wText" style="min-height:260px;font-family:var(--sans);font-size:1rem" placeholder="Deine Antwort …">${esc(text)}</textarea>
       <p class="small muted" style="margin-top:6px">Dein Entwurf wird automatisch gespeichert, auch für deine anderen Geräte.</p>
       <button class="btn" id="wDone" style="margin-top:6px">Fertig, Erwartungshorizont zeigen</button></div>`;
@@ -675,22 +990,22 @@ function renderWrite(){
   } else {
     const p=write.checks.filter(Boolean).length;
     $("#app").innerHTML=`<button class="btn ghost" id="wBack">Zur Liste</button>
-      <div class="block" style="margin-top:12px"><div class="q">${esc(a.q)}</div>
+      <div class="block" style="margin-top:12px"><div class="q">${inl(a.q)}</div>
       <p class="small muted">Deine Antwort:</p><p style="white-space:pre-wrap">${esc(text)}</p></div>
       <div class="block"><h3>Erwartungshorizont</h3><p class="small muted">Hak ab, was in deiner Antwort vorkommt. Jeder Punkt zählt einen Punkt.</p>
-      ${a.k.map((k,i)=>`<label class="row" style="align-items:flex-start;gap:10px;margin:10px 0"><input type="checkbox" data-c="${i}" ${write.checks[i]?"checked":""} style="width:22px;height:22px;margin-top:2px"><span class="grow">${esc(k)}</span></label>`).join("")}
-      <p class="verdict" style="font-size:1.3rem">${p} von ${a.k.length} Punkten</p>
+      ${a.k.map((k,i)=>`<label class="row" style="align-items:flex-start;gap:10px;margin:10px 0"><input type="checkbox" data-c="${i}" ${write.checks[i]?"checked":""} style="width:22px;height:22px;margin-top:2px"><span class="grow">${inl(k)}</span></label>`).join("")}
+      <p class="verdict" style="font-size:1.3rem">${p}&nbsp;von&nbsp;${a.k.length} Punkten</p>${write.prev?`<p class="small muted">Letztes Mal: ${write.prev.p} von ${write.prev.max} Punkten</p>`:""}
       <button class="btn" id="wSave">Ergebnis speichern</button></div>
-      <div class="block"><h3>Musterlösung</h3><p>${esc(a.m)}</p></div>
+      <div class="block"><h3>Musterlösung</h3><div class="ml">${a.essay?a.m.split("\n").map(x=>`<p>${inl(x)}</p>`).join(""):richText(a.m)}</div></div>
       <div class="block"><h3>Ausführliche Bewertung</h3>
       <p class="small muted">Kopiert Aufgabe, Erwartungshorizont und deine Antwort. Füge das in einen Claude-Chat ein und du bekommst Punkte, Note und Verbesserungstipps.</p>
       <button class="btn ghost" id="wClaude">Für Claude kopieren</button><div id="wCopy"></div></div>
       <button class="btn ghost" id="wEdit">Antwort überarbeiten</button>`;
     document.querySelectorAll("[data-c]").forEach(c=>c.onchange=()=>{ write.checks[+c.dataset.c]=c.checked; renderWrite(); });
-    $("#wSave").onclick=()=>{ wRes()[a.id]={p, max:a.k.length, date:Date.now()}; save(); toast(`Gespeichert: ${p} von ${a.k.length} Punkten`); write=null; renderWrite(); window.scrollTo(0,0); };
+    $("#wSave").onclick=()=>{ wRes()[a.id]={p, max:a.k.length, date:Date.now()}; logDay(Date.now()).x=(logDay(Date.now()).x||0)+1; save(); toast(`Gespeichert: ${p} von ${a.k.length} Punkten`); write=null; renderWrite(); window.scrollTo(0,0); };
     $("#wEdit").onclick=()=>{ write.phase="schreiben"; renderWrite(); };
     $("#wClaude").onclick=async()=>{
-      const prompt=`Bewerte bitte meine Übungsantwort für die Klausur „Sozialstruktur“ (Prof. Erlinghagen, UDE, Lehramt). Beziehe dich auf den Vorlesungsstoff.\n\nAufgabe (${a.k.length} Punkte):\n${a.q}\n\nErwartungshorizont (je 1 Punkt):\n${a.k.map(k=>"- "+k).join("\n")}\n\nMusterlösung:\n${a.m}\n\nMeine Antwort:\n${text}\n\nGib mir: Punkte pro Kriterium, Gesamtpunkte, eine Note (1,0 bis 5,0), was gut war und konkret, was ich besser formulieren oder ergänzen sollte.`;
+      const prompt=`Bewerte bitte meine Übungsantwort für die Klausur „Sozialstruktur“ (Prof. Erlinghagen, UDE, Lehramt). Beziehe dich auf den Vorlesungsstoff.\n\nAufgabe (${a.k.length} Punkte):\n${a.q}\n\nErwartungshorizont (je 1 Punkt):\n${a.k.map(k=>"- "+k).join("\n")}\n\nMusterlösung:\n${plain(a.m)}\n\nMeine Antwort:\n${text}\n\nGib mir: Punkte pro Kriterium, Gesamtpunkte, eine Note (1,0 bis 5,0), was gut war und konkret, was ich besser formulieren oder ergänzen sollte.`;
       try{ await navigator.clipboard.writeText(prompt); $("#wCopy").innerHTML=`<p class="small" style="margin-top:10px">Kopiert. Öffne jetzt einen neuen Chat im Claude-Projekt und füge den Text ein.</p>`; }
       catch(e){ $("#wCopy").innerHTML=`<p class="small" style="margin-top:10px">Halte den Text gedrückt und kopiere ihn:</p><textarea readonly style="min-height:120px">${esc(prompt)}</textarea>`; }
     };
@@ -699,8 +1014,14 @@ function renderWrite(){
 }
 
 /* ===== Üben ===== */
+let idkQueue=[];   // „Weiß ich nicht“: Frage kommt nach 3 anderen Fragen wieder, ohne Strafe
+function nextPracticeQ(items, avoid){
+  idkQueue.forEach(x=>x.wait--);
+  const k=idkQueue.findIndex(x=>x.wait<=0 && items.some(i=>i.id===x.id) && x.id!==avoid);
+  if(k>=0){ const id=idkQueue.splice(k,1)[0].id; return items.find(i=>i.id===id); }
+  return weightedPick(items, avoid);
+}
 function renderPractice(){
-  if(!state.err) state.err={};
   const all = allQ().filter(inFilter);
   const errs = all.filter(x=>state.err[x.id] && boxOf(x.id)<4);
   const items = state.errOnly ? errs : all;
@@ -715,21 +1036,20 @@ function renderPractice(){
   }
   if(!practice || !items.find(x=>x.id===practice.p.q.id)){
     const last = items.find(x=>x.id===state.lastQ);
-    practice = {p:prepQ(last || weightedPick(items)), ans:null, done:false};
+    practice = {p:prepQ(last || weightedPick(items)), ans:null, done:false, idk:false, before:null};
     state.lastQ = practice.p.q.id;
   }
-  const rightAll = all.filter(x=>boxOf(x.id)>=2).length;
-  const {p, ans, done} = practice;
-  const ok = done && isRight(p,ans);
+  if(practice.before==null) practice.before = all.filter(x=>boxOf(x.id)>=2).length;
+  const {p, ans, done, idk} = practice;
+  const ses=sessions()[p.q.s];
   $("#app").innerHTML = head + `
-    <p class="small muted">${rightAll} von ${all.length} Fragen schon richtig beantwortet. Falsche kommen öfter dran.</p>
+    <p class="small muted">Zuletzt ${practice.before} von ${all.length} Fragen richtig. Falsche kommen öfter dran.</p>
     <div class="block">
-      <p class="small muted">Sitzung ${esc(p.q.s)}${typeHint(p)?" · "+typeHint(p):""}</p>
-      <div class="q">${esc(p.q.q)}</div>
-      ${answerHTML(p, ans, done)}
-      ${done ? `<div class="expl"><strong>${ok?"Richtig.":"Nicht ganz."}</strong> ${esc(p.q.e||"")}</div>
-        <button class="btn" id="nextQ">Nächste Frage</button>`
-      : (p.t!=="sc" ? `<button class="btn" id="check" style="margin-top:12px"${isAnswered(p,ans)?"":" disabled"}>Prüfen</button>` : "")}
+      <p class="eyebrow">Sitzung ${esc(p.q.s)}${ses?": "+esc(ses):""}${typeHint(p)?" · "+typeHint(p):""}</p>
+      <div class="q">${inl(p.q.q)}</div>
+      ${answerHTML(p, ans, done, idk)}
+      ${done ? fbHTML(p, ans, idk) + `<button class="btn" id="nextQ" style="margin-top:14px">Nächste Frage</button>`
+      : `<div class="row" style="margin-top:12px">${p.t!=="sc" ? `<button class="btn" id="check"${isAnswered(p,ans)?"":" disabled"}>Prüfen</button>` : ""}<button class="btn ghost idk" id="idk">Weiß ich nicht</button></div>`}
     </div>`;
   bindHead();
   const check = () => { practice.done=true; const r=isRight(p,practice.ans); grade(p.q.id, r); track("od", r); save(); renderPractice(); };
@@ -740,29 +1060,51 @@ function renderPractice(){
       if(redraw) renderPractice(); else { const b=$("#check"); if(b) b.disabled=!isAnswered(p,a); }
     });
     const b=$("#check"); if(b) b.onclick=check;
-  } else $("#nextQ").onclick=()=>{ practice={p:prepQ(weightedPick(items,p.q.id)), ans:null, done:false}; state.lastQ=practice.p.q.id; save(); renderPractice(); window.scrollTo(0,0); };
+    $("#idk").onclick=()=>{ practice.done=true; practice.idk=true; practice.ans=null; idkQueue.push({id:p.q.id, wait:3}); track("od"); logDay(Date.now()).x=(logDay(Date.now()).x||0)+1; save(); renderPractice(); };
+  } else $("#nextQ").onclick=()=>{ const n=nextPracticeQ(items,p.q.id); practice={p:prepQ(n), ans:null, done:false, idk:false, before:null}; state.lastQ=n.id; save(); renderPractice(); window.scrollTo(0,0); };
 }
 
-/* ===== Karteikarten ===== */
+/* ===== Karteikarten mit Wiederholungsplan ===== */
+function buildDeck(free){
+  const items=allK().filter(inFilter);
+  if(free){ const pool=items.slice(), deck=[]; while(deck.length<Math.min(10,pool.length)){ const x=weightedPick(pool); deck.push(x); pool.splice(pool.indexOf(x),1); } return deck; }
+  const due=dueCards(items), fresh=items.filter(x=>!isSeen(x.id));
+  return due.concat(fresh).slice(0,Math.max(10,Math.min(due.length,30)));
+}
+function cardCtx(c){ const t=sessions()[c.s]; return `Sitzung ${c.s}${t?": "+t:""}${c.ctx?" · "+c.ctx:""}`; }
 function renderCards(){
-  const items = allK().filter(inFilter);
-  if(!items.length){ $("#app").innerHTML=`<h1>Karten</h1>${filterSelect()}<p>Für diese Auswahl gibt es noch keine Karten.</p>`; bindFilter(renderCards); return; }
-  if(!cards || !items.find(x=>x.id===cards.k.id)) cards = {k:weightedPick(items), flipped:false};
-  const {k, flipped} = cards;
-  $("#app").innerHTML = `
-    <div class="row"><h1 class="grow">Karten</h1>${filterSelect()}</div>
-    <p class="small muted">Erst selbst erklären, dann umdrehen. Sei ehrlich beim Bewerten.</p>
-    <div class="block card" id="card" role="button" tabindex="0" aria-label="Karte umdrehen">
-      ${flipped ? `<p class="small muted" style="text-align:left">${esc(k.f)}</p><div class="back">${esc(k.b)}</div>` : `<div class="front">${esc(k.f)}</div><p class="small muted" style="margin-top:14px">Tippen zum Umdrehen</p>`}
-    </div>
-    ${flipped ? `<div class="row"><button class="btn ghost grow" id="no">Nicht gewusst</button><button class="btn grow" id="yes">Gewusst</button></div>` : ""}`;
-  bindFilter(()=>{cards=null;renderCards();});
-  const flip=()=>{ cards.flipped=true; renderCards(); };
-  const c=$("#card"); c.onclick=flip; c.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();} };
-  if(flipped){
-    const nxt=ok=>{ grade(k.id,ok); track(state.course, ok); save(); cards={k:weightedPick(items,k.id),flipped:false}; renderCards(); };
-    $("#yes").onclick=()=>nxt(true); $("#no").onclick=()=>nxt(false);
+  if(!cards || !cards.deck){ cards={deck:buildDeck(false), i:0, flip:false, right:0, free:false, req:{}}; }
+  const D=cards.deck, items=allK().filter(inFilter);
+  const head=`<div class="row"><h1 class="grow">Karten</h1>${filterSelect()}</div>`;
+  const bindHead=()=>bindFilter(()=>{ cards=null; renderCards(); });
+  if(cards.i>=D.length){
+    const left=dueCards(items).length+items.filter(x=>!isSeen(x.id)).length;
+    const nextDue=items.filter(x=>isSeen(x.id)&&!isDue(x.id)).map(x=>state.due[x.id]).sort((a,b)=>a-b)[0];
+    $("#app").innerHTML=head+`<div class="block"><h2>${D.length?(left?"Runde geschafft":"Für heute erledigt"):"Heute ist nichts fällig"}</h2>
+      ${D.length?`<p>${cards.right} von ${D.length} Antworten gewusst.</p>`:""}
+      <p class="small muted">${left?`Noch ${left} Karten fällig oder neu.`:`Alle Karten sind auf dem Stand.${nextDue?` Die nächsten werden ${whenText(nextDue)} fällig.`:""}`} Gewusste Karten kommen nach 1, 3, 7, 16 und 35 Tagen wieder, nicht gewusste sofort noch einmal.</p>
+      <div class="row">${left?`<button class="btn" id="again">Weiter</button>`:""}<button class="btn ghost" id="free">Freiwillig weiterüben</button></div></div>`;
+    bindHead();
+    if($("#again")) $("#again").onclick=()=>{ cards=null; renderCards(); };
+    $("#free").onclick=()=>{ cards={deck:buildDeck(true), i:0, flip:false, right:0, free:true, req:{}}; renderCards(); };
+    return;
   }
+  const c=D[cards.i], b=boxOf(c.id);
+  $("#app").innerHTML=head+`
+    <div class="row between"><p class="eyebrow">Karte ${cards.i+1} von ${D.length}${cards.free?" · freiwillig":isSeen(c.id)?" · fällig":" · neu"}</p><span class="dots" aria-label="Fach ${b} von 5">${[1,2,3,4,5].map(i=>`<i class="${i<=b?"on":""}"></i>`).join("")}</span></div>
+    <div class="block card" id="card" style="margin-top:8px" role="button" tabindex="0" aria-label="Karte umdrehen">
+      <p class="cctx">${inl(cardCtx(c))}</p><div class="front">${inl(c.f)}</div>
+      ${cards.flip?`<div class="back">${richText(c.b)}</div>${infoHTML(c.i)}`:`<p class="tap">Tippen zum Umdrehen</p>`}</div>
+    ${cards.flip?`<div class="row"><button class="btn" id="yes" style="flex:1">Gewusst</button><button class="btn warn" id="no" style="flex:1">Nicht gewusst</button></div>`
+      :`<p class="small muted">Erst selbst erklären, dann umdrehen.</p>`}`;
+  bindHead();
+  const cd=$("#card"); cd.onclick=e=>{ if(e.target.closest("a,button,select")) return; cards.flip=!cards.flip; renderCards(); };
+  cd.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); cd.click(); } };
+  const answer=ok=>{ gradeCard(c,ok,cards.free); track(state.course, ok);
+    if(ok) cards.right++; else if((cards.req[c.id]||0)<2){ cards.req[c.id]=(cards.req[c.id]||0)+1; D.push(c); }
+    save(); cards.i++; cards.flip=false; renderCards(); };
+  if($("#yes")) $("#yes").onclick=()=>answer(true);
+  if($("#no")) $("#no").onclick=()=>answer(false);
 }
 
 /* ===== Quiz-Simulation ===== */
@@ -793,7 +1135,8 @@ function renderQuiz(){
 }
 function startQuiz(){
   const b=state.quizBlock, pool = shuffle(quizPool(b)).slice(0,12).map(prepQ);
-  quiz = {items:pool, answers:Array(pool.length).fill(null), cur:0, end:Date.now()+15*60*1000, running:true, scope:b==="alle"?"alle":"q"+b};
+  const sc=b==="alle"?"alle":"q"+b, prev=state.quizzes.filter(z=>z.scope===sc).slice(-1)[0]||null;
+  quiz = {items:pool, answers:Array(pool.length).fill(null), cur:0, end:Date.now()+15*60*1000, running:true, scope:sc, prev};
   clearInterval(timerId); timerId=setInterval(tick,1000); renderQuiz();
 }
 function tick(){
@@ -813,7 +1156,7 @@ function renderQuizRunning(){
     <div class="coins">${quiz.items.map((_,i)=>`<button class="coin${qDone(i)?" done":""}${i===quiz.cur?" now":""}" data-i="${i}" aria-label="Frage ${i+1}">${i+1}</button>`).join("")}</div>
     <div class="block">
       <p class="small muted">Frage ${quiz.cur+1}${typeHint(it)?" · "+typeHint(it):""}</p>
-      <div class="q">${esc(it.q.q)}</div>
+      <div class="q">${inl(it.q.q)}</div>
       ${answerHTML(it, a, false)}
     </div>
     <div class="row"><button class="btn ghost grow" id="prev"${quiz.cur===0?" disabled":""}>Zurück</button><button class="btn ghost grow" id="next"${quiz.cur===quiz.items.length-1?" disabled":""}>Weiter</button></div>`;
@@ -848,7 +1191,7 @@ function renderQuizResult(){
   $("#app").innerHTML = `
     <h1>Ergebnis</h1>
     <div class="block">
-      <div class="verdict ${pass?"pass":"fail"}">${quiz.score} von ${quiz.items.length}: ${pass?"bestanden":"nicht bestanden"}</div>
+      <div class="verdict ${pass?"pass":"fail"}">${quiz.score} von ${quiz.items.length}: ${pass?"bestanden":"nicht bestanden"}</div>${quiz.prev?`<p class="small muted" style="margin:4px 0 0">Zuletzt in diesem Stoff: ${quiz.prev.score} von ${quiz.prev.total}</p>`:""}
       <div class="coins">${quiz.items.map((it,i)=>`<span class="coin ${quiz.ok[i]?"ok":"no"}">${i+1}</span>`).join("")}</div>
       <p class="small muted">${pass?"Mit "+quiz.score+" Punkten liegst du "+(quiz.score>=8?"über":"unter")+" dem Schnitt von 7,5, den du für 30 Punkte insgesamt brauchst.":"Für das echte Quiz brauchst du mindestens 7. Übe die falschen Fragen, sie kommen jetzt öfter dran."}</p>
       <div class="row"><button class="btn" id="again">Neue Simulation</button><button class="btn ghost" id="toPr">Fehler üben</button></div>
@@ -856,10 +1199,9 @@ function renderQuizResult(){
     <h2>Durchsicht</h2>
     ${quiz.items.map((it,i)=>{ const a=quiz.answers[i], ok=quiz.ok[i]; return `<div class="review">
       <p class="small" style="color:var(--${ok?"good":"bad"})">Frage ${i+1}: ${ok?"richtig":isAnswered(it,a)?"falsch":"nicht beantwortet"}</p>
-      <p><strong>${esc(it.q.q)}</strong></p>
-      ${!ok && isAnswered(it,a) ? `<p class="small">Deine Antwort: ${esc(answerText(it,a))}</p>` : ""}
-      <p class="small">Richtig: ${esc(correctText(it))}</p>
-      ${it.q.e?`<p class="small muted">${esc(it.q.e)}</p>`:""}</div>`; }).join("")}`;
+      <p><strong>${inl(it.q.q)}</strong></p>
+      ${isAnswered(it,a) && !ok && it.t!=="sc" ? `<p class="small">Deine Antwort: ${inl(answerText(it,a))}</p>` : ""}
+      ${isAnswered(it,a) ? fbHTML(it,a,false) : fbHTML(it,a,true).replace("Kein Problem, die Frage kommt gleich noch einmal.","Nicht beantwortet.")}</div>`; }).join("")}`;
   $("#again").onclick=()=>{quiz=null;renderQuiz();};
   $("#toPr").onclick=()=>{quiz=null;state.errOnly=true;practice=null;save();go("practice");};
 }

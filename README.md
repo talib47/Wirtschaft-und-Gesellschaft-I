@@ -14,8 +14,9 @@ Eine Datei (`index.html`, Vanilla-JS, kein Build-Schritt). Zwei Kurse in einer A
 | `<style>` | Design (Farben als Tokens, Dunkelmodus) |
 | `BASE` / `BASE_SOZ` | Inhalte: Sitzungen, Fragen, Karten je Kurs |
 | `QUIZZES` | Zuordnung der Sitzungen zu den 4 Quizzen |
-| `state` | Fortschritt (Leitner-Boxen `box`, Quiz-Ergebnisse, Entwürfe, Lernzeit) |
+| `state` | Fortschritt: Fächer `box`, Termine `due` (Wiederholungsplan), Fehler `err`, unklare Sitzungen `unclear`, Quiz-Ergebnisse, Entwürfe, Lernzeit |
 | `GH` | Geräte-Abgleich über GitHub |
+| Textformat | `richText()`, `inl()`, `infoHTML()`, `copyText()` (übernommen aus Wirtschaft II) |
 | `render*()` | Ansichten: Home, Üben, Karten, Quiz, Schreiben, Statistik (mit Lern-Tracker) |
 
 ## Geräte-Abgleich
@@ -25,3 +26,67 @@ Eine Datei (`index.html`, Vanilla-JS, kein Build-Schritt). Zwei Kurse in einer A
 - Eigene Schlüssel pro App: `od-lernapp-v1`, `od-gh-token`, `od-zoom`.
 
 Schwester-App mit modularem Aufbau, Wiederholungsplan wie bei Anki, Rechentrainer und Probeklausur: https://github.com/talib47/Wirtschaft-II
+
+## So kommen neue Sitzungen dazu
+
+Gilt für jeden Chat, der neue Folien einbaut. Grundlage sind nur die Folien. Nichts dazuerfinden. Widerspricht etwas der Folie, gilt die Folie, mit kurzem Hinweis (im `i`-Feld der Karte oder in der Antwort an Talib).
+
+**Wichtig für den Lernstand:** IDs nie ändern, nie wiederverwenden. Die Schlüssel `od-lernapp-v1`, `od-gh-token`, `od-zoom` und die Datei `fortschritt.json` bleiben unverändert. Nur neue Einträge anhängen, nichts löschen.
+
+### ID-Schema
+
+| Was | Ökonomisches Denken (`BASE`) | Sozialstruktur (`BASE_SOZ`) |
+|---|---|---|
+| Sitzung | `BASE.sitzungen["2"]="Age of Religion"` | `BASE_SOZ.sitzungen["2"]="Titel (22.10.)"` |
+| Frage | `s2-01`, `s2-02` … | – |
+| Karte | `s2-k01` … | `soz2-k01` … |
+| Schreibaufgabe | – | `soz2-a01` … |
+
+### Aufbau einer Lektion (= eine Sitzung)
+
+- **Ökonomisches Denken:** 30–40 Fragen im Moodle-Stil, davon 20–30 % andere Typen (Mehrfachauswahl, Zuordnung, Zahl), dazu 15–20 Karten. Rechenstoff immer auch als Zahlenfrage.
+- **Sozialstruktur:** 20–25 Karten und 5–7 Schreibaufgaben mit Operator (Erläutern, Vergleichen, Beschreiben …).
+- Reihenfolge der Folien beibehalten. Quiz-Zuordnung steht in `QUIZZES` (Quiz 1 = Sitzung 1–4, 2 = 5–7, 3 = 8–10, 4 = 11–12).
+
+### Fragen (Pflicht: Begründung für jede falsche Antwort)
+
+```js
+{id:"s2-01", s:2, q:"Frage", o:["RICHTIG zuerst","falsch A","falsch B","falsch C"], e:"Warum die richtige Antwort stimmt",
+ w:{1:"Warum A falsch ist und was den Unterschied macht", 2:"…", 3:"…"}}
+```
+- Die richtige Antwort steht in `o` immer an erster Stelle, die App mischt.
+- `w` ist **Pflicht**: für jeden falschen Index ein Satz, warum genau diese Wahl falsch ist (Verwechslung benennen, z. B. „Das ist Platon, nicht Xenophon“).
+- Richtig/Falsch: `o:["Falsch","Richtig"], a:0, fix:true, w:{1:"…"}` (Index der richtigen in `a`).
+- Mehrfachauswahl: `typ:"multi", o:[…], a:[0,2], w:{3:"…"}` (Begründung für jede falsche Option).
+- Zuordnung: `typ:"zuord", paare:[["Begriff","Zuordnung"], …]` (4–6 Paare), `e` mit Eselsbrücke.
+- Zahl: `typ:"zahl", a:400, einheit:"%", tol:0, e:"Rechenweg", w:"typischer Fehler"`.
+
+### Karten
+
+```js
+{id:"s2-k01", s:2, ctx:"Kontextzeile: worum es geht", f:"Begriff oder Frage", b:"Rückseite", i:"Herkunft oder Eselsbrücke"}
+```
+- `ctx` (Pflicht): kurze Zeile über der Frage, z. B. „Geld, Wert und gerechter Tausch“ oder „Konzept“.
+- `b` gegliedert schreiben, nicht als Fließtext:
+  - `- ` Aufzählung, `1. ` Ablauf
+  - `Begriff: Erklärung` → Begriff fett (Begriff höchstens 42 Zeichen)
+  - `$ (Ertrag − Kosten) / Kosten` → Formelbox
+  - Vergleich als Tabelle, erste Spalte = Zeilenkopf: `| | A | B` dann `| Merkmal | … | …` (auf dem Handy gestapelt)
+  - `**fett**` für Kernbegriffe; Fachbegriff in Klammern dahinter wird automatisch leiser gesetzt
+  - Zahl und Einheit mit normalem Leerzeichen schreiben („40 €“), die App hält sie zusammen
+- `i` (optional, dezent): Wortherkunft, Eselsbrücke oder Hinweis auf einen Widerspruch in den Folien.
+
+### Schreibaufgaben (Sozialstruktur)
+
+```js
+{id:"soz2-a01", s:2, q:"Erläutern Sie …", k:["Kriterium = 1 Punkt", …], m:"1) **Kern:** …\n2) …"}
+```
+- `k`: 5–8 Kriterien, je 1 Punkt.
+- `m`: gegliedert mit `1) 2) 3)`, Kernbegriffe **fett**. Echte Essays dürfen Fließtext bleiben: dann `essay:true` setzen.
+
+### Prüfen vor dem Hochladen
+
+1. `node --check` auf das Skript.
+2. Keine doppelten IDs (Fragen, Karten, Aufgaben).
+3. Headless-Browser, hell und dunkel, Handybreite 320–390 px: keine JS-Fehler, nichts ragt über den Rand.
+4. Commit als `Claude <noreply@anthropic.com>`, push auf `main`. Den Zweig `fortschritt` nie anfassen.
