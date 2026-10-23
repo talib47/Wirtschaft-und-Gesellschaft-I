@@ -87,6 +87,49 @@ td:last-child{text-align:right}
 .switch button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
 .zoom{position:fixed;right:12px;bottom:calc(64px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;z-index:5}
 .zoom button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:22px;line-height:1;opacity:.85;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+/* ---- Lernmethoden (aus Wirtschaft II übernommen) ---- */
+.bsp{border:1px solid var(--line);border-radius:12px;padding:8px 12px 2px;margin:10px 0;background:var(--bg)}
+.bsp .bh{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 2px}
+.bsp .dlist{margin:0} .bsp .dlist>.full{grid-column:1/-1}
+.bsp .dlist>:first-child{border-top:0}
+.pad{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--bg);overflow:hidden;margin:0 0 12px}
+.pad canvas{display:block;width:100%;height:220px;touch-action:none}
+.pad.big canvas{height:360px}
+.pad .tools{position:absolute;right:8px;top:8px;display:flex;gap:6px}
+.pad .tools button{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:.8rem}
+.pad .ph{position:absolute;left:12px;top:10px;font-size:.8rem;color:var(--muted);pointer-events:none}
+.grade{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.grade .btn{padding:12px 4px;min-width:0}
+.modes{display:flex;flex-direction:column}
+.mode{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;padding:13px 2px;border:0;border-top:1px solid var(--line);background:none;width:100%;text-align:left}
+.mode:first-child{border-top:0}
+.mode .t{font-weight:600} .mode .d{grid-column:1/-1;font-size:.84rem;color:var(--muted)} .mode .n{font-variant-numeric:tabular-nums;font-size:.85rem;color:var(--muted)}
+.mode:disabled{opacity:.5}
+.today{border-color:var(--accent);background:var(--accent-soft)}
+.plan{margin:6px 0 12px;padding-left:1.3em} .plan li{margin:.35em 0} .plan li span{display:block;font-size:.84rem;color:var(--muted)}
+#sessbar{position:sticky;top:0;z-index:7;background:var(--surface);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+#sessbar[hidden]{display:none}
+#sessbar .sbin{max-width:40rem;margin:0 auto;display:flex;gap:8px;align-items:center;padding:8px 16px}
+#sessbar .sbt{flex:1;min-width:0;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#sessbar .steps{display:flex;gap:3px;max-width:40rem;margin:0 auto;padding:0 16px 6px}
+#sessbar .steps i{flex:1;height:4px;border-radius:2px;background:var(--line)} #sessbar .steps i.on{background:var(--accent)}
+.who{font-family:var(--serif);font-size:1.2rem;font-weight:600;line-height:1.35;margin:0 0 10px}
+.weak{margin:4px 0 8px;padding-left:1.2em;font-size:.92rem} .weak li{margin:.2em 0}
+.dateinp{padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:.92rem;max-width:100%}
+.ptsinp{width:4.5rem}
+.dgrid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center;margin-top:6px}
+.dgrid .dateinp[type=date]{width:100%;max-width:12rem}
+.klist{display:grid;grid-template-columns:fit-content(45%) 1fr;font-size:.92rem;margin:4px 0 10px}
+.klist>b,.klist>span{padding:6px 0;border-top:1px solid var(--line);min-width:0} .klist>b{padding-right:14px;font-weight:600}
+.klist>b:first-child,.klist>b:first-child+span{border-top:0}
+.qrow{padding:10px 0;border-top:1px solid var(--line)} .qrow:first-of-type{border-top:0}
+.recall{margin:4px 0 0}
+.lexsearch{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;margin:0 0 10px}
+.lexitem{border-top:1px solid var(--line);padding:4px 0} .lexitem:first-of-type{border-top:0}
+.lexitem summary{cursor:pointer;padding:8px 0;font-weight:600;list-style-position:outside}
+.lexitem .lexctx{font-size:.8rem;color:var(--muted);font-weight:400;display:block}
+.lexitem .back{padding:0 0 8px}
+.mini{font-size:.8rem;color:var(--muted)}
 /* ---- Textformat (aus Wirtschaft II übernommen) ---- */
 .back p,.ml p{margin:0 0 .5em}
 .back ul,.back ol,.ml ul,.ml ol{margin:0 0 .5em;padding-left:1.25em}
@@ -161,6 +204,7 @@ main,.block{min-width:0;overflow-wrap:break-word}
 </style>
 </head>
 <body>
+<div id="sessbar" hidden></div>
 <main id="app"><p class="muted">Lade …</p></main>
 <nav><div class="wrap" id="nav"></div></nav>
 <div class="zoom" aria-label="Schriftgröße"><button id="zIn" aria-label="Größer">+</button><button id="zOut" aria-label="Kleiner">−</button></div>
@@ -278,15 +322,34 @@ const BASE = {
     {id:"s1-k10",s:1,ctx:"Geld, Wert und gerechter Tausch",f:"Aristoteles: Geld",b:"Warum gibt es Geld?\n- erleichtert den Austausch\n- macht unterschiedliche Güter vergleichbar\nWas macht Geld wertvoll? Gebrauch, Austausch, Seltenheit, Vergleichbarkeit.\nAchtung: Aussage über den **Nutzen**, nicht über die historische Entstehung.",i:"Leseempfehlung der Folie: Graeber, Schulden. Die ersten 5000 Jahre (auf der Folie „Graber“ geschrieben)."},
     {id:"s1-k11",s:1,ctx:"Aristoteles: Ist jeder Gelderwerb legitim?",f:"Oikonomia vs. Chrematistik",b:"| | Oikonomia | Chrematistik\n| Ziel | Bedarfsdeckung | Geldvermehrung zum Selbstzweck\n| Bewertung | legitim | fragwürdig",i:"Oikonomia: von griechisch oikos, „Haus“. Daher kommt „Ökonomie“.\nChrematistik: von griechisch chrēmata, „Geld, Güter“."},
     {id:"s1-k12",s:1,ctx:"Zwei Arten von Aussagen",f:"Normativ vs. positiv",b:"| | Normativ | Positiv\n| Frage | Wie soll es sein? | Wie ist es, wie funktioniert es?\n| Beispiel | Was ist notwendig für eine gerechte Gesellschaft? | Ist die Gesellschaft gerecht?\nWandel von der Antike zur Moderne: von **normativ** zu **positiv**.",i:"Positiv: von lateinisch ponere, „setzen, feststellen“. Gemeint ist beschreibend, nicht „gut“."},
-    {id:"s1-k13",s:1,ctx:"Was darf ein Verkäufer verschweigen?",f:"Cicero (~100 v. Chr.)",b:"Ein Getreidehändler weiß: Morgen kommt viel Getreide, der Preis fällt. Muss er das dem heutigen Käufer sagen?\n- Handel ist mehr als Preise und Mengen.\n- Es geht um Regeln, Wissen, Moral.\n- Es herrscht eine **Informationsasymmetrie**."},
+    {id:"s1-k13",s:1,ctx:"Was darf ein Verkäufer verschweigen?",f:"Cicero (~100 v. Chr.)",b:"> [Fall]\n> Lage: Ein Getreidehändler weiß, dass morgen viel Getreide eintrifft und der Preis fällt.\n> Frage: Muss er das dem heutigen Käufer sagen?\n- Handel ist mehr als Preise und Mengen.\n- Es geht um Regeln, Wissen, Moral.\n- Es herrscht eine **Informationsasymmetrie**."},
     {id:"s1-k14",s:1,ctx:"Konzept",f:"Informationsasymmetrie",b:"Die Beteiligten einer wirtschaftlichen Transaktion sind unterschiedlich gut informiert.\nBeispiel: Gebrauchtwagenmarkt, Akerlof (1970), The Market for Lemons.",i:"Asymmetrie: griechisch „Ungleichmäßigkeit“.\nLemon: englisch für einen schlechten Gebrauchtwagen."},
     {id:"s1-k15",s:1,ctx:"Entscheidungen: Wie führt man einen Gutshof?",f:"Cato (~50 v. Chr.)",b:"Wirtschaftliche Betriebsführung, der Gutshof wird kalkulatorisch betrachtet:\n- Kosten\n- Arbeitsorganisation\n- Auslastung vorhandener Ressourcen\n- Eigenproduktion oder Einkauf (make or buy)\nZentrale Frage: Wie setzt man vorhandene Ressourcen möglichst wirtschaftlich ein?"},
     {id:"s1-k16",s:1,ctx:"Entscheidungen: Lohnt sich eine Investition?",f:"Columella (~50 n. Chr.)",b:"Investition als Verhältnis von:\n- eingesetztem Aufwand und\n- erwartetem Ertrag\nVergleich mit **alternativen** Verwendungen des Kapitals.\nDaraus: Rendite und Opportunitätskosten."},
-    {id:"s1-k17",s:1,ctx:"Konzept",f:"Rendite",b:"Ertrag einer Anlage im Verhältnis zu ihren Kosten.\n$ Rendite = (Ertrag − Kosten) / Kosten\nBeispiel: Ertrag: 20 €, Kosten: 5 €\n$ (20 − 5) / 5 = 3 = 300 %"},
-    {id:"s1-k18",s:1,ctx:"Konzept",f:"Opportunitätskosten",b:"Entgangener Nutzen oder Ertrag, den ein anderer Einsatz eines Gutes oder Produktionsfaktors gebracht hätte.\nBeispiel: Fernseher für 1.000 € statt Anlage zu 4 % p. a.\n$ 4 % × 1.000 € = 40 €",i:"Opportunität: von lateinisch opportunitas, „Gelegenheit“. Gemeint ist die verpasste Gelegenheit."},
+    {id:"s1-k17",s:1,ctx:"Konzept",f:"Rendite",b:"Ertrag einer Anlage im Verhältnis zu ihren Kosten.\n$ Rendite = (Ertrag − Kosten) / Kosten\n> Ertrag: 20 €\n> Kosten: 5 €\n> Rendite: (20 − 5) / 5 = 3 = 300 %"},
+    {id:"s1-k18",s:1,ctx:"Konzept",f:"Opportunitätskosten",b:"Entgangener Nutzen oder Ertrag, den ein anderer Einsatz eines Gutes oder Produktionsfaktors gebracht hätte.\n> Gewählt: Fernseher für 1.000 €\n> Verzichtet: Anlage zu 4 % p. a.\n> Opportunitätskosten: 4 % × 1.000 € = 40 €",i:"Opportunität: von lateinisch opportunitas, „Gelegenheit“. Gemeint ist die verpasste Gelegenheit."},
     {id:"s1-k19",s:1,ctx:"Tabelle „Antike und Moderne“",f:"Antikes Problem → moderner Begriff",b:"| Antikes Problem | Moderner Begriff\n| Spezialisierung von Tätigkeiten | Arbeitsteilung\n| Menschen reagieren auf Belohnungen | Anreize\n| Tausch benötigt Vergleichbarkeit | Geld und Wert\n| Verkäufer wissen mehr als Käufer | Informationsasymmetrie\n| Selbst produzieren oder zukaufen? | make or buy\n| Lohnt sich eine Investition? | Rendite/Opportunitätskosten\n| Was ist eine gerechte Gesellschaft? | Steuer- und Transfersysteme"},
     {id:"s1-k20",s:1,ctx:"Zusammenfassung der Sitzung",f:"Take-aways Sitzung 1",b:"- Viele ökonomische Probleme sind sehr alt.\n- Modelle sind historisch entstandene Perspektiven auf Probleme, nicht die Probleme selbst.\n- In der Antike gab es keine eigenständige Wirtschaftswissenschaft.\n- Moderne Begriffe ≠ moderne Theorie: Ähnliche Fragestellung heißt nicht gleiche Theorie."},
     {id:"s1-k21",s:1,ctx:"Gerechtigkeit: Gedankenexperiment der Folie",f:"Platons Grenze, auf heute übertragen",b:"Existenzminimum (Art. 1 Abs. 1 GG):\n- Erwachsene: 12.096 € im Jahr (1.008 € im Monat)\n- Kind: 6.828 € im Jahr (569 € im Monat)\nMaximalvermögen nach Platon (× 4):\n- Erwachsene: 4.032 € im Monat\n- Kind: 2.279 € im Monat (laut Folie)\nFrage der Folie: Ist das gerecht?",i:"Hinweis: 4 × 569 € ergibt 2.276 €. Die Folie nennt 2.279 €; hier gilt die Folie."}
+  ],
+  /* „Wer sagt das?“: sinngemäße Aussagen aus den Folien den Autoren zuordnen.
+     a = richtiger Schlüssel aus werListe, alt = ebenfalls vertretbare Schlüssel (werden nicht als falsch angeboten),
+     ex = Begründung, w = {Schlüssel: warum diese Verwechslung falsch ist} */
+  werListe: {xenophon:"Xenophon", platon:"Platon", aristoteles:"Aristoteles", cicero:"Cicero", cato:"Cato", columella:"Columella"},
+  wer: [
+    {id:"s1-w01",s:1,t:"Haushalt und Gutshof sind eine wirtschaftliche Organisation. Die Arbeit wird nach Fähigkeiten und Aufgaben verteilt.",a:"xenophon",ex:"Arbeitsteilung als **Organisation** des Gutshofs, eine „betriebswirtschaftliche“ Frage.",w:{platon:"Platon denkt Arbeitsteilung für die ganze **Gesellschaft**, nicht für den einzelnen Hof.",cato:"Cato rechnet Kosten und Auslastung. Die Verteilung der Arbeit nach Fähigkeiten ist Xenophons Thema."}},
+    {id:"s1-w02",s:1,t:"Niemand kann alle Bedürfnisse allein befriedigen. Deshalb sind alle auf die Tätigkeiten anderer angewiesen.",a:"platon",ex:"Arbeitsteilung als **gesellschaftliches Prinzip**: Sie erzeugt gegenseitige Abhängigkeit.",w:{xenophon:"Xenophon schaut auf den einzelnen Hof, nicht auf die Gesellschaft."}},
+    {id:"s1-w03",s:1,t:"Geld erleichtert den Tausch und macht unterschiedliche Güter vergleichbar.",a:"aristoteles",ex:"Aristoteles fragt nach dem **Nutzen** von Geld, nicht nach seiner Entstehung."},
+    {id:"s1-w04",s:1,t:"Wirtschaften zur Bedarfsdeckung ist etwas anderes als Geldvermehrung als Selbstzweck.",a:"aristoteles",ex:"Oikonomia gegen Chrematistik: Ist jeder Gelderwerb legitim?",w:{platon:"Platon zieht eine Vermögensgrenze. Die Unterscheidung von Oikonomia und Chrematistik stammt von Aristoteles."}},
+    {id:"s1-w05",s:1,t:"Muss ein Händler dem Käufer sagen, dass morgen viel Getreide eintrifft und der Preis fällt?",a:"cicero",ex:"Ciceros Getreidehändler: ein frühes Beispiel für **Informationsasymmetrie**."},
+    {id:"s1-w06",s:1,t:"Der Staat legt ein Existenzminimum fest. Mehr als das Vierfache davon darf niemand besitzen.",a:"platon",ex:"Platons gerechte Gesellschaft: Alles über dem Maximalvermögen geht an den Staat bzw. die Schutzgötter.",w:{aristoteles:"Aristoteles fragt, ob jeder Gelderwerb legitim ist. Eine feste Vermögensgrenze stammt von Platon."}},
+    {id:"s1-w07",s:1,t:"Soll der Gutshof selbst produzieren oder zukaufen? Kosten und Auslastung der Ressourcen entscheiden.",a:"cato",ex:"Catos kalkulatorische Betriebsführung, heute „make or buy“.",w:{columella:"Columella vergleicht Investitionen mit Alternativen. Eigenproduktion oder Einkauf ist Catos Frage.",xenophon:"Xenophon organisiert die Arbeit nach Fähigkeiten. Kosten und make or buy rechnet Cato."}},
+    {id:"s1-w08",s:1,t:"Eine Investition ist ein Verhältnis von Aufwand und erwartetem Ertrag und muss mit anderen Verwendungen des Kapitals verglichen werden.",a:"columella",ex:"Columella: Daraus entstehen die Begriffe **Rendite** und **Opportunitätskosten**.",w:{cato:"Cato rechnet Kosten und Auslastung. Der Vergleich mit Alternativen ist Columellas Schritt."}},
+    {id:"s1-w09",s:1,t:"Geld ist wertvoll durch Gebrauch, Austausch, Seltenheit und Vergleichbarkeit.",a:"aristoteles",ex:"Die vier Wertgründe nach Aristoteles."},
+    {id:"s1-w10",s:1,t:"Handel ist mehr als Preise und Mengen. Es geht um Regeln, Wissen und Moral.",a:"cicero",ex:"So fasst die Folie Ciceros Getreidehändler zusammen."},
+    {id:"s1-w11",s:1,t:"Wie lässt sich Arbeit sinnvoll organisieren, und wie kann ein Gutshof besser funktionieren?",a:"xenophon",alt:["cato"],ex:"Xenophons Leitfragen. Cato geht später in dieselbe Richtung, rechnet aber Kosten."},
+    {id:"s1-w12",s:1,t:"Wie können vorhandene Ressourcen möglichst wirtschaftlich eingesetzt werden?",a:"cato",alt:["xenophon"],ex:"Die zentrale Frage von Catos Betriebsführung."},
+    {id:"s1-w13",s:1,t:"Spezialisierung verteilt die Aufgaben in der Gesellschaft und schafft gegenseitige Abhängigkeit.",a:"platon",ex:"Bei Platon verschiebt sich die Frage vom Haushalt zur Gesellschaft.",w:{xenophon:"Bei Xenophon bleibt die Arbeitsteilung im Haushalt bzw. auf dem Gutshof."}}
   ]
 };
 
@@ -297,7 +360,7 @@ const BASE_SOZ = {
     {id:"soz1-k01",s:1,ctx:"Was meint „Sozialstruktur“?",f:"Struktur (Glatzer 2002)",b:"Eine Mehrzahl von Einheiten ist **nicht zufällig** angeordnet bzw. verbunden.\n- Es gibt Regelmäßigkeiten oder Muster.\n- Was an einer Stelle auftritt, kehrt an einer anderen wieder."},
     {id:"soz1-k02",s:1,ctx:"Wofür sich die Soziologie interessiert",f:"Soziologie als Verhaltenswissenschaft",b:"Ziel: soziale Phänomene erklären und vorhersagen.\n| | Nicht | Sondern\n| Blick | Verhalten einzelner Menschen | strukturierende Einflüsse, die Handeln systematisch prägen\n| Beispiel | Warum läuft Herr K. Amok? | Welche Bedingungen fördern die Häufigkeit von Amokläufen?"},
     {id:"soz1-k03",s:1,ctx:"Was meint „Sozialstruktur“?",f:"Ziel jeder Sozialstrukturanalyse",b:"Faktoren bestimmen, die Verhalten **systematisch** beeinflussen.\n- Fokus: Muster, verursacht durch offene oder verdeckte soziale Regeln\n- kein Interesse am Einzelfall, sondern an Durchschnittswerten bzw. Wahrscheinlichkeiten\n- Soziale Regeln manifestieren sich in sozialen Strukturen.",i:"Manifestieren: von lateinisch manifestus, „handgreiflich, offenkundig“. Regeln werden in Strukturen sichtbar."},
-    {id:"soz1-k04",s:1,ctx:"Wie man in der Sozialstrukturanalyse argumentiert",f:"Goldene Regel",b:"Keine Argumentation mit Einzelfällen!\nUnzulässig: „Raucher sterben nicht früher“, weil Helmut Schmidt (ca. 40 Zigaretten am Tag) 96 wurde.\nZulässig: Überlebensraten britischer Ärzte, Raucher vs. Nichtraucher (Doll et al. 2004)."},
+    {id:"soz1-k04",s:1,ctx:"Wie man in der Sozialstrukturanalyse argumentiert",f:"Goldene Regel",b:"Keine Argumentation mit Einzelfällen!\n> Unzulässig: „Raucher sterben nicht früher“, weil Helmut Schmidt (ca. 40 Zigaretten am Tag) 96 wurde.\n> Zulässig: Überlebensraten britischer Ärzte, Raucher vs. Nichtraucher (Doll et al. 2004)."},
     {id:"soz1-k05",s:1,ctx:"Was meint „Sozialstruktur“?",f:"Wie entsteht Sozialstruktur?",b:"- von Menschen gemacht: Grundlage **und** Ergebnis menschlichen Handelns\n- entsteht durch bewusst oder unbewusst geschaffene, dauerhafte, durchsetzbare Regeln\n- Regeln steuern, ordnen und stabilisieren soziale Prozesse\n- begrenzte Reichweite, historisch und kulturell wandelbar\n- Bestand und Wandel hängen von der Verteilung von Ressourcen (Macht) ab"},
     {id:"soz1-k06",s:1,ctx:"Faktor 1 von 3",f:"Restriktionen",b:"Beschränkungen des individuellen Handlungsspielraums.\n- können enger oder weiter sein\nNatürlich: z. B. Schwerkraft, Klima\nSozial: soziale Regeln, also Normen und Gesetze",i:"Restriktion: von lateinisch restringere, „zurückbinden, einschränken“."},
     {id:"soz1-k07",s:1,ctx:"Faktor 2 von 3",f:"Ressourcen",b:"- mehr (weniger) Ressourcen = mehr (weniger) Macht\n- Restriktionen wirken **in Kombination** mit Ressourcen auf den Handlungsspielraum"},
@@ -342,6 +405,27 @@ const BASE_SOZ = {
     {id:"soz1-a07",s:1,q:"Beschreiben Sie den Wandel von der vormodernen Ständegesellschaft zur modernen Gesellschaft in Deutschland.",
       k:["Stände: Gruppen mit rechtlich abgesichertem ungleichem Status, Rechten und Pflichten","In der Ständegesellschaft entscheidet die soziale Herkunft über die Lebenschancen","Merkmale der Moderne, z. B. soziale Mobilität, Säkularisierung, Individualisierung, Pluralisierung, Ausdifferenzierung","Voraussetzungen der Industrialisierung, z. B. Bauernbefreiung, Berufs- und Niederlassungsfreiheit, Bevölkerungswachstum, Bildung","Trennung von Arbeits- und Wohnort, späte Nationalstaatsgründung, Sozialversicherungen","Abfolge Agrargesellschaft → Industriegesellschaft → (Dienstleistungsgesellschaft?)"],
       m:"1) **Ständegesellschaft:** Stände wie Adel, Geistlichkeit, Bürgertum und einfaches Volk haben **rechtlich abgesicherte**, ungleiche Rechte und Pflichten. Die **soziale Herkunft** bestimmt die Lebenschancen.\n2) **Merkmale der Moderne:** rationale Lebensführung, wissenschaftlicher Fortschritt, **soziale Mobilität**, **Säkularisierung**, Ausdifferenzierung, Pluralisierung, **Individualisierung**.\n3) **Voraussetzungen der Industrialisierung:** **Bauernbefreiung**, Berufs- und Niederlassungsfreiheit, Bevölkerungswachstum, steigende Bildung, **Trennung von Arbeits- und Wohnort**; später Nationalstaat bzw. Zollunion, Demokratisierung und **Sozialversicherungen**.\n4) **Ergebnis:** Spätestens seit dem 19. Jahrhundert wird aus der **Agrar-** eine **Industriegesellschaft**. Ob heute von einer Dienstleistungsgesellschaft zu sprechen ist, bleibt offen."}
+  ],
+  /* „Wer sagt das?“ (Format wie bei BASE). g in werListe = Gruppe; Falschantworten kommen zuerst aus derselben Gruppe. */
+  werListe: {
+    marx:{n:"Karl Marx",g:"theorie"}, weber:{n:"Max Weber",g:"theorie"}, schicht:{n:"Schichtmodelle (Bolte, Dahrendorf, Geißler)",g:"theorie"}, stand:{n:"Ständegesellschaft (Schäfers/Kopp)",g:"theorie"},
+    trad:{n:"Traditionelle Sozialstrukturanalyse",g:"ansatz"}, neu:{n:"Neue Sozialstrukturanalyse",g:"ansatz"}, lva:{n:"Lebensverlaufsansatz",g:"ansatz"},
+    hsoc:{n:"Homo sociologicus",g:"bild"}, hoec:{n:"Homo oeconomicus",g:"bild"}, glatzer:{n:"Glatzer: Begriff der Struktur",g:"ansatz"}
+  },
+  wer: [
+    {id:"soz1-w01",s:1,t:"Die soziale Position hängt an einer einzigen Dimension: dem Besitz von Produktionsmitteln.",a:"marx",ex:"Marx: **eine** Ungleichheitsdimension, das Kapital.",w:{weber:"Weber nennt **drei** Dimensionen: Klasse, Stand, Partei."}},
+    {id:"soz1-w02",s:1,t:"Die Gesellschaft zerfällt in Bourgeoisie und Proletariat, die sich unversöhnlich gegenüberstehen.",a:"marx",ex:"Marx: zwei antagonistische Klassen, Klassenkonflikt.",w:{schicht:"Schichtmodelle ordnen in viele Stufen, nicht in zwei gegnerische Klassen."}},
+    {id:"soz1-w03",s:1,t:"Neben dem Besitz zählen auch das soziale Ansehen und die Fähigkeit, Gruppeninteressen zu organisieren.",a:"weber",ex:"Weber: Klasse, Stand (Prestige) und Partei (Konfliktfähigkeit).",w:{marx:"Bei Marx zählt nur der Besitz von Produktionsmitteln."}},
+    {id:"soz1-w04",s:1,t:"Zur Klasse gehört der Besitz von Kapital und von Wissen.",a:"weber",ex:"Webers Klassenbegriff schließt Wissen ein.",w:{marx:"Marx bestimmt die Klasse allein über den Besitz von Produktionsmitteln, Wissen kommt nicht vor."}},
+    {id:"soz1-w05",s:1,t:"Gesellschaftliches Handeln ist ein Produkt gesellschaftlicher Strukturen. Gesucht werden Großgruppen wie Klassen und Schichten.",a:"trad",ex:"Prämisse und Ziel der traditionellen Sozialstrukturanalyse.",w:{neu:"Die Neue Sozialstrukturanalyse sucht **Indikatoren** wie Alter oder Bildung, keine Großgruppen."}},
+    {id:"soz1-w06",s:1,t:"Gesucht werden Merkmale wie Alter, Bildung oder Geschlecht, die individuelles Handeln strukturieren.",a:"neu",ex:"Neue Sozialstrukturanalyse: gesellschaftliches Handeln als Produkt strukturierten individuellen Handelns.",w:{trad:"Die traditionelle Analyse sucht Großgruppen (Klassen, Schichten), keine einzelnen Indikatoren."}},
+    {id:"soz1-w07",s:1,t:"Der Mensch ist ein Rädchen im Getriebe. Seine Position bestimmen vorgegebene Rollenerwartungen.",a:"hsoc",ex:"Menschenbild Homo sociologicus.",w:{hoec:"Der Homo oeconomicus ist das Gegenteil: „seines Glückes Schmied“."}},
+    {id:"soz1-w08",s:1,t:"Der Mensch ist seines Glückes Schmied. Die Sozialstruktur ergibt sich aus freien Handlungen.",a:"hoec",ex:"Menschenbild Homo oeconomicus: vollkommen rationaler Akteur.",w:{hsoc:"Beim Homo sociologicus bestimmen Rollenerwartungen die Position."}},
+    {id:"soz1-w09",s:1,t:"Frühere Arbeitslosigkeit prägt die heutige Angst, den Job zu verlieren.",a:"lva",ex:"Lebensverlaufsansatz: Vorher-nachher-Wechselwirkung."},
+    {id:"soz1-w10",s:1,t:"Eine Partnerschaft besteht nur, wenn beide zustimmen. Lebensläufe sind miteinander verknüpft.",a:"lva",ex:"Lebensverlaufsansatz: „linked lives“."},
+    {id:"soz1-w11",s:1,t:"Eine Struktur liegt vor, wenn Einheiten nicht zufällig angeordnet sind und sich Muster wiederholen.",a:"glatzer",ex:"Glatzers Definition von Struktur (2002)."},
+    {id:"soz1-w12",s:1,t:"Die Bevölkerung wird von oben nach unten nach Beruf, Qualifikation und ökonomischer Lage geordnet.",a:"schicht",alt:["trad"],ex:"Schichtmodelle wie Bolte-Zwiebel und Haus-Modell. Ihre Grenze: horizontale Ungleichheit fehlt.",w:{marx:"Marx kennt nur zwei Klassen, keine gestufte Ordnung."}},
+    {id:"soz1-w13",s:1,t:"Gruppen mit Rechten und Pflichten, deren ungleicher Status rechtlich abgesichert ist. Über die Lebenschancen entscheidet die Herkunft.",a:"stand",ex:"Stände nach Schäfers/Kopp (2006): typisch für vormoderne Gesellschaften.",w:{schicht:"Schichten sind nicht rechtlich abgesichert, sie beschreiben die moderne Gesellschaft."}}
   ]
 };
 
@@ -354,7 +438,9 @@ const KEY = "od-lernapp-v1";
 /* ===== Zustand ===== */
 let state = {custom:{sitzungen:{},fragen:[],karten:[]}, soz:{sitzungen:{},karten:[]}, box:{}, quizzes:[], filter:"alle", sozFilter:"alle", course:"od"};
 let view = "home";
-let practice = null, cards = null, quiz = null, write = null, timerId = null, resetArmed = false;
+let practice = null, cards = null, quiz = null, write = null, who = null, sess = null, timerId = null, resetArmed = false;
+/* Läuft gerade eine Übung? Dann holt der Abgleich keinen fremden Stand dazwischen. */
+const busy=()=>!!((quiz&&quiz.running)||(write&&write.id)||(practice&&practice.list&&practice.i<practice.list.length)||(cards&&cards.deck&&cards.i<cards.deck.length)||(who&&who.i<who.list.length)||sess);
 
 /* ===== Speichern: lokal auf dem Gerät + Abgleich über GitHub (Zweig "fortschritt") ===== */
 const GH = {api:"https://api.github.com/repos/talib47/Wirtschaft-und-Gesellschaft-I/contents/fortschritt.json", branch:"fortschritt", tokenKey:"od-gh-token"};
@@ -435,8 +521,8 @@ async function save(){
 }
 /* Automatischer Abgleich: beim Öffnen, beim Zurückkehren in die App und alle 30 Sekunden */
 async function autoPull(){
-  if(!ghToken || document.visibilityState!=="visible" || (quiz && quiz.running) || (write && write.id) || (view==="cards" && cards && cards.i<cards.deck.length) || (view==="practice" && practice && !practice.done && practice.ans!=null) || pushTimer || pushing) return;
-  if(await syncFromRemote()){ practice=null; cards=null; render(); }
+  if(!ghToken || document.visibilityState!=="visible" || busy() || pushTimer || pushing) return;
+  if(await syncFromRemote()){ practice=null; cards=null; who=null; render(); }
 }
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") flushPush(); else { visit(); autoPull(); } });
 window.addEventListener("pagehide", flushPush);
@@ -509,6 +595,13 @@ function richText(b){
     if(!l){ flush(); continue; }
     if((m=l.match(/^\$ ?(.*)$/))){ const box=`<div class="eq">${nb(m[1])}</div>`;
       if((kind==="ol"||kind==="ul")&&items.length) items[items.length-1]+=box; else { flush(); out+=box; } continue; }
+    if(l.startsWith(">")){ flush(); let head="Beispiel"; const rows=[];
+      while(i<L.length&&L[i].trim().startsWith(">")){ const x=L[i].trim().replace(/^> ?/,""); let mm;
+        if((mm=x.match(/^\[(.+)\]$/))) head=mm[1];
+        else if((mm=x.match(TERM))) rows.push(`<b>${inl(mm[1])}</b><span>${inl(mm[2])}</span>`);
+        else if(x) rows.push(`<span class="full">${inl(x)}</span>`);
+        i++; }
+      i--; out+=`<div class="bsp"><p class="bh">${esc(head)}</p><div class="dlist">${rows.join("")}</div></div>`; continue; }
     if(l.startsWith("|")){ flush(); const rows=[];
       while(i<L.length&&L[i].trim().startsWith("|")){ rows.push(L[i].trim().replace(/^\||\|$/g,"").split("|").map(x=>x.trim())); i++; }
       i--; out+=cmpTable(rows); continue; }
@@ -530,7 +623,7 @@ async function copyText(text,holder){
   try{ await navigator.clipboard.writeText(text); toast("Kopiert. Jetzt in einen Claude-Chat einfügen."); return true; }
   catch(x){ const h=$(holder); if(h){ h.innerHTML=`<textarea class="copybox" readonly>${esc(text)}</textarea>`; const t=h.querySelector("textarea"); t.focus(); t.select(); } toast("Text markiert. Jetzt kopieren."); return false; }
 }
-const plain=s=>String(s).replace(/\*\*/g,"").replace(/^\$ ?/gm,"").replace(/^\| ?/gm,"").replace(/ ?\| ?/g," | ");
+const plain=s=>String(s).replace(/^> ?\[.*\]$/gm,"").replace(/^> ?/gm,"").replace(/\*\*/g,"").replace(/^\$ ?/gm,"").replace(/^\| ?/gm,"").replace(/ ?\| ?/g," | ");
 
 const isSoz = () => state.course==="soz";
 function sessions(){ return isSoz() ? Object.assign({}, BASE_SOZ.sitzungen, state.soz.sitzungen) : Object.assign({}, BASE.sitzungen, state.custom.sitzungen); }
@@ -553,23 +646,36 @@ function norm(){
   if(!state.soz) state.soz={sitzungen:{},karten:[]};
   /* Übernahme der alten Leitner-Fächer: Karten ohne Termin bekommen einen Termin passend zu ihrem Fach,
      gerechnet ab dem letzten Lerntag. Nichts wird gelöscht. */
+  for(const k of ["lapses","who","dates","quizPts","sessions"]) if(!state[k]||typeof state[k]!=="object") state[k]={};
   const base=dayStart(state.updated||Date.now());
-  allCardsBoth().forEach(c=>{ const b=state.box[c.id]; if(b && state.due[c.id]==null) state.due[c.id]=base+INTERVAL[Math.min(b,5)]*864e5; });
+  allCardsBoth().concat(allQ()).forEach(c=>{ const b=state.box[c.id]; if(b && state.due[c.id]==null) state.due[c.id]=base+INTERVAL[Math.min(b,5)]*864e5; });
 }
 const isSeen=id=>!!state.box[id];
 const isDue=id=>isSeen(id) && (state.due[id]||0)<=Date.now();
 function dueCards(items){ return (items||allK()).filter(x=>isDue(x.id)).sort((a,b)=>(state.due[a.id]||0)-(state.due[b.id]||0)); }
-function gradeCard(c,ok,free){
-  const b0=boxOf(c.id), b1=ok?Math.min(5,Math.max(b0,1)+1):1;
-  state.box[c.id]=b1;
-  if(!free||!ok||b1<b0) state.due[c.id]= ok ? dayStart()+(b0===5?35:INTERVAL[b1])*864e5 : Date.now();
+/* Karten: 2 sicher (nächstes Fach), 1 unsicher (Fach bleibt, morgen wieder), 0 nicht gewusst (Fach 1, gleich noch einmal).
+   Freiwilliges Üben verlängert keine Abstände, kann sie aber verkürzen. */
+function gradeCard(c,lv,free){
+  const b0=boxOf(c.id), old=state.due[c.id]||0;
+  const b1= lv===2? Math.min(5,Math.max(b0,1)+1) : lv===1? Math.max(1,b0) : 1;
+  const nd= lv===2? dayStart()+(b0===5?35:INTERVAL[b1])*864e5 : lv===1? dayStart()+864e5 : Date.now();
+  if(!free || !b0){ state.box[c.id]=b1; state.due[c.id]=nd; }
+  else if(lv<2){ state.box[c.id]=Math.min(b0,b1); state.due[c.id]=Math.min(old||nd,nd); }
+  if(lv===0) state.lapses[c.id]=(state.lapses[c.id]||0)+1;
 }
 const whenText=t=>{ const d=Math.round((dayStart(t)-dayStart())/864e5); return d<=0?"heute":d===1?"morgen":"in "+d+" Tagen"; };
-function grade(id, ok){
-  const b=boxOf(id); state.box[id] = ok ? Math.min(5, Math.max(b,1)+1) : 1;
-  if(!state.err) state.err={};
-  if(!ok) state.err[id]=1; else if(state.box[id]>=4) delete state.err[id];
+/* Fragen: richtig = nächstes Fach und längerer Abstand, falsch = Fach 1 und morgen wieder.
+   free (freiwillig, noch nicht fällig): Richtige verlängern den Abstand nicht. */
+function grade(id, ok, free){
+  const b=boxOf(id), b1= ok ? Math.min(5, Math.max(b,1)+1) : 1;
+  if(ok && free && b){ if(b1>=4) delete state.err[id]; return; }
+  state.box[id]=b1;
+  state.due[id]= ok ? dayStart()+(b===5?35:INTERVAL[b1])*864e5 : dayStart()+864e5;
+  if(!ok){ state.err[id]=1; state.lapses[id]=(state.lapses[id]||0)+1; } else if(b1>=4) delete state.err[id];
 }
+/* „Weiß ich nicht“: keine Strafe. Fach bleibt (mindestens 1), kein Fehler, kommt in der Runde und morgen wieder. */
+function gradeIdk(id){ state.box[id]=Math.max(1,boxOf(id)); state.due[id]=dayStart()+864e5; }
+function dueQ(items){ return (items||allQ()).filter(x=>isDue(x.id)).sort((a,b)=>(state.due[a.id]||0)-(state.due[b.id]||0)); }
 function weightedPick(items, avoidId){
   const pool = items.length>1 ? items.filter(x=>x.id!==avoidId) : items;
   const w = pool.map(x=>[6,5,4,3,2,1][boxOf(x.id)]);
@@ -684,21 +790,24 @@ function bindFilter(after){ const f=$("#flt"); if(f) f.onchange=()=>{ setF(f.val
 
 /* ===== Navigation ===== */
 const TABS_OD = [["home","Übersicht"],["practice","Üben"],["cards","Karten"],["quiz","Quiz"],["stats","Statistik"]];
-const TABS_SOZ = [["home","Übersicht"],["cards","Karten"],["write","Schreiben"],["stats","Statistik"]];
+const TABS_SOZ = [["home","Übersicht"],["cards","Karten"],["practice","Üben"],["write","Schreiben"],["stats","Statistik"]];
+const SUBVIEW = {who:"practice", lex:"practice", sessdone:"home"};
 const tabs = () => isSoz() ? TABS_SOZ : TABS_OD;
 function renderNav(){
-  $("#nav").innerHTML = tabs().map(([k,l])=>`<button data-v="${k}"${view===k?' aria-current="page"':""}>${l}</button>`).join("");
+  const cur=SUBVIEW[view]||view;
+  $("#nav").innerHTML = tabs().map(([k,l])=>`<button data-v="${k}"${cur===k?' aria-current="page"':""}>${l}</button>`).join("");
   $("#nav").querySelectorAll("button").forEach(b=>b.onclick=()=>go(b.dataset.v));
 }
 function go(v){
   if(quiz && quiz.running && v!=="quiz"){ toast("Die Quiz-Simulation läuft. Erst abgeben."); return; }
+  if(v==="practice" && view==="practice") practice=null;   // Tipp auf „Üben“ führt zurück zur Auswahl
   view=v; resetArmed=false; render(); window.scrollTo(0,0);
 }
 function render(){
   norm();
-  if(!tabs().some(t=>t[0]===view)) view="home";
-  renderNav();
-  ({home:isSoz()?renderSozHome:renderHome,practice:renderPractice,cards:renderCards,quiz:renderQuiz,write:renderWrite,stats:renderStats})[view]();
+  if(!tabs().some(t=>t[0]===(SUBVIEW[view]||view))) view="home";
+  renderNav(); updateSessBar();
+  ({home:isSoz()?renderSozHome:renderHome,practice:renderPractice,cards:renderCards,quiz:renderQuiz,write:renderWrite,stats:renderStats,who:renderWho,lex:renderLex,sessdone:renderSessDone})[view]();
 }
 /* Fachumschalter: wird nach jedem Neuzeichnen oben eingesetzt (außer während der Quiz-Simulation) */
 function addSwitch(){
@@ -711,7 +820,7 @@ function addSwitch(){
 new MutationObserver(addSwitch).observe(document.getElementById("app"),{childList:true});
 document.getElementById("app").addEventListener("click",e=>{
   const b=e.target.closest(".switch button"); if(!b || state.course===b.dataset.c) return;
-  state.course=b.dataset.c; cards=null; practice=null; write=null; save(); view="home"; render(); window.scrollTo(0,0);
+  sess=null; state.course=b.dataset.c; cards=null; practice=null; write=null; who=null; save(); view="home"; render(); window.scrollTo(0,0);
 });
 
 /* ===== Lern-Tracker =====
@@ -729,7 +838,9 @@ function track(course, ok){
   state.lastAct=now;
   if(ok!==undefined) countAnswer(ok);
 }
-function visit(){ const now=Date.now(); if(now-(state.lastVisit||0)>NEWSESSION){ logDay(now).v++; state.lastVisit=now; save(); } }
+/* Besuch zählen, aber NICHT speichern: Beim Start darf nichts den Zeitstempel erhöhen,
+   sonst würde ein neuerer Stand von einem anderen Gerät überschrieben. Gespeichert wird mit der nächsten echten Aktion. */
+function visit(){ const now=Date.now(); if(now-(state.lastVisit||0)>NEWSESSION){ logDay(now).v++; state.lastVisit=now; } }
 
 const fmtMin = sec => { const m=Math.round(sec/60); return m<60 ? m+" Min." : Math.floor(m/60)+" Std. "+(m%60?(m%60)+" Min.":""); };
 function bars(vals, labels, title){
@@ -775,6 +886,8 @@ function renderStats(){
       <tr><td>Lernsitzungen</td><td>${wkSess}</td></tr>
       <tr><td>App geöffnet</td><td>${wkVis}-mal</td></tr>
       <tr><td>Tage in Folge gelernt</td><td>${streak}</td></tr></table></div>
+    ${datesBlock()}
+    ${weakBlock()}
     ${tips.length?`<div class="block"><h3>Was auffällt</h3>${tips.map(t=>`<p class="small">${t.replace(/\.\.$/,".")}</p>`).join("")}</div>`:""}
     ${bars(v14,l14,"Lernzeit der letzten 14 Tage")}
     ${bars(wd,["Mo","Di","Mi","Do","Fr","Sa","So"],"Nach Wochentag (gesamt)")}
@@ -783,6 +896,7 @@ function renderStats(){
       <p class="small"><strong>Ökonomisches Denken:</strong> ${next?`Quiz ${next.n} öffnet in ${dn} Tag${dn===1?"":"en"}.`:"Alle Quiz sind offen, Abgabe bis 21.02.2027."} ${odOpen} von ${odItems.length} Fragen und Karten sind noch nicht sicher${next&&odOpen?`, also etwa ${Math.ceil(odOpen/dn)} pro Tag bis dahin`:""}.</p>
       <p class="small"><strong>Sozialstruktur:</strong> ${sozOpen} von ${sozCards.length} Karten noch nicht sicher, ${aufOpen} von ${auf.length} Schreibaufgaben noch offen.</p></div>
     <p class="small muted">Lernzeit zählt nur, solange du aktiv bist. Pausen über 2 Minuten zählen nicht mit. Nach 15 Minuten Pause beginnt eine neue Sitzung.</p>`;
+  bindDates(); bindWeak();
 }
 
 function week7(){
@@ -848,23 +962,18 @@ function reviewBlock(){
 }
 function bindReview(){
   document.querySelectorAll(".rv").forEach(b=>b.onclick=()=>{ setF(b.dataset.k);
-    if(b.dataset.go==="errors"){ state.errOnly=true; practice=null; save(); go("practice"); } else { cards=null; save(); go("cards"); } });
+    if(b.dataset.go==="errors"){ save(); startRound("err"); } else { cards=null; save(); go("cards"); } });
 }
-function dueBanner(){
-  const n=dueCards().length; if(!n) return "";
-  return `<div class="block due"><span><b>Heute fällig: ${n} Karte${n===1?"":"n"}</b><br><span class="small muted">Zuerst wiederholen, dann Neues lernen.</span></span><button class="btn" id="goDue">Wiederholen</button></div>`;
-}
-function bindDue(){ const b=$("#goDue"); if(b) b.onclick=()=>{ setF("alle"); cards=null; go("cards"); }; }
 function examBlock(){
   if(!isSoz()){
     return `<details class="block exam"><summary><b>So ist die Prüfung gebaut</b></summary>
       <ul><li>4 Quiz auf Moodle, je 12 Fragen, 15 Minuten</li><li>Jedes Quiz einzeln bestehen: mindestens 7 von 12</li><li>Über alle vier zusammen mindestens 30 Punkte</li><li>Jedes Quiz nur <b>einmal</b> möglich</li>
       <li>Freischaltung: Quiz 1 ab 16.11., Quiz 2 ab 07.12., Quiz 3 ab 25.01., Quiz 4 ab 07.02.</li><li>Abgabe aller vier bis 21.02.2027</li></ul>
-      <p class="small muted" style="margin:0">Quelle: Syllabus und Folien der ersten Sitzung.</p></details>`;
+      <p class="small muted" style="margin:0">Quelle: Syllabus und Folien der ersten Sitzung.</p>${myDatesLine()}</details>`;
   }
   return `<details class="block exam"><summary><b>So ist die Prüfung gebaut</b></summary>
     <ul><li>Modulklausur zur Vorlesung</li><li>Klausurrelevant: vor allem die Ausführungen in der Vorlesung und die Folien</li><li>Dringend empfohlen: parallel Erlinghagen &amp; Hank (2018), Neue Sozialstrukturanalyse</li><li>Format nach deiner Angabe: Textaufgaben</li></ul>
-    <p class="small muted" style="margin:0">Termin und genaue Aufgabenform stehen noch nicht auf den Folien.</p></details>`;
+    <p class="small muted" style="margin:0">Termin und genaue Aufgabenform stehen noch nicht auf den Folien.</p>${myDatesLine()}</details>`;
 }
 
 /* ===== Übersicht ===== */
@@ -878,7 +987,7 @@ function renderHome(){
   $("#app").innerHTML = `
     <h1>Ökonomisches Denken</h1>
     <p class="muted">${qs.length} Fragen und ${ks.length} Karten aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}.</p>
-    ${dueBanner()}
+    ${todayBlock()}
     <div class="block">
       ${next ? `<h2>${days===0?"Quiz "+next.n+" öffnet heute":"Noch "+days+" Tage bis Quiz "+next.n}</h2>
       <p class="small muted">Öffnet am ${new Date(next.open+"T00:00:00").toLocaleDateString("de-DE")}.</p>`
@@ -891,12 +1000,12 @@ function renderHome(){
     <div class="block"><h3>Sitzungen</h3>
       <p class="small muted">„Sicher“ heißt: dreimal hintereinander richtig. Etwas unklar? „Verstehe ich nicht“ markiert die Sitzung und kopiert einen fertigen Prompt für Claude.</p>${rows}</div>
     <div class="block"><h3>Letzte Simulationen</h3>
-      ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · ${/^q\d$/.test(z.scope)?"Quiz "+z.scope.slice(1):z.scope==="alle"?"alle Sitzungen":"Sitzung "+esc(z.scope)}</td><td style="color:var(--${z.score>=7?"good":"bad"})">${z.score}&nbsp;/&nbsp;${z.total}</td></tr>`).join("")}</table>`
+      ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · ${/^q\d$/.test(z.scope)?"Quiz "+z.scope.slice(1):z.scope==="alle"?"alle Sitzungen":z.scope==="mini"?"Mini-Quiz":"Sitzung "+esc(z.scope)}</td><td style="color:var(--${z.score>=7?"good":"bad"})">${z.score}&nbsp;/&nbsp;${z.total}</td></tr>`).join("")}</table>`
       : `<p class="small muted">Noch keine Simulation. Starte eine, sobald du die Karten einmal durch hast.</p>`}
     </div>
     ${storeNote()}
     ${resetBlock()}`;
-  bindBackup(); bindDue(); bindReview(); bindSessionRows(renderHome); bindReset(renderHome);
+  bindBackup(); bindToday(); bindReview(); bindSessionRows(renderHome); bindReset(renderHome);
   $("#goQuiz").onclick=()=>go("quiz"); $("#goPr").onclick=()=>go("practice");
 }
 function resetBlock(){ return `<div class="block"><h3>Fortschritt zurücksetzen</h3>
@@ -932,11 +1041,16 @@ function renderSozHome(){
   $("#app").innerHTML = `
     <h1>Sozialstruktur</h1>
     <p class="muted">${ks.length} Karten und ${allA().length} Schreibaufgaben aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}.</p>
-    ${dueBanner()}
+    ${todayBlock()}
     <div class="block">
       <h2>Karten lernen</h2>
       <p class="small muted">Erst selbst erklären, dann umdrehen. Gewusste Karten kommen nach 1, 3, 7, 16 und 35 Tagen wieder.</p>
       <button class="btn" id="goCards">Karten starten</button>
+    </div>
+    <div class="block">
+      <h2>Wer sagt das?</h2>
+      <p class="small muted">Aussagen den Theorien, Ansätzen und Menschenbildern zuordnen. Trainiert genau das Unterscheiden, das Klausurfragen verlangen.</p>
+      <button class="btn ghost" id="goWho">Zuordnen üben</button>
     </div>
     <div class="block">
       <h2>Klausurantworten üben</h2>
@@ -949,8 +1063,9 @@ function renderSozHome(){
       <p class="small muted">„Sicher“ heißt: dreimal hintereinander gewusst. Etwas unklar? „Verstehe ich nicht“ markiert die Sitzung und kopiert einen fertigen Prompt für Claude.</p>${rows}</div>
     ${storeNote()}
     ${resetBlock()}`;
-  bindBackup(); bindDue(); bindReview(); bindSessionRows(renderSozHome); bindReset(renderSozHome);
+  bindBackup(); bindToday(); bindReview(); bindSessionRows(renderSozHome); bindReset(renderSozHome);
   $("#goCards").onclick=()=>{ cards=null; go("cards"); };
+  $("#goWho").onclick=()=>openWho(8);
   $("#goWrite").onclick=()=>go("write");
 }
 
@@ -964,7 +1079,7 @@ function wStat(){
   const avg=Math.round(done.reduce((t,x)=>t+r[x.id].p/r[x.id].max,0)/done.length*100);
   return `${done.length} von ${a.length} Aufgaben bearbeitet, im Schnitt ${avg} % der Punkte.`;
 }
-let draftTimer=null;
+let draftTimer=null, wStrokes={};
 function renderWrite(){
   const items=allA().filter(inFilter), r=wRes();
   if(!write || !write.id){
@@ -982,30 +1097,37 @@ function renderWrite(){
   if(write.phase==="schreiben"){
     $("#app").innerHTML=`<button class="btn ghost" id="wBack">Zur Liste</button>
       <div class="block" style="margin-top:12px"><p class="eyebrow">Sitzung ${a.s} · ${a.k.length} Punkte${write.prev?` · zuletzt ${write.prev.p}/${write.prev.max}`:""}</p><div class="q">${inl(a.q)}</div>
-      <textarea id="wText" style="min-height:260px;font-family:var(--sans);font-size:1rem" placeholder="Deine Antwort …">${esc(text)}</textarea>
-      <p class="small muted" style="margin-top:6px">Dein Entwurf wird automatisch gespeichert, auch für deine anderen Geräte.</p>
-      <button class="btn" id="wDone" style="margin-top:6px">Fertig, Erwartungshorizont zeigen</button></div>`;
-    $("#wText").oninput=e=>{ track("soz"); wDraft()[a.id]=e.target.value; clearTimeout(draftTimer); draftTimer=setTimeout(save,1000); };
-    $("#wDone").onclick=()=>{ if(!$("#wText").value.trim()){ toast("Schreib zuerst eine Antwort."); return; } wDraft()[a.id]=$("#wText").value; save(); write.phase="pruefen"; write.checks=a.k.map(()=>false); renderWrite(); window.scrollTo(0,0); };
+      ${write.pen?padHTML("wpad",true,"Mit dem Stift schreiben wie in der Klausur")+`<p class="small muted" style="margin-top:0">Handschrift bleibt nur auf diesem Gerät, bis du die Seite verlässt.</p>`
+        :`<textarea id="wText" style="min-height:260px;font-family:var(--sans);font-size:1rem" placeholder="Deine Antwort …">${esc(text)}</textarea>
+      <p class="small muted" style="margin-top:6px">Dein Entwurf wird automatisch gespeichert, auch für deine anderen Geräte.</p>`}
+      <div class="row" style="margin-top:6px"><button class="btn" id="wDone">Fertig, Erwartungshorizont zeigen</button><button class="btn ghost" id="wPen">${write.pen?"Tippen statt Stift":"Mit Stift schreiben"}</button></div></div>`;
+    if(write.pen){ wStrokes[a.id]=wStrokes[a.id]||[]; bindPad("wpad",wStrokes[a.id]); }
+    else $("#wText").oninput=e=>{ track("soz"); wDraft()[a.id]=e.target.value; clearTimeout(draftTimer); draftTimer=setTimeout(save,1000); };
+    $("#wPen").onclick=()=>{ write.pen=!write.pen; renderWrite(); };
+    $("#wDone").onclick=()=>{
+      if(write.pen){ if(!(wStrokes[a.id]||[]).length){ toast("Schreib zuerst eine Antwort."); return; } }
+      else { if(!$("#wText").value.trim()){ toast("Schreib zuerst eine Antwort."); return; } wDraft()[a.id]=$("#wText").value; save(); }
+      track("soz"); write.phase="pruefen"; write.checks=a.k.map(()=>false); renderWrite(); window.scrollTo(0,0); };
   } else {
     const p=write.checks.filter(Boolean).length;
     $("#app").innerHTML=`<button class="btn ghost" id="wBack">Zur Liste</button>
       <div class="block" style="margin-top:12px"><div class="q">${inl(a.q)}</div>
-      <p class="small muted">Deine Antwort:</p><p style="white-space:pre-wrap">${esc(text)}</p></div>
+      <p class="small muted">Deine Antwort:</p>${write.pen?padHTML("wpad2",true,"Deine Handschrift"):`<p style="white-space:pre-wrap">${esc(text)}</p>`}</div>
       <div class="block"><h3>Erwartungshorizont</h3><p class="small muted">Hak ab, was in deiner Antwort vorkommt. Jeder Punkt zählt einen Punkt.</p>
       ${a.k.map((k,i)=>`<label class="row" style="align-items:flex-start;gap:10px;margin:10px 0"><input type="checkbox" data-c="${i}" ${write.checks[i]?"checked":""} style="width:22px;height:22px;margin-top:2px"><span class="grow">${inl(k)}</span></label>`).join("")}
       <p class="verdict" style="font-size:1.3rem">${p}&nbsp;von&nbsp;${a.k.length} Punkten</p>${write.prev?`<p class="small muted">Letztes Mal: ${write.prev.p} von ${write.prev.max} Punkten</p>`:""}
       <button class="btn" id="wSave">Ergebnis speichern</button></div>
       <div class="block"><h3>Musterlösung</h3><div class="ml">${a.essay?a.m.split("\n").map(x=>`<p>${inl(x)}</p>`).join(""):richText(a.m)}</div></div>
       <div class="block"><h3>Ausführliche Bewertung</h3>
-      <p class="small muted">Kopiert Aufgabe, Erwartungshorizont und deine Antwort. Füge das in einen Claude-Chat ein und du bekommst Punkte, Note und Verbesserungstipps.</p>
+      <p class="small muted">Kopiert Aufgabe, Erwartungshorizont und deine Antwort. Füge das in einen Claude-Chat ein und du bekommst Punkte, Note und Verbesserungstipps.${write.pen?" Bei Handschrift: vorher einen Screenshot vom Schreibfeld machen und mitschicken.":""}</p>
       <button class="btn ghost" id="wClaude">Für Claude kopieren</button><div id="wCopy"></div></div>
       <button class="btn ghost" id="wEdit">Antwort überarbeiten</button>`;
-    document.querySelectorAll("[data-c]").forEach(c=>c.onchange=()=>{ write.checks[+c.dataset.c]=c.checked; renderWrite(); });
-    $("#wSave").onclick=()=>{ wRes()[a.id]={p, max:a.k.length, date:Date.now()}; logDay(Date.now()).x=(logDay(Date.now()).x||0)+1; save(); toast(`Gespeichert: ${p} von ${a.k.length} Punkten`); write=null; renderWrite(); window.scrollTo(0,0); };
+    if(write.pen) bindPad("wpad2",wStrokes[a.id]=wStrokes[a.id]||[]);
+    document.querySelectorAll("[data-c]").forEach(c=>c.onchange=()=>{ write.checks[+c.dataset.c]=c.checked; const y=window.scrollY; renderWrite(); window.scrollTo(0,y); });
+    $("#wSave").onclick=()=>{ wRes()[a.id]={p, max:a.k.length, date:Date.now()}; logDay(Date.now()).x=(logDay(Date.now()).x||0)+1; save(); toast(`Gespeichert: ${p} von ${a.k.length} Punkten`); write=null; if(sess) return sessNext(); renderWrite(); window.scrollTo(0,0); };
     $("#wEdit").onclick=()=>{ write.phase="schreiben"; renderWrite(); };
     $("#wClaude").onclick=async()=>{
-      const prompt=`Bewerte bitte meine Übungsantwort für die Klausur „Sozialstruktur“ (Prof. Erlinghagen, UDE, Lehramt). Beziehe dich auf den Vorlesungsstoff.\n\nAufgabe (${a.k.length} Punkte):\n${a.q}\n\nErwartungshorizont (je 1 Punkt):\n${a.k.map(k=>"- "+k).join("\n")}\n\nMusterlösung:\n${plain(a.m)}\n\nMeine Antwort:\n${text}\n\nGib mir: Punkte pro Kriterium, Gesamtpunkte, eine Note (1,0 bis 5,0), was gut war und konkret, was ich besser formulieren oder ergänzen sollte.`;
+      const prompt=`Bewerte bitte meine Übungsantwort für die Klausur „Sozialstruktur“ (Prof. Erlinghagen, UDE, Lehramt). Beziehe dich auf den Vorlesungsstoff.\n\nAufgabe (${a.k.length} Punkte):\n${a.q}\n\nErwartungshorizont (je 1 Punkt):\n${a.k.map(k=>"- "+k).join("\n")}\n\nMusterlösung:\n${plain(a.m)}\n\nMeine Antwort:\n${write.pen?"(handschriftlich, siehe angehängtes Foto bzw. Screenshot)":text}\n\nGib mir: Punkte pro Kriterium, Gesamtpunkte, eine Note (1,0 bis 5,0), was gut war und konkret, was ich besser formulieren oder ergänzen sollte.`;
       try{ await navigator.clipboard.writeText(prompt); $("#wCopy").innerHTML=`<p class="small" style="margin-top:10px">Kopiert. Öffne jetzt einen neuen Chat im Claude-Projekt und füge den Text ein.</p>`; }
       catch(e){ $("#wCopy").innerHTML=`<p class="small" style="margin-top:10px">Halte den Text gedrückt und kopiere ihn:</p><textarea readonly style="min-height:120px">${esc(prompt)}</textarea>`; }
     };
@@ -1013,58 +1135,161 @@ function renderWrite(){
   $("#wBack").onclick=()=>{ write=null; renderWrite(); window.scrollTo(0,0); };
 }
 
-/* ===== Üben ===== */
-let idkQueue=[];   // „Weiß ich nicht“: Frage kommt nach 3 anderen Fragen wieder, ohne Strafe
-function nextPracticeQ(items, avoid){
-  idkQueue.forEach(x=>x.wait--);
-  const k=idkQueue.findIndex(x=>x.wait<=0 && items.some(i=>i.id===x.id) && x.id!==avoid);
-  if(k>=0){ const id=idkQueue.splice(k,1)[0].id; return items.find(i=>i.id===id); }
-  return weightedPick(items, avoid);
+/* ===== Üben: Auswahl, Fragenrunden (erst abrufen, dann Auswahl), „Wer sagt das?“, Lexikon ===== */
+const ROUND=10;
+/* Erst abrufen: bei Einfach- und Mehrfachauswahl. Nicht bei Richtig/Falsch, Zuordnung, Zahl (dort ist die Antwort schon frei)
+   und nicht bei „NICHT“-Fragen, weil man ein fehlendes Element ohne Auswahl nicht sinnvoll abrufen kann. */
+function recallFirst(q){ const t=qType(q); return (t==="sc"||t==="multi") && !q.fix && !/\bNICHT\b/.test(q.q); }
+const newQ=items=>items.filter(x=>!isSeen(x.id));
+function qStatus(q){ return !isSeen(q.id)?"neu" : state.err[q.id]?"zuletzt falsch" : isDue(q.id)?"fällig":"wiederholen"; }
+function startRound(kind, list){
+  const all=allQ().filter(inFilter);
+  let L=list;
+  if(!L){
+    if(kind==="due"){ const d=dueQ(all), n=newQ(all); L=d.slice(0,20).concat(n.slice(0,Math.max(0,ROUND-d.length))); }
+    else if(kind==="err") L=shuffle(all.filter(x=>state.err[x.id]&&boxOf(x.id)<4)).slice(0,ROUND);
+    else { const pool=all.slice(); L=[]; while(L.length<Math.min(ROUND,pool.length)){ const x=weightedPick(pool); L.push(x); pool.splice(pool.indexOf(x),1); } }
+  }
+  practice={kind, list:L.map(q=>Object.assign(prepQ(q),{st:qStatus(q)})), i:0, ans:null, shown:false, done:false, idk:false, right:0, n:0, idks:0, req:{},
+    before:{x:all.filter(x=>boxOf(x.id)>=2).length, y:all.length}};
+  view="practice"; render(); window.scrollTo(0,0);
 }
 function renderPractice(){
-  const all = allQ().filter(inFilter);
-  const errs = all.filter(x=>state.err[x.id] && boxOf(x.id)<4);
-  const items = state.errOnly ? errs : all;
-  const head = `<div class="row"><h1 class="grow">Üben</h1>${filterSelect()}</div>
-    <div class="row" style="margin:-4px 0 10px"><label class="small muted">Modus <select id="mode">
-      <option value="0"${state.errOnly?"":" selected"}>Alle Fragen</option>
-      <option value="1"${state.errOnly?" selected":""}>Nur meine Fehler (${errs.length})</option></select></label></div>`;
-  const bindHead = () => { bindFilter(()=>{practice=null;renderPractice();}); $("#mode").onchange=e=>{ state.errOnly=e.target.value==="1"; practice=null; save(); renderPractice(); }; };
-  if(!items.length){
-    $("#app").innerHTML = head + (state.errOnly ? `<div class="block"><p>Keine offenen Fehler. Alles, was du falsch hattest, sitzt inzwischen sicher.</p></div>` : `<p>Für diese Auswahl gibt es noch keine Fragen.</p>`);
-    bindHead(); return;
-  }
-  if(!practice || !items.find(x=>x.id===practice.p.q.id)){
-    const last = items.find(x=>x.id===state.lastQ);
-    practice = {p:prepQ(last || weightedPick(items)), ans:null, done:false, idk:false, before:null};
-    state.lastQ = practice.p.q.id;
-  }
-  if(practice.before==null) practice.before = all.filter(x=>boxOf(x.id)>=2).length;
-  const {p, ans, done, idk} = practice;
-  const ses=sessions()[p.q.s];
-  $("#app").innerHTML = head + `
-    <p class="small muted">Zuletzt ${practice.before} von ${all.length} Fragen richtig. Falsche kommen öfter dran.</p>
+  if(!practice || !practice.list) return renderPracticeHub();
+  const P=practice, L=P.list;
+  if(P.i>=L.length) return renderRoundEnd();
+  const p=L[P.i], ses=sessions()[p.q.s], showOpts=P.shown||P.done||!recallFirst(p.q);
+  const title={due:"Fragen lernen",err:"Meine Fehler",free:"Frei üben"}[P.kind]||"Fragen";
+  $("#app").innerHTML = `<h1>${sess?"Heute: ":""}${title}</h1>
+    <p class="small muted">Zuletzt ${P.before.x} von ${P.before.y} Fragen richtig.</p>
     <div class="block">
-      <p class="eyebrow">Sitzung ${esc(p.q.s)}${ses?": "+esc(ses):""}${typeHint(p)?" · "+typeHint(p):""}</p>
+      <div class="row between"><p class="eyebrow">Frage ${P.i+1} von ${L.length} · Sitzung ${esc(p.q.s)}${ses?": "+esc(ses):""}</p><span class="chip${p.st==="zuletzt falsch"?" err":""}">${p.st}</span></div>
       <div class="q">${inl(p.q.q)}</div>
-      ${answerHTML(p, ans, done, idk)}
-      ${done ? fbHTML(p, ans, idk) + `<button class="btn" id="nextQ" style="margin-top:14px">Nächste Frage</button>`
-      : `<div class="row" style="margin-top:12px">${p.t!=="sc" ? `<button class="btn" id="check"${isAnswered(p,ans)?"":" disabled"}>Prüfen</button>` : ""}<button class="btn ghost idk" id="idk">Weiß ich nicht</button></div>`}
+      ${showOpts ? (typeHint(p)&&!P.done?`<p class="small muted">${typeHint(p)}</p>`:"") + answerHTML(p, P.ans, P.done, P.idk)
+        : `<p class="small muted recall">Erst selbst überlegen, am besten in einem Satz. Dann die Auswahl zeigen.</p>`}
+      ${P.done ? fbHTML(p, P.ans, P.idk) + `<button class="btn" id="nextQ" style="margin-top:14px">Weiter</button>`
+        : `<div class="row" style="margin-top:12px">${!showOpts?`<button class="btn" id="show">Auswahl zeigen</button>`:p.t!=="sc"?`<button class="btn" id="check"${isAnswered(p,P.ans)?"":" disabled"}>Prüfen</button>`:""}<button class="btn ghost idk" id="idk">Weiß ich nicht</button></div>`}
     </div>`;
-  bindHead();
-  const check = () => { practice.done=true; const r=isRight(p,practice.ans); grade(p.q.id, r); track("od", r); save(); renderPractice(); };
-  if(!done){
-    bindAnswer(p, ()=>practice.ans, (a,instant,redraw)=>{
-      practice.ans=a;
-      if(instant && isAnswered(p,a)) return check();
-      if(redraw) renderPractice(); else { const b=$("#check"); if(b) b.disabled=!isAnswered(p,a); }
-    });
-    const b=$("#check"); if(b) b.onclick=check;
-    $("#idk").onclick=()=>{ practice.done=true; practice.idk=true; practice.ans=null; idkQueue.push({id:p.q.id, wait:3}); track("od"); logDay(Date.now()).x=(logDay(Date.now()).x||0)+1; save(); renderPractice(); };
-  } else $("#nextQ").onclick=()=>{ const n=nextPracticeQ(items,p.q.id); practice={p:prepQ(n), ans:null, done:false, idk:false, before:null}; state.lastQ=n.id; save(); renderPractice(); window.scrollTo(0,0); };
+  const requeue=q=>{ if(P.req[q.id]) return; P.req[q.id]=1; L.splice(Math.min(L.length,P.i+4),0,Object.assign(prepQ(q),{st:"nochmal"})); };
+  const check=()=>{ P.done=true; P.n++; const r=isRight(p,P.ans);
+    grade(p.q.id, r, P.kind==="free" && isSeen(p.q.id) && !isDue(p.q.id)); track("od", r);
+    if(r) P.right++; else requeue(p.q); save(); renderPractice(); };
+  if(!P.done){
+    if($("#show")) $("#show").onclick=()=>{ P.shown=true; renderPractice(); };
+    if(showOpts){
+      bindAnswer(p, ()=>P.ans, (a,instant,redraw)=>{ P.ans=a;
+        if(instant && isAnswered(p,a)) return check();
+        if(redraw) renderPractice(); else { const b=$("#check"); if(b) b.disabled=!isAnswered(p,a); } });
+      const b=$("#check"); if(b) b.onclick=check;
+    }
+    $("#idk").onclick=()=>{ P.done=true; P.idk=true; P.ans=null; P.idks++; gradeIdk(p.q.id); requeue(p.q); track("od"); logDay(Date.now()).x=(logDay(Date.now()).x||0)+1; save(); renderPractice(); };
+  } else $("#nextQ").onclick=()=>{ P.i++; P.ans=null; P.shown=false; P.done=false; P.idk=false; renderPractice(); window.scrollTo(0,0); };
+}
+function renderRoundEnd(){
+  const P=practice, all=allQ().filter(inFilter), left=dueQ(all).length+newQ(all).length;
+  $("#app").innerHTML=`<h1>${P.list.length?"Runde geschafft":"Nichts fällig"}</h1><div class="block">
+    ${P.n||P.idks?`<p>${P.right} von ${P.n} Antworten richtig${P.idks?`, ${P.idks}× „Weiß ich nicht“`:""}.</p>`:`<p>Gerade ist hier keine Frage fällig.</p>`}
+    <p class="small muted">Richtige Fragen kommen nach 1, 3, 7, 16 und 35 Tagen wieder, falsche und „Weiß ich nicht“ morgen. ${left?`Noch ${left} fällig oder neu.`:"Sonst ist gerade nichts fällig."}</p>
+    <div class="row">${sess?sessBtn():`${left?`<button class="btn" id="rAgain">Nächste Runde</button>`:""}<button class="btn ghost" id="rFree">Frei weiterüben</button><button class="btn ghost" id="rHub">Zur Auswahl</button>`}</div></div>`;
+  if($("#rAgain")) $("#rAgain").onclick=()=>startRound("due");
+  if($("#rFree")) $("#rFree").onclick=()=>startRound("free");
+  if($("#rHub")) $("#rHub").onclick=()=>{ practice=null; renderPractice(); };
+}
+function renderPracticeHub(){
+  const ks=allK().filter(inFilter), wn=werAll().length;
+  let modes="";
+  if(!isSoz()){
+    const all=allQ().filter(inFilter), d=dueQ(all).length, n=newQ(all).length, e=all.filter(x=>state.err[x.id]&&boxOf(x.id)<4).length;
+    modes+=`<button class="mode" id="mDue"${d+n?"":" disabled"}><span class="t">Fragen lernen</span><span class="n">${d} fällig · ${n} neu</span><span class="d">Erst selbst überlegen, dann die Auswahl. Richtige kommen nach 1, 3, 7, 16 und 35 Tagen wieder.</span></button>
+      <button class="mode" id="mErr"${e?"":" disabled"}><span class="t">Meine Fehler</span><span class="n">${e}</span><span class="d">Fragen, die du falsch hattest und die noch nicht sicher sitzen.</span></button>`;
+  }
+  modes+=`<button class="mode" id="mWho"${wn?"":" disabled"}><span class="t">Wer sagt das?</span><span class="n">${wn} Aussagen</span><span class="d">Sinngemäße Aussagen aus den Folien ${isSoz()?"Theorien, Ansätzen und Menschenbildern":"den antiken Autoren"} zuordnen, mit Begründung.</span></button>`;
+  if(!isSoz()) modes+=`<button class="mode" id="mFree"><span class="t">Frei üben</span><span class="n">${allQ().filter(inFilter).length} Fragen</span><span class="d">Gemischt, Schwieriges öfter. Verlängert keine Abstände.</span></button>`;
+  modes+=`<button class="mode" id="mLex"><span class="t">Lexikon</span><span class="n">${ks.length} Begriffe</span><span class="d">Alle Karten zum Nachschlagen, mit Suche.</span></button>`;
+  $("#app").innerHTML=`<div class="row"><h1 class="grow">Üben</h1>${filterSelect()}</div><div class="block"><div class="modes">${modes}</div></div>`;
+  bindFilter(renderPracticeHub);
+  if($("#mDue")) $("#mDue").onclick=()=>startRound("due");
+  if($("#mErr")) $("#mErr").onclick=()=>startRound("err");
+  if($("#mFree")) $("#mFree").onclick=()=>startRound("free");
+  $("#mWho").onclick=()=>openWho(8);
+  $("#mLex").onclick=()=>{ view="lex"; render(); window.scrollTo(0,0); };
 }
 
-/* ===== Karteikarten mit Wiederholungsplan ===== */
+/* ===== „Wer sagt das?“ ===== */
+const werData=()=>isSoz()?BASE_SOZ:BASE;
+const werAll=(ignoreFilter)=>(werData().wer||[]).filter(x=>ignoreFilter||inFilter(x));
+const werName=k=>{ const v=werData().werListe[k]; return typeof v==="string"?v:v.n; };
+const werGroup=k=>{ const v=werData().werListe[k]; return typeof v==="string"?"":v.g; };
+function werOptions(x){
+  const used=[...new Set(werAll(true).map(w=>w.a))].filter(k=>k!==x.a&&!(x.alt||[]).includes(k));
+  const same=shuffle(used.filter(k=>werGroup(k)===werGroup(x.a))), other=shuffle(used.filter(k=>werGroup(k)!==werGroup(x.a)));
+  return shuffle([x.a].concat(same.concat(other).slice(0,3)));
+}
+function werPick(n,ignoreFilter){
+  const pool=werAll(ignoreFilter).slice(), w=pool.map(x=>{ const h=state.who[x.id]; return !h?3 : h.last?1:4; }), out=[];
+  while(out.length<Math.min(n,pool.length)){ let r=Math.random()*w.reduce((a,b)=>a+b,0), i=0; for(;i<pool.length;i++){ r-=w[i]; if(r<=0) break; } i=Math.min(i,pool.length-1); out.push(pool.splice(i,1)[0]); w.splice(i,1); }
+  return out;
+}
+function openWho(n,list){ who={list:(list||werPick(n||8)).map(x=>({x,o:werOptions(x)})), i:0, a:null, right:0, idk:false}; view="who"; render(); window.scrollTo(0,0); }
+function renderWho(){
+  if(!who){ view="practice"; return render(); }
+  const W=who, L=W.list;
+  if(W.i>=L.length){
+    $("#app").innerHTML=`<h1>Runde geschafft</h1><div class="block"><p>${W.right} von ${L.length} richtig zugeordnet.</p>
+      <p class="small muted">Falsch zugeordnete Aussagen kommen in den nächsten Runden häufiger.</p>
+      <div class="row">${sess?sessBtn():`<button class="btn" id="wAgain">Neue Runde</button><button class="btn ghost" id="wOut">Zur Auswahl</button>`}</div></div>`;
+    if($("#wAgain")) $("#wAgain").onclick=()=>openWho(8);
+    if($("#wOut")) $("#wOut").onclick=()=>{ who=null; practice=null; view="practice"; render(); };
+    return;
+  }
+  const {x,o}=L[W.i], ses=sessions()[x.s], answered=W.a!==null||W.idk;
+  let fb="";
+  if(W.idk) fb=`<div class="fb idk"><p class="fh">Kein Problem, die Aussage kommt wieder.</p><div class="dlist"><b>Richtig</b><span>${esc(werName(x.a))}</span><b>Warum</b><span>${inl(x.ex)}</span></div></div>`;
+  else if(W.a===x.a) fb=`<div class="fb good"><p class="fh">Richtig.</p><p style="margin:0">${inl(x.ex)}</p></div>`;
+  else if(W.a!==null){ const why=(x.w||{})[W.a];
+    fb=`<div class="fb bad"><p class="fh">Nicht ganz.</p><div class="dlist">${why?`<b>Deine Wahl</b><span>${inl(why)}</span>`:""}<b>Richtig</b><span>${esc(werName(x.a))}</span><b>${why?"Der Unterschied":"Warum"}</b><span>${inl(x.ex)}</span></div></div>`; }
+  $("#app").innerHTML=`<h1>${sess?"Heute: ":""}Wer sagt das?</h1>
+    <div class="block"><p class="eyebrow">Aussage ${W.i+1} von ${L.length} · Sitzung ${x.s}${ses?": "+esc(ses):""} · sinngemäß nach den Folien</p>
+      <p class="who">„${inl(x.t)}“</p>
+      <div class="opts">${o.map(k=>{ const c=!answered?"":(k===x.a?" right":(k===W.a?" wrong":"")); return `<button class="opt${c}" data-k="${k}"${answered?" disabled":""}>${esc(werName(k))}</button>`; }).join("")}</div>
+      ${answered?fb+`<button class="btn" id="wNext" style="margin-top:14px">Weiter</button>`:`<div class="row" style="margin-top:12px"><button class="btn ghost idk" id="wIdk">Weiß ich nicht</button></div>`}</div>`;
+  const rec=ok=>{ const h=state.who[x.id]||{n:0,r:0}; h.n++; if(ok) h.r++; h.last=ok; if(ok===false&&W.a) h.conf=W.a; state.who[x.id]=h; };
+  document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{ if(answered) return; W.a=b.dataset.k; const ok=W.a===x.a; if(ok) W.right++; rec(ok); track(state.course, ok); save(); renderWho(); });
+  if($("#wIdk")) $("#wIdk").onclick=()=>{ W.idk=true; const h=state.who[x.id]||{n:0,r:0}; h.last=false; state.who[x.id]=h; track(state.course); logDay(Date.now()).x=(logDay(Date.now()).x||0)+1; save(); renderWho(); };
+  if($("#wNext")) $("#wNext").onclick=()=>{ W.i++; W.a=null; W.idk=false; renderWho(); window.scrollTo(0,0); };
+}
+
+/* ===== Lexikon: alle Karten zum Nachschlagen ===== */
+function renderLex(){
+  const ks=allK().filter(inFilter).slice().sort((a,b)=>a.f.localeCompare(b.f,"de"));
+  $("#app").innerHTML=`<div class="row"><h1 class="grow">Lexikon</h1>${filterSelect()}</div>
+    <input class="lexsearch" id="lexQ" type="search" placeholder="Begriff suchen …" aria-label="Begriff suchen">
+    <div class="block">${ks.map(c=>`<details class="lexitem" data-s="${esc((c.f+" "+plain(c.b)+" "+(c.ctx||"")).toLowerCase())}"><summary>${inl(c.f)}<span class="lexctx">${inl(cardCtx(c))}</span></summary><div class="back">${richText(c.b)}</div>${infoHTML(c.i)}</details>`).join("")}
+    <p class="small muted" id="lexNone" hidden style="margin:0">Nichts gefunden.</p></div>`;
+  bindFilter(renderLex);
+  $("#lexQ").oninput=e=>{ const t=e.target.value.trim().toLowerCase(); let n=0;
+    document.querySelectorAll(".lexitem").forEach(d=>{ const ok=!t||d.dataset.s.includes(t); d.hidden=!ok; if(ok) n++; }); $("#lexNone").hidden=!!n; };
+}
+
+/* ===== Schreibfeld für den Stift (aus Wirtschaft II): Striche bleiben nur im Speicher, nichts wird hochgeladen ===== */
+function drawSurface(c,strokes){
+  const ctx=c.getContext("2d"); let penSeen=false, cur=null;
+  const color=()=>getComputedStyle(document.documentElement).getPropertyValue("--ink").trim()||"#1C2B3A";
+  function size(){ const r=c.getBoundingClientRect(), dpr=window.devicePixelRatio||1; c.width=r.width*dpr; c.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
+  function draw(){ const r=c.getBoundingClientRect(); ctx.clearRect(0,0,r.width,r.height); ctx.lineCap="round"; ctx.lineJoin="round"; ctx.strokeStyle=color();
+    for(const s of strokes){ for(let i=1;i<s.length;i++){ ctx.lineWidth=s[i][2]; ctx.beginPath(); ctx.moveTo(s[i-1][0]*r.width,s[i-1][1]*r.height); ctx.lineTo(s[i][0]*r.width,s[i][1]*r.height); ctx.stroke(); } } }
+  const pt=e=>{ const r=c.getBoundingClientRect(); const p=e.pressure&&e.pointerType==="pen"?e.pressure:.5; return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height,1.2+p*2.6]; };
+  c.onpointerdown=e=>{ if(e.pointerType==="pen") penSeen=true; if(penSeen&&e.pointerType==="touch") return; cur=[pt(e)]; strokes.push(cur); try{c.setPointerCapture(e.pointerId);}catch(x){} };
+  c.onpointermove=e=>{ if(!cur) return; const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e]; for(const ev of evs) cur.push(pt(ev)); draw(); };
+  c.onpointerup=c.onpointercancel=()=>{ cur=null; };
+  size(); window.addEventListener("resize",size);
+  return {undo(){ strokes.pop(); draw(); }, clear(){ strokes.length=0; draw(); }};
+}
+const padHTML=(id,big,label)=>`<div class="pad${big?" big":""}"><span class="ph">${label||"Hier hinschreiben"}</span><canvas id="${id}" aria-label="Schreibfeld für den Stift"></canvas><div class="tools"><button id="${id}U">Zurück</button><button id="${id}X">Leeren</button></div></div>`;
+function bindPad(id,strokes){ const c=$("#"+id); if(!c) return; const sf=drawSurface(c,strokes); $("#"+id+"U").onclick=()=>sf.undo(); $("#"+id+"X").onclick=()=>sf.clear(); }
+
+/* ===== Karteikarten mit Wiederholungsplan und drei Stufen ===== */
+let cStrokes=[];
 function buildDeck(free){
   const items=allK().filter(inFilter);
   if(free){ const pool=items.slice(), deck=[]; while(deck.length<Math.min(10,pool.length)){ const x=weightedPick(pool); deck.push(x); pool.splice(pool.indexOf(x),1); } return deck; }
@@ -1072,21 +1297,23 @@ function buildDeck(free){
   return due.concat(fresh).slice(0,Math.max(10,Math.min(due.length,30)));
 }
 function cardCtx(c){ const t=sessions()[c.s]; return `Sitzung ${c.s}${t?": "+t:""}${c.ctx?" · "+c.ctx:""}`; }
+function openCards(deck,free){ cards={deck:deck.slice(), i:0, flip:false, right:0, unsure:0, n:0, free:!!free, req:{}, pad:!!(cards&&cards.pad)}; cStrokes=[]; view="cards"; render(); window.scrollTo(0,0); }
 function renderCards(){
-  if(!cards || !cards.deck){ cards={deck:buildDeck(false), i:0, flip:false, right:0, free:false, req:{}}; }
+  if(!cards || !cards.deck){ cards={deck:buildDeck(false), i:0, flip:false, right:0, unsure:0, n:0, free:false, req:{}, pad:!!(cards&&cards.pad)}; }
   const D=cards.deck, items=allK().filter(inFilter);
-  const head=`<div class="row"><h1 class="grow">Karten</h1>${filterSelect()}</div>`;
+  const head=`<div class="row"><h1 class="grow">${sess?"Heute: Karten":"Karten"}</h1>${sess?"":filterSelect()}</div>`;
   const bindHead=()=>bindFilter(()=>{ cards=null; renderCards(); });
   if(cards.i>=D.length){
     const left=dueCards(items).length+items.filter(x=>!isSeen(x.id)).length;
     const nextDue=items.filter(x=>isSeen(x.id)&&!isDue(x.id)).map(x=>state.due[x.id]).sort((a,b)=>a-b)[0];
+    const no=cards.n-cards.right-cards.unsure;
     $("#app").innerHTML=head+`<div class="block"><h2>${D.length?(left?"Runde geschafft":"Für heute erledigt"):"Heute ist nichts fällig"}</h2>
-      ${D.length?`<p>${cards.right} von ${D.length} Antworten gewusst.</p>`:""}
-      <p class="small muted">${left?`Noch ${left} Karten fällig oder neu.`:`Alle Karten sind auf dem Stand.${nextDue?` Die nächsten werden ${whenText(nextDue)} fällig.`:""}`} Gewusste Karten kommen nach 1, 3, 7, 16 und 35 Tagen wieder, nicht gewusste sofort noch einmal.</p>
-      <div class="row">${left?`<button class="btn" id="again">Weiter</button>`:""}<button class="btn ghost" id="free">Freiwillig weiterüben</button></div></div>`;
+      ${cards.n?`<p>${cards.right} sicher, ${cards.unsure} unsicher, ${no} nicht gewusst.</p>`:""}
+      <p class="small muted">${left?`Noch ${left} Karten fällig oder neu.`:`Alle Karten sind auf dem Stand.${nextDue?` Die nächsten werden ${whenText(nextDue)} fällig.`:""}`} „Sicher“ kommt nach 1, 3, 7, 16 und 35 Tagen wieder, „Unsicher“ morgen, „Nicht gewusst“ gleich noch einmal.</p>
+      <div class="row">${sess?sessBtn():`${left?`<button class="btn" id="again">Weiter</button>`:""}<button class="btn ghost" id="free">Freiwillig weiterüben</button>`}</div></div>`;
     bindHead();
     if($("#again")) $("#again").onclick=()=>{ cards=null; renderCards(); };
-    $("#free").onclick=()=>{ cards={deck:buildDeck(true), i:0, flip:false, right:0, free:true, req:{}}; renderCards(); };
+    if($("#free")) $("#free").onclick=()=>openCards(buildDeck(true),true);
     return;
   }
   const c=D[cards.i], b=boxOf(c.id);
@@ -1095,16 +1322,155 @@ function renderCards(){
     <div class="block card" id="card" style="margin-top:8px" role="button" tabindex="0" aria-label="Karte umdrehen">
       <p class="cctx">${inl(cardCtx(c))}</p><div class="front">${inl(c.f)}</div>
       ${cards.flip?`<div class="back">${richText(c.b)}</div>${infoHTML(c.i)}`:`<p class="tap">Tippen zum Umdrehen</p>`}</div>
-    ${cards.flip?`<div class="row"><button class="btn" id="yes" style="flex:1">Gewusst</button><button class="btn warn" id="no" style="flex:1">Nicht gewusst</button></div>`
-      :`<p class="small muted">Erst selbst erklären, dann umdrehen.</p>`}`;
+    ${cards.pad?padHTML("cpad",false):""}
+    ${cards.flip?`<div class="grade"><button class="btn warn" id="g0">Nicht gewusst</button><button class="btn ghost" id="g1">Unsicher</button><button class="btn" id="g2">Sicher</button></div>`
+      :`<div class="row"><button class="btn" id="flip" style="flex:1">Antwort zeigen</button><button class="btn ghost" id="padT">${cards.pad?"Schreibfeld aus":"Schreibfeld"}</button></div>
+        <p class="small muted" style="margin-top:8px">Erst antworten, im Kopf oder im Schreibfeld, dann umdrehen. „Unsicher“, wenn du es nur ungefähr wusstest.</p>`}`;
   bindHead();
   const cd=$("#card"); cd.onclick=e=>{ if(e.target.closest("a,button,select")) return; cards.flip=!cards.flip; renderCards(); };
   cd.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); cd.click(); } };
-  const answer=ok=>{ gradeCard(c,ok,cards.free); track(state.course, ok);
-    if(ok) cards.right++; else if((cards.req[c.id]||0)<2){ cards.req[c.id]=(cards.req[c.id]||0)+1; D.push(c); }
-    save(); cards.i++; cards.flip=false; renderCards(); };
-  if($("#yes")) $("#yes").onclick=()=>answer(true);
-  if($("#no")) $("#no").onclick=()=>answer(false);
+  if($("#flip")) $("#flip").onclick=()=>{ cards.flip=true; renderCards(); };
+  if($("#padT")) $("#padT").onclick=()=>{ cards.pad=!cards.pad; renderCards(); };
+  if(cards.pad) bindPad("cpad",cStrokes);
+  const answer=lv=>{ gradeCard(c,lv,cards.free); track(state.course, lv===2); cards.n++;
+    if(lv===2) cards.right++; else if(lv===1) cards.unsure++;
+    else if((cards.req[c.id]||0)<2){ cards.req[c.id]=(cards.req[c.id]||0)+1; D.splice(Math.min(D.length,cards.i+4),0,c); }
+    save(); cards.i++; cards.flip=false; cStrokes.length=0; renderCards(); };
+  if($("#g0")) $("#g0").onclick=()=>answer(0);
+  if($("#g1")) $("#g1").onclick=()=>answer(1);
+  if($("#g2")) $("#g2").onclick=()=>answer(2);
+}
+
+/* ===== Tägliche Einheit „Heute“: mischt Wiederholung, Neues, Zuordnen und Prüfungsformat (Spacing und Interleaving) ===== */
+const sessKey=()=>dayKey(Date.now())+":"+state.course;
+function nextNewSession(){ const s=sessions();
+  for(const k of Object.keys(s).sort((a,b)=>a-b)){ if(allK().some(x=>String(x.s)===k&&!isSeen(x.id)) || (!isSoz()&&allQ().some(x=>String(x.s)===k&&!isSeen(x.id)))) return k; } return null; }
+function nextWriteTask(){ const r=wRes(), A=allA();
+  return A.find(a=>!r[a.id]) || A.slice().sort((a,b)=>(r[a.id].p/r[a.id].max)-(r[b.id].p/r[b.id].max) || r[a.id].date-r[b.id].date)[0]; }
+function planToday(){
+  const S=[], dc=dueCards().length, dq=isSoz()?0:dueQ().length, nk=nextNewSession();
+  if(dc) S.push({k:"cards", t:"Karten wiederholen", d:`${Math.min(dc,20)} fällige Karten`, min:Math.max(2,Math.round(Math.min(dc,20)*.4))});
+  if(dq) S.push({k:"recall", t:"Fragen wiederholen", d:`${Math.min(dq,8)} fällige Fragen: erst abrufen, dann Auswahl`, min:Math.max(2,Math.round(Math.min(dq,8)*.6))});
+  if(nk){
+    const nkc=allK().filter(x=>String(x.s)===nk&&!isSeen(x.id)).length;
+    if(nkc) S.push({k:"newcards", s:nk, t:`Neu: Sitzung ${nk}`, d:`${Math.min(5,nkc)} neue Karten: ${sessions()[nk]}`, min:3});
+    const nkq=isSoz()?0:allQ().filter(x=>String(x.s)===nk&&!isSeen(x.id)).length;
+    if(nkq) S.push({k:"newq", s:nk, t:`Neu: Fragen zu Sitzung ${nk}`, d:`${Math.min(5,nkq)} neue Fragen`, min:3});
+  }
+  if(werAll(true).length) S.push({k:"who", t:"Wer sagt das?", d:"5 Aussagen zuordnen", min:3});
+  if(isSoz()){ const a=nextWriteTask(); if(a) S.push({k:"write", id:a.id, t:"Eine Klausuraufgabe schreiben", d:`Sitzung ${a.s} · ${a.k.length} Punkte`, min:10}); }
+  else if(allQ().length>=6) S.push({k:"mini", t:"Mini-Quiz wie auf Moodle", d:"6 Fragen in 7:30 Minuten, Auswahl sofort sichtbar", min:8});
+  return S;
+}
+function startSession(){ sess={steps:planToday(), i:0, t0:Date.now(), course:state.course}; runStep(); }
+function runStep(){
+  if(!sess) return; const s=sess.steps[sess.i];
+  if(!s) return finishSession();
+  ({cards:()=>openCards(dueCards().slice(0,20)),
+    recall:()=>startRound("due", dueQ().slice(0,8)),
+    newcards:()=>openCards(allK().filter(x=>String(x.s)===s.s&&!isSeen(x.id)).slice(0,5)),
+    newq:()=>startRound("due", allQ().filter(x=>String(x.s)===s.s&&!isSeen(x.id)).slice(0,5)),
+    who:()=>openWho(5, werPick(5,true)),
+    write:()=>{ write={id:s.id, phase:"schreiben", checks:[], prev:wRes()[s.id]||null}; view="write"; render(); window.scrollTo(0,0); },
+    mini:()=>startMini()})[s.k]();
+}
+/* Schritt überspringen: eine laufende Mini-Simulation wird verworfen, nichts wird gewertet */
+function dropQuiz(){ if(quiz&&quiz.running){ clearInterval(timerId); } quiz=null; }
+function sessNext(){ if(!sess) return; dropQuiz(); sess.i++; runStep(); }
+function endSession(){ dropQuiz(); sess=null; practice=null; cards=null; who=null; write=null; view="home"; render(); window.scrollTo(0,0); }
+function finishSession(){
+  dropQuiz();
+  const min=Math.max(1,Math.round((Date.now()-sess.t0)/60000)); state.sessions[sessKey()]=min; save();
+  sess=null; practice=null; cards=null; who=null; write=null; sessMin=min; view="sessdone"; render(); window.scrollTo(0,0);
+}
+let sessMin=0;
+function renderSessDone(){
+  $("#app").innerHTML=`<p class="eyebrow">Heute</p><h1>Geschafft</h1><div class="block"><p>Deine Einheit ist fertig, etwa ${sessMin}&nbsp;Minuten.</p>
+    <p class="small muted">Morgen stellt die App eine neue Einheit zusammen. Was du heute nicht sicher wusstest, ist dann wieder dabei.</p>
+    <button class="btn" id="sdHome">Zur Übersicht</button></div>`;
+  $("#sdHome").onclick=()=>go("home");
+}
+function updateSessBar(){
+  const b=$("#sessbar"); if(!b) return;
+  if(!sess||!sess.steps[sess.i]){ b.hidden=true; b.innerHTML=""; return; }
+  const s=sess.steps[sess.i];
+  b.hidden=false;
+  b.innerHTML=`<div class="sbin"><span class="sbt"><b>Heute ${sess.i+1}/${sess.steps.length}</b> · ${esc(s.t)}</span><button class="btn small" id="sbNext">${sess.i<sess.steps.length-1?"Nächster Schritt":"Abschließen"}</button><button class="btn ghost small" id="sbEnd" aria-label="Einheit beenden">✕</button></div>
+    <div class="steps" aria-hidden="true">${sess.steps.map((_,i)=>`<i class="${i<=sess.i?"on":""}"></i>`).join("")}</div>`;
+  $("#sbNext").onclick=sessNext; $("#sbEnd").onclick=endSession;
+}
+const sessBtn=()=>`<button class="btn" id="sessGo">${sess&&sess.i<sess.steps.length-1?"Weiter zum nächsten Schritt":"Einheit abschließen"}</button>`;
+document.addEventListener("click",e=>{ if(e.target.closest("#sessGo")) sessNext(); });
+function todayBlock(){
+  if(sess) return `<div class="block today"><p class="eyebrow">Heute</p><h2>Einheit läuft</h2><p class="small muted">Schritt ${sess.i+1} von ${sess.steps.length}: ${esc(sess.steps[sess.i]?sess.steps[sess.i].t:"")}</p><button class="btn" id="goSess">Fortsetzen</button></div>`;
+  const S=planToday(); if(!S.length) return "";
+  const min=S.reduce((a,x)=>a+x.min,0), done=state.sessions[sessKey()];
+  return `<div class="block today"><p class="eyebrow">Heute · etwa ${min}&nbsp;Minuten</p><h2>${done?"Für heute erledigt":"Deine Lerneinheit"}</h2>
+    ${done?`<p class="small muted">Du hast heute schon gelernt. Eine zweite Runde schadet nicht.</p>`:`<p class="small muted">Gemischt aus Wiederholung, Neuem und Prüfungsformat. Die Reihenfolge stellt die App jeden Tag neu zusammen.</p>`}
+    <ol class="plan">${S.map(x=>`<li><b>${esc(x.t)}</b><span>${inl(x.d)}</span></li>`).join("")}</ol>
+    <button class="btn" id="goSess">${done?"Noch eine Runde":"Starten"}</button></div>`;
+}
+function bindToday(){ const b=$("#goSess"); if(b) b.onclick=()=>{ if(sess) runStep(); else startSession(); }; }
+
+/* ===== Termine und Schwachstellen (Statistik) ===== */
+const isoTs=iso=>{ const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).getTime(); };
+const fmtD=iso=>{ const d=new Date(isoTs(iso)); return ["So","Mo","Di","Mi","Do","Fr","Sa"][d.getDay()]+" "+String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."; };
+const daysTo=iso=>Math.round((isoTs(iso)-dayStart())/864e5);
+const cdText=iso=>{ const d=daysTo(iso); return d>1?`noch ${d}&nbsp;Tage`:d===1?"morgen":d===0?"heute":"vorbei"; };
+function quizSum(){ return Object.values(state.quizPts).reduce((a,b)=>a+(+b||0),0); }
+function myDatesLine(){
+  if(!isSoz()){
+    const nx=QUIZZES.filter(z=>state.quizPts[z.n]==null && state.dates["q"+z.n] && daysTo(state.dates["q"+z.n])>=0).sort((a,b)=>isoTs(state.dates["q"+a.n])-isoTs(state.dates["q"+b.n]))[0];
+    const done=QUIZZES.filter(z=>state.quizPts[z.n]!=null).length;
+    return `<p class="small" style="margin:8px 0 0">${nx?`<b>Dein nächster Termin:</b> Quiz ${nx.n} am ${fmtD(state.dates["q"+nx.n])}, ${cdText(state.dates["q"+nx.n])}.`:"Eigene Termine kannst du unter Statistik eintragen."}${done?` Bisher ${quizSum()} von mindestens 30&nbsp;Punkten.`:""}</p>`;
+  }
+  const k=state.dates.soz;
+  return `<p class="small" style="margin:8px 0 0">${k?`<b>Klausur:</b> ${fmtD(k)}, ${cdText(k)}.`:"Den Klausurtermin kannst du unter Statistik eintragen."}</p>`;
+}
+function datesBlock(){
+  const sum=quizSum(), open=QUIZZES.filter(z=>state.quizPts[z.n]==null).length;
+  return `<div class="block"><h3>Termine</h3>
+    <p class="small muted" style="margin:0 0 4px">Ökonomisches Denken: Jedes Quiz ist ab dem Freischaltdatum offen und nur einmal möglich. Trag ein, wann du es schreiben willst, und danach deine Punkte.</p>
+    ${QUIZZES.map(z=>{ const d=state.dates["q"+z.n], pt=state.quizPts[z.n];
+      const st= pt!=null?`Geschrieben: ${pt} von 12 Punkten, ${pt>=7?"bestanden":"nicht bestanden"}.` : d?`Termin ${fmtD(d)}, ${cdText(d)}.` : "Noch kein Termin. Abgabe spätestens Sa 21.02.2027.";
+      return `<div class="qrow"><div class="row between"><b>Quiz ${z.n}</b><span class="mini">offen ab ${fmtD(z.open)}</span></div>
+        <div class="dgrid"><label class="small" for="dq${z.n}">Termin</label><input type="date" class="dateinp" id="dq${z.n}" data-dk="q${z.n}" value="${d||""}" min="${z.open}" max="2027-02-21">
+        <label class="small" for="pq${z.n}">Punkte</label><span><input type="number" inputmode="numeric" class="dateinp ptsinp" id="pq${z.n}" data-pk="${z.n}" min="0" max="12" value="${pt!=null?pt:""}"> <span class="mini">von 12</span></span></div>
+        <p class="small ${pt!=null&&pt<7?"":"muted"}" style="margin:4px 0 0${pt!=null&&pt<7?";color:var(--bad)":""}">${st}</p></div>`; }).join("")}
+    <p class="small" style="margin:10px 0 0"><b>Summe:</b> ${sum} von mindestens 30&nbsp;Punkten${open&&sum<30?`, in ${open} offenen Quiz fehlen noch ${30-sum} (Schnitt ${(Math.ceil((30-sum)/open*10)/10).toString().replace(".",",")} je Quiz, mindestens 7)`:""}.</p>
+    <div class="qrow" style="margin-top:8px"><div class="row between"><b>Klausur Sozialstruktur</b>${state.dates.soz?`<span class="mini">${cdText(state.dates.soz)}</span>`:""}</div>
+      <div class="dgrid"><label class="small" for="dsoz">Termin</label><input type="date" class="dateinp" id="dsoz" data-dk="soz" value="${state.dates.soz||""}"></div>
+      <p class="small muted" style="margin:4px 0 0">Der Termin steht noch nicht auf den Folien.</p></div></div>`;
+}
+function bindDates(){
+  document.querySelectorAll("[data-dk]").forEach(el=>el.onchange=()=>{ if(el.value) state.dates[el.dataset.dk]=el.value; else delete state.dates[el.dataset.dk]; save(); const y=window.scrollY; render(); window.scrollTo(0,y); });
+  document.querySelectorAll("[data-pk]").forEach(el=>el.onchange=()=>{ const v=el.value.trim(), n=+v;
+    if(v===""){ delete state.quizPts[el.dataset.pk]; } else if(Number.isInteger(n)&&n>=0&&n<=12){ state.quizPts[el.dataset.pk]=n; } else { toast("Bitte eine ganze Zahl von 0 bis 12."); return; }
+    save(); const y=window.scrollY; render(); window.scrollTo(0,y); });
+}
+function weakData(){
+  const wc=allK().filter(c=>(state.lapses[c.id]||0)>=2).sort((a,b)=>state.lapses[b.id]-state.lapses[a.id]);
+  const wq=isSoz()?[]:allQ().filter(q=>((state.lapses[q.id]||0)>=1||state.err[q.id])&&boxOf(q.id)<=2).sort((a,b)=>(state.lapses[b.id]||0)-(state.lapses[a.id]||0));
+  const conf={}, wwho=[];
+  werAll(true).forEach(x=>{ const h=state.who[x.id]; if(h&&h.last===false){ wwho.push(x); if(h.conf){ const k=werName(x.a)+" ↔ "+werName(h.conf); conf[k]=(conf[k]||0)+1; } } });
+  const r=wRes(), wa=isSoz()?allA().filter(a=>r[a.id]&&r[a.id].p/r[a.id].max<.6):[];
+  return {wc,wq,wwho,conf:Object.entries(conf).sort((a,b)=>b[1]-a[1]).slice(0,3),wa};
+}
+function weakBlock(){
+  const W=weakData(), none=!W.wc.length&&!W.wq.length&&!W.wwho.length&&!W.wa.length;
+  return `<div class="block"><h3>Schwachstellen: ${COURSE_NAME[state.course]}</h3>${none?`<p class="small muted" style="margin:0">Noch nichts Auffälliges. Hier erscheinen Karten, die du mehrmals nicht wusstest, falsche Fragen, verwechselte Zuordnungen${isSoz()?" und Schreibaufgaben unter 60&nbsp;%":""}.</p>`:""}
+    ${W.wc.length?`<p class="small" style="margin:8px 0 2px"><b>Karten, die du mehrmals nicht wusstest</b></p><ul class="weak">${W.wc.slice(0,5).map(c=>`<li>${inl(c.f)}</li>`).join("")}</ul><button class="btn ghost small" id="wkC">Diese ${Math.min(W.wc.length,15)} Karten üben</button>`:""}
+    ${W.wq.length?`<p class="small" style="margin:12px 0 2px"><b>Fragen mit Fehlern</b></p><ul class="weak">${W.wq.slice(0,5).map(q=>`<li>${inl(q.q)}</li>`).join("")}</ul><button class="btn ghost small" id="wkQ">Diese ${Math.min(W.wq.length,10)} Fragen üben</button>`:""}
+    ${W.wwho.length?`<p class="small" style="margin:12px 0 2px"><b>„Wer sagt das?“ zuletzt falsch</b></p>${W.conf.length?`<ul class="weak">${W.conf.map(([k,n])=>`<li>${esc(k)} (${n}×)</li>`).join("")}</ul>`:""}<button class="btn ghost small" id="wkW">Diese ${Math.min(W.wwho.length,8)} Aussagen üben</button>`:""}
+    ${W.wa.length?`<p class="small" style="margin:12px 0 2px"><b>Schreibaufgaben unter 60&nbsp;%</b></p><ul class="weak">${W.wa.slice(0,5).map(a=>`<li>${inl(a.q)} (${wRes()[a.id].p}/${wRes()[a.id].max})</li>`).join("")}</ul><button class="btn ghost small" id="wkA">Erste davon neu schreiben</button>`:""}
+  </div>`;
+}
+function bindWeak(){
+  const W=weakData();
+  if($("#wkC")) $("#wkC").onclick=()=>openCards(W.wc.slice(0,15),true);
+  if($("#wkQ")) $("#wkQ").onclick=()=>startRound("err",W.wq.slice(0,10));
+  if($("#wkW")) $("#wkW").onclick=()=>openWho(8,W.wwho.slice(0,8));
+  if($("#wkA")) $("#wkA").onclick=()=>{ const a=W.wa[0]; write={id:a.id, phase:"schreiben", checks:[], prev:wRes()[a.id]}; view="write"; render(); window.scrollTo(0,0); };
 }
 
 /* ===== Quiz-Simulation ===== */
@@ -1133,11 +1499,14 @@ function renderQuiz(){
   if(quiz.running) return renderQuizRunning();
   renderQuizResult();
 }
-function startQuiz(){
-  const b=state.quizBlock, pool = shuffle(quizPool(b)).slice(0,12).map(prepQ);
-  const sc=b==="alle"?"alle":"q"+b, prev=state.quizzes.filter(z=>z.scope===sc).slice(-1)[0]||null;
-  quiz = {items:pool, answers:Array(pool.length).fill(null), cur:0, end:Date.now()+15*60*1000, running:true, scope:sc, prev};
-  clearInterval(timerId); timerId=setInterval(tick,1000); renderQuiz();
+function startQuiz(){ const b=state.quizBlock; beginQuiz(shuffle(quizPool(b)).slice(0,12), 15*60*1000, b==="alle"?"alle":"q"+b); }
+/* Mini-Quiz für „Heute“: 6 Fragen in 7:30 Minuten (gleiches Tempo wie Moodle), bevorzugt schon gelernte Fragen */
+function startMini(){ const seen=shuffle(allQ().filter(x=>isSeen(x.id))); let L=seen.slice(0,6);
+  if(L.length<6) L=L.concat(shuffle(allQ().filter(x=>!L.includes(x))).slice(0,6-L.length)); beginQuiz(L, 450000, "mini"); }
+function beginQuiz(list, ms, sc){
+  const prev=state.quizzes.filter(z=>z.scope===sc).slice(-1)[0]||null;
+  quiz={items:list.map(prepQ), answers:Array(list.length).fill(null), cur:0, end:Date.now()+ms, running:true, scope:sc, prev};
+  clearInterval(timerId); timerId=setInterval(tick,1000); view="quiz"; render(); window.scrollTo(0,0);
 }
 function tick(){
   if(!quiz||!quiz.running) return clearInterval(timerId);
@@ -1182,19 +1551,19 @@ function finishQuiz(){
   quiz.running=false;
   quiz.ok = quiz.items.map((it,i)=>isRight(it, quiz.answers[i]));
   quiz.score = quiz.ok.filter(Boolean).length;
-  quiz.items.forEach((it,i)=>{ grade(it.q.id, quiz.ok[i]); countAnswer(quiz.ok[i]); });
+  quiz.items.forEach((it,i)=>{ grade(it.q.id, quiz.ok[i], isSeen(it.q.id)&&!isDue(it.q.id)); countAnswer(quiz.ok[i]); });
   state.quizzes.push({date:Date.now(), score:quiz.score, total:quiz.items.length, scope:quiz.scope});
   save(); view="quiz"; render(); window.scrollTo(0,0);
 }
 function renderQuizResult(){
-  const pass = quiz.score>=7;
+  const n=quiz.items.length, pass = quiz.score/n >= 7/12, mini=quiz.scope==="mini";
   $("#app").innerHTML = `
     <h1>Ergebnis</h1>
     <div class="block">
-      <div class="verdict ${pass?"pass":"fail"}">${quiz.score} von ${quiz.items.length}: ${pass?"bestanden":"nicht bestanden"}</div>${quiz.prev?`<p class="small muted" style="margin:4px 0 0">Zuletzt in diesem Stoff: ${quiz.prev.score} von ${quiz.prev.total}</p>`:""}
+      <div class="verdict ${pass?"pass":"fail"}">${quiz.score}&nbsp;von&nbsp;${n}: ${pass?"bestanden":"nicht bestanden"}</div>${quiz.prev?`<p class="small muted" style="margin:4px 0 0">Zuletzt in diesem Stoff: ${quiz.prev.score} von ${quiz.prev.total}</p>`:""}
       <div class="coins">${quiz.items.map((it,i)=>`<span class="coin ${quiz.ok[i]?"ok":"no"}">${i+1}</span>`).join("")}</div>
-      <p class="small muted">${pass?"Mit "+quiz.score+" Punkten liegst du "+(quiz.score>=8?"über":"unter")+" dem Schnitt von 7,5, den du für 30 Punkte insgesamt brauchst.":"Für das echte Quiz brauchst du mindestens 7. Übe die falschen Fragen, sie kommen jetzt öfter dran."}</p>
-      <div class="row"><button class="btn" id="again">Neue Simulation</button><button class="btn ghost" id="toPr">Fehler üben</button></div>
+      <p class="small muted">${mini?"Mini-Quiz: gleiche Bestehensquote wie auf Moodle (7 von 12).":pass?"Mit "+quiz.score+" Punkten liegst du "+(quiz.score>=8?"über":"unter")+" dem Schnitt von 7,5, den du für 30 Punkte insgesamt brauchst.":"Für das echte Quiz brauchst du mindestens 7. Übe die falschen Fragen, sie kommen jetzt öfter dran."}</p>
+      <div class="row">${sess?sessBtn():`<button class="btn" id="again">Neue Simulation</button><button class="btn ghost" id="toPr">Fehler üben</button>`}</div>
     </div>
     <h2>Durchsicht</h2>
     ${quiz.items.map((it,i)=>{ const a=quiz.answers[i], ok=quiz.ok[i]; return `<div class="review">
@@ -1202,8 +1571,8 @@ function renderQuizResult(){
       <p><strong>${inl(it.q.q)}</strong></p>
       ${isAnswered(it,a) && !ok && it.t!=="sc" ? `<p class="small">Deine Antwort: ${inl(answerText(it,a))}</p>` : ""}
       ${isAnswered(it,a) ? fbHTML(it,a,false) : fbHTML(it,a,true).replace("Kein Problem, die Frage kommt gleich noch einmal.","Nicht beantwortet.")}</div>`; }).join("")}`;
-  $("#again").onclick=()=>{quiz=null;renderQuiz();};
-  $("#toPr").onclick=()=>{quiz=null;state.errOnly=true;practice=null;save();go("practice");};
+  if($("#again")) $("#again").onclick=()=>{quiz=null;renderQuiz();};
+  if($("#toPr")) $("#toPr").onclick=()=>{ quiz=null; setF("alle"); startRound("err"); };
 }
 
 /* ===== Zoom (pro Gerät) ===== */

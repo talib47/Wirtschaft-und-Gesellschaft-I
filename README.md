@@ -5,7 +5,7 @@ Live: https://talib47.github.io/Wirtschaft-und-Gesellschaft-I/
 Eine Datei (`index.html`, Vanilla-JS, kein Build-Schritt). Zwei Kurse in einer App, umschaltbar:
 
 - **Ökonomisches Denken** (Seminar, Studienleistung = 4 Quizze): Fragen im Stil einer Fahrschul-App (Einfach-/Mehrfachauswahl, Zuordnen, Zahl), Karteikarten, Quiz-Simulation mit Timer, Bereitschaft je Quiz. Reiter: Übersicht · Üben · Karten · Quiz · Statistik
-- **Sozialstruktur** (Vorlesung, Klausur mit Textaufgaben): Karteikarten und Schreibtraining (Antwort schreiben, Erwartungshorizont abhaken, optional Text von Claude bewerten lassen). Reiter: Übersicht · Karten · Schreiben · Statistik
+- **Sozialstruktur** (Vorlesung, Klausur mit Textaufgaben): Karteikarten und Schreibtraining (Antwort schreiben, Erwartungshorizont abhaken, optional Text von Claude bewerten lassen). Reiter: Übersicht · Karten · Üben · Schreiben · Statistik
 
 ## Aufbau von `index.html`
 
@@ -14,9 +14,10 @@ Eine Datei (`index.html`, Vanilla-JS, kein Build-Schritt). Zwei Kurse in einer A
 | `<style>` | Design (Farben als Tokens, Dunkelmodus) |
 | `BASE` / `BASE_SOZ` | Inhalte: Sitzungen, Fragen, Karten je Kurs |
 | `QUIZZES` | Zuordnung der Sitzungen zu den 4 Quizzen |
-| `state` | Fortschritt: Fächer `box`, Termine `due` (Wiederholungsplan), Fehler `err`, unklare Sitzungen `unclear`, Quiz-Ergebnisse, Entwürfe, Lernzeit |
+| `state` | Fortschritt: Fächer `box` und Termine `due` (Karten **und** Fragen), Fehler `err`, Patzer `lapses`, „Wer sagt das?“ `who`, unklare Sitzungen `unclear`, eigene Termine `dates`, echte Quizpunkte `quizPts`, Tageseinheiten `sessions`, Quiz-Simulationen, Entwürfe, Lernzeit |
 | `GH` | Geräte-Abgleich über GitHub |
 | Textformat | `richText()`, `inl()`, `infoHTML()`, `copyText()` (übernommen aus Wirtschaft II) |
+| Lernmethoden | Abruf vor Auswahl (`recallFirst`), Wiederholungsplan `grade`/`gradeCard`/`gradeIdk`, Schreibfeld `drawSurface`, „Wer sagt das?“ `renderWho`, Lexikon `renderLex`, Tageseinheit `planToday`/`sessbar`, Termine `datesBlock`, Schwachstellen `weakBlock` (Ideen aus Wirtschaft II) |
 | `render*()` | Ansichten: Home, Üben, Karten, Quiz, Schreiben, Statistik (mit Lern-Tracker) |
 
 ## Geräte-Abgleich
@@ -90,3 +91,33 @@ Gilt für jeden Chat, der neue Folien einbaut. Grundlage sind nur die Folien. Ni
 2. Keine doppelten IDs (Fragen, Karten, Aufgaben).
 3. Headless-Browser, hell und dunkel, Handybreite 320–390 px: keine JS-Fehler, nichts ragt über den Rand.
 4. Commit als `Claude <noreply@anthropic.com>`, push auf `main`. Den Zweig `fortschritt` nie anfassen.
+
+### Beispielboxen in Karten
+
+Zeilen mit `> ` werden zu einer Box mit Label links, z. B.
+```
+> Ertrag: 20 €
+> Kosten: 5 €
+> Rendite: (20 − 5) / 5 = 300 %
+```
+Überschrift statt „Beispiel“: erste Zeile `> [Fall]`.
+
+### „Wer sagt das?“ (Pflicht: 8–15 Aussagen pro Sitzung)
+
+```js
+// in BASE.wer bzw. BASE_SOZ.wer
+{id:"s2-w01", s:2, t:"Sinngemäße Aussage nach der Folie", a:"schluessel", alt:["auch_vertretbar"],
+ ex:"Begründung, warum es zu a gehört", w:{andererSchluessel:"Warum genau diese Verwechslung falsch ist"}}
+```
+- `t` ist **sinngemäß** formuliert, kein erfundenes Zitat. Nur Aussagen, die so auf den Folien stehen.
+- `a` muss in `werListe` stehen. Neue Autoren, Theorien oder Ansätze dort ergänzen (Schlüssel nie umbenennen). In `BASE_SOZ.werListe` mit Gruppe `g` (`theorie`, `ansatz`, `bild`): Falschantworten kommen zuerst aus derselben Gruppe.
+- `alt`: Schlüssel, die ebenfalls vertretbar wären. Sie werden nicht als falsche Antwort angeboten.
+- `w`: für typische Verwechslungen eine Begründung.
+- IDs: `s2-w01` (Ökonomisches Denken), `soz2-w01` (Sozialstruktur).
+
+### Was die App beim Lernen macht (nicht ändern ohne Grund)
+
+- Fragen: Bei Einfach- und Mehrfachauswahl erst selbst abrufen, dann „Auswahl zeigen“. Ausnahmen: Richtig/Falsch, Zuordnung, Zahl und Fragen mit „NICHT“.
+- Wiederholungsplan für Karten **und** Fragen: 0, 0, 1, 3, 7, 16, 35 Tage. Karten mit drei Stufen (Nicht gewusst / Unsicher / Sicher). „Weiß ich nicht“ ohne Strafe: Fach bleibt, kein Fehler, kommt in der Runde und morgen wieder.
+- Beim Start wird **nichts** gespeichert (sonst überschreibt der Abgleich einen neueren Stand). `norm()` ergänzt fehlende Termine nur im Speicher.
+- Die Quiz-Simulation bleibt wie Moodle: Auswahl sofort sichtbar, kein „Weiß ich nicht“.
