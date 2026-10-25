@@ -121,3 +121,7 @@ Zeilen mit `> ` werden zu einer Box mit Label links, z. B.
 - Wiederholungsplan für Karten **und** Fragen: 0, 0, 1, 3, 7, 16, 35 Tage. Karten mit drei Stufen (Nicht gewusst / Unsicher / Sicher). „Weiß ich nicht“ ohne Strafe: Fach bleibt, kein Fehler, kommt in der Runde und morgen wieder.
 - Beim Start wird **nichts** gespeichert (sonst überschreibt der Abgleich einen neueren Stand). `norm()` ergänzt fehlende Termine nur im Speicher.
 - Die Quiz-Simulation bleibt wie Moodle: Auswahl sofort sichtbar, kein „Weiß ich nicht“.
+
+## Updates
+
+Nach jeder Änderung an `index.html` einmal `python3 stamp.py` ausführen: setzt die Versionsnummer im Update-Check und schreibt `version.txt`. Die App vergleicht beim Start und beim Zurückkehren ihre Version damit und lädt sich bei Änderungen neu.
