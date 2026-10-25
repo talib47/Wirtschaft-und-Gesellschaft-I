@@ -757,7 +757,7 @@ function fbHTML(p,a,idk){
   if(idk) return `<div class="fb idk"><p class="fh">Kein Problem, die Frage kommt gleich noch einmal.</p><div class="dlist">${right}${why?`<b>Warum</b><span>${why}</span>`:""}</div></div>`;
   if(isRight(p,a)) return `<div class="fb good"><p class="fh">Richtig.</p>${why?`<p style="margin:0">${why}</p>`:""}</div>`;
   let rows="";
-  if(p.t==="sc" && a!=null && w[a]) rows+=`<b>Deine Wahl</b><span>${inl(w[a])}</span>`;
+  if(p.t==="sc" && a!=null && w[a]) rows+=`<b>Warum nicht</b><span>${inl(w[a])}</span>`;
   if(p.t==="multi"){
     const wrongSel=(a||[]).filter(i=>!p.correct.includes(i)), missed=p.correct.filter(i=>!(a||[]).includes(i));
     wrongSel.forEach(i=>{ rows+=`<b>Falsch angekreuzt</b><span>${inl(p.q.o[i])}${w[i]?`: ${inl(w[i])}`:""}</span>`; });
@@ -765,7 +765,7 @@ function fbHTML(p,a,idk){
   }
   if(p.t==="zahl" && typeof q.w==="string") rows+=`<b>Typischer Fehler</b><span>${inl(q.w)}</span>`;
   if(p.t!=="multi") rows+=right;
-  if(why) rows+=`<b>${rows.includes("Deine Wahl")?"Der Unterschied":"Warum"}</b><span>${why}</span>`;
+  if(why) rows+=`<b>${rows.includes("Warum nicht")?"Der Unterschied":"Warum"}</b><span>${why}</span>`;
   return `<div class="fb bad"><p class="fh">Nicht ganz.</p><div class="dlist">${rows}</div></div>`;
 }
 /* onSet(neueAntwort, sofortPruefen, neuZeichnen) */
@@ -1247,7 +1247,7 @@ function renderWho(){
   if(W.idk) fb=`<div class="fb idk"><p class="fh">Kein Problem, die Aussage kommt wieder.</p><div class="dlist"><b>Richtig</b><span>${esc(werName(x.a))}</span><b>Warum</b><span>${inl(x.ex)}</span></div></div>`;
   else if(W.a===x.a) fb=`<div class="fb good"><p class="fh">Richtig.</p><p style="margin:0">${inl(x.ex)}</p></div>`;
   else if(W.a!==null){ const why=(x.w||{})[W.a];
-    fb=`<div class="fb bad"><p class="fh">Nicht ganz.</p><div class="dlist">${why?`<b>Deine Wahl</b><span>${inl(why)}</span>`:""}<b>Richtig</b><span>${esc(werName(x.a))}</span><b>${why?"Der Unterschied":"Warum"}</b><span>${inl(x.ex)}</span></div></div>`; }
+    fb=`<div class="fb bad"><p class="fh">Nicht ganz.</p><div class="dlist">${why?`<b>Warum nicht</b><span>${inl(why)}</span>`:""}<b>Richtig</b><span>${esc(werName(x.a))}</span><b>${why?"Der Unterschied":"Warum"}</b><span>${inl(x.ex)}</span></div></div>`; }
   $("#app").innerHTML=`<h1>${sess?"Heute: ":""}Wer sagt das?</h1>
     <div class="block"><p class="eyebrow">Aussage ${W.i+1} von ${L.length} · Sitzung ${x.s}${ses?": "+esc(ses):""} · sinngemäß nach den Folien</p>
       <p class="who">„${inl(x.t)}“</p>
