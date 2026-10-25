@@ -98,7 +98,21 @@ td:last-child{text-align:right}
 .pad .tools{position:absolute;right:8px;top:8px;display:flex;gap:6px}
 .pad .tools button{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:.8rem}
 .pad .ph{position:absolute;left:12px;top:10px;font-size:.8rem;color:var(--muted);pointer-events:none}
-.grade{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.grade{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hint{margin:6px 0 0;font-size:.75rem;color:var(--muted);opacity:.85}
+.swipewrap{position:relative;overflow-x:clip;overflow-y:visible;margin:0 -16px;padding:0 16px}
+.swipewrap .card{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;will-change:transform;position:relative;overflow:hidden;backface-visibility:hidden}
+.card .tint{position:absolute;inset:0;opacity:0;pointer-events:none;border-radius:inherit;border:2px solid transparent;will-change:opacity}
+.card .tint.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 7%,transparent)}
+.card .tint.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 7%,transparent)}
+.card.enter{animation:cardIn .22s ease-out}
+@keyframes cardIn{from{opacity:0;transform:translate3d(0,8px,0) scale(.985)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.card.enter{animation:none}}
+.cty{display:block;width:100%;box-sizing:border-box;margin:2px 0 12px;padding:6px 2px;font:inherit;font-size:.95rem;color:var(--ink);background:transparent;border:0;border-bottom:1px dashed var(--line);border-radius:0;resize:none;outline:none}
+.cty:focus{border-bottom-color:var(--muted)}
+.cty::placeholder{color:var(--muted);opacity:.7}
+.tylink{background:transparent;border:0;padding:8px 6px;font:inherit;font-size:.85rem;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.card .typed{border-top:1px solid var(--line);padding-top:8px}.card .typed p{margin:2px 0 0;white-space:pre-wrap}
 .grade .btn{padding:12px 4px;min-width:0}
 .modes{display:flex;flex-direction:column}
 .mode{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;padding:13px 2px;border:0;border-top:1px solid var(--line);background:none;width:100%;text-align:left}
@@ -1044,7 +1058,7 @@ function renderSozHome(){
     ${todayBlock()}
     <div class="block">
       <h2>Karten lernen</h2>
-      <p class="small muted">Erst selbst erklären, dann umdrehen. Gewusste Karten kommen nach 1, 3, 7, 16 und 35 Tagen wieder.</p>
+      <p class="small muted">Erst selbst erklären, dann umdrehen. Sichere Karten kommen nach 1, 3, 7, 16 und 35 Tagen wieder.</p>
       <button class="btn" id="goCards">Karten starten</button>
     </div>
     <div class="block">
@@ -1297,48 +1311,71 @@ function buildDeck(free){
   return due.concat(fresh).slice(0,Math.max(10,Math.min(due.length,30)));
 }
 function cardCtx(c){ const t=sessions()[c.s]; return `Sitzung ${c.s}${t?": "+t:""}${c.ctx?" · "+c.ctx:""}`; }
-function openCards(deck,free){ cards={deck:deck.slice(), i:0, flip:false, right:0, unsure:0, n:0, free:!!free, req:{}, pad:!!(cards&&cards.pad)}; cStrokes=[]; view="cards"; render(); window.scrollTo(0,0); }
+function openCards(deck,free){ cards={deck:deck.slice(), i:0, flip:false, right:0, unsure:0, n:0, free:!!free, req:{}, typed:"", tyOpen:false, hist:[]}; view="cards"; render(); window.scrollTo(0,0); }
 function renderCards(){
-  if(!cards || !cards.deck){ cards={deck:buildDeck(false), i:0, flip:false, right:0, unsure:0, n:0, free:false, req:{}, pad:!!(cards&&cards.pad)}; }
+  if(!cards || !cards.deck){ cards={deck:buildDeck(false), i:0, flip:false, right:0, unsure:0, n:0, free:false, req:{}, typed:"", tyOpen:false, hist:[]}; }
   const D=cards.deck, items=allK().filter(inFilter);
   const head=`<div class="row"><h1 class="grow">${sess?"Heute: Karten":"Karten"}</h1>${sess?"":filterSelect()}</div>`;
   const bindHead=()=>bindFilter(()=>{ cards=null; renderCards(); });
   if(cards.i>=D.length){
     const left=dueCards(items).length+items.filter(x=>!isSeen(x.id)).length;
     const nextDue=items.filter(x=>isSeen(x.id)&&!isDue(x.id)).map(x=>state.due[x.id]).sort((a,b)=>a-b)[0];
-    const no=cards.n-cards.right-cards.unsure;
     $("#app").innerHTML=head+`<div class="block"><h2>${D.length?(left?"Runde geschafft":"Für heute erledigt"):"Heute ist nichts fällig"}</h2>
-      ${cards.n?`<p>${cards.right} sicher, ${cards.unsure} unsicher, ${no} nicht gewusst.</p>`:""}
-      <p class="small muted">${left?`Noch ${left} Karten fällig oder neu.`:`Alle Karten sind auf dem Stand.${nextDue?` Die nächsten werden ${whenText(nextDue)} fällig.`:""}`} „Sicher“ kommt nach 1, 3, 7, 16 und 35 Tagen wieder, „Unsicher“ morgen, „Nicht gewusst“ gleich noch einmal.</p>
+      ${cards.n?`<p>${cards.right} sicher, ${cards.unsure} nicht sicher.</p>`:""}
+      <p class="small muted">${left?`Noch ${left} Karten fällig oder neu.`:`Alle Karten sind auf dem Stand.${nextDue?` Die nächsten werden ${whenText(nextDue)} fällig.`:""}`} „Sicher“ kommt nach 1, 3, 7, 16 und 35 Tagen wieder, „Nicht sicher“ gleich in dieser Runde und morgen noch einmal.</p>
       <div class="row">${sess?sessBtn():`${left?`<button class="btn" id="again">Weiter</button>`:""}<button class="btn ghost" id="free">Freiwillig weiterüben</button>`}</div></div>`;
     bindHead();
     if($("#again")) $("#again").onclick=()=>{ cards=null; renderCards(); };
     if($("#free")) $("#free").onclick=()=>openCards(buildDeck(true),true);
     return;
   }
-  const c=D[cards.i], b=boxOf(c.id);
+  const c=D[cards.i], b=boxOf(c.id), esc=t=>t.replace(/&/g,"&amp;").replace(/</g,"&lt;");
   $("#app").innerHTML=head+`
     <div class="row between"><p class="eyebrow">Karte ${cards.i+1} von ${D.length}${cards.free?" · freiwillig":isSeen(c.id)?" · fällig":" · neu"}</p><span class="dots" aria-label="Fach ${b} von 5">${[1,2,3,4,5].map(i=>`<i class="${i<=b?"on":""}"></i>`).join("")}</span></div>
-    <div class="block card" id="card" style="margin-top:8px" role="button" tabindex="0" aria-label="Karte umdrehen">
+    <div class="swipewrap">
+    <div class="block card${cards.enter?" enter":""}" id="card" style="margin-top:8px" role="button" tabindex="0" aria-label="Karte umdrehen"><i class="tint" aria-hidden="true"></i>
       <p class="cctx">${inl(cardCtx(c))}</p><div class="front">${inl(c.f)}</div>
-      ${cards.flip?`<div class="back">${richText(c.b)}</div>${infoHTML(c.i)}`:`<p class="tap">Tippen zum Umdrehen</p>`}</div>
-    ${cards.pad?padHTML("cpad",false):""}
-    ${cards.flip?`<div class="grade"><button class="btn warn" id="g0">Nicht gewusst</button><button class="btn ghost" id="g1">Unsicher</button><button class="btn" id="g2">Sicher</button></div>`
-      :`<div class="row"><button class="btn" id="flip" style="flex:1">Antwort zeigen</button><button class="btn ghost" id="padT">${cards.pad?"Schreibfeld aus":"Schreibfeld"}</button></div>
-        <p class="small muted" style="margin-top:8px">Erst antworten, im Kopf oder im Schreibfeld, dann umdrehen. „Unsicher“, wenn du es nur ungefähr wusstest.</p>`}`;
+      ${cards.flip?`${cards.typed.trim()?`<div class="typed"><span class="small muted">Deine Antwort</span><p>${esc(cards.typed)}</p></div>`:""}<div class="back">${richText(c.b)}</div>${infoHTML(c.i)}`:`<p class="tap">Tippen zum Umdrehen</p>`}</div></div>
+    ${cards.flip?`<div class="grade"><button class="btn ghost" id="g1">← Nicht sicher</button><button class="btn" id="g2">Sicher →</button></div>`
+      :`${cards.tyOpen||cards.typed?`<textarea id="cty" class="cty" rows="1" placeholder="Deine Antwort …" aria-label="Antwort tippen">${esc(cards.typed)}</textarea>`:""}
+      <div class="row"><button class="btn" id="flip" style="flex:1">Antwort zeigen</button>${cards.tyOpen||cards.typed?"":`<button class="tylink" id="tyO">Tippen</button>`}</div><p class="hint">Erst antworten, dann aufdecken.</p>`}
+    ${cards.hist.length?`<button class="btn ghost small" id="cprev" style="margin-top:6px">← Vorherige Karte</button>`:""}`;
+  cards.enter=false;
   bindHead();
-  const cd=$("#card"); cd.onclick=e=>{ if(e.target.closest("a,button,select")) return; cards.flip=!cards.flip; renderCards(); };
-  cd.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); cd.click(); } };
+  if($("#tyO")) $("#tyO").onclick=()=>{ cards.tyOpen=true; renderCards(); $("#cty").focus(); };
+  const ta=$("#cty"); if(ta){ const fit=()=>{ ta.style.height="auto"; ta.style.height=ta.scrollHeight+"px"; }; fit(); ta.oninput=()=>{ cards.typed=ta.value; fit(); }; }
+  const cd=$("#card"); let moved=false;
+  cd.onclick=e=>{ if(e.target.closest("a,button,select")||moved) return; cards.flip=!cards.flip; renderCards(); };
+  cd.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); cd.click(); } else if(cards.flip&&e.key==="ArrowRight") answer(2); else if(cards.flip&&e.key==="ArrowLeft") answer(1); };
   if($("#flip")) $("#flip").onclick=()=>{ cards.flip=true; renderCards(); };
-  if($("#padT")) $("#padT").onclick=()=>{ cards.pad=!cards.pad; renderCards(); };
-  if(cards.pad) bindPad("cpad",cStrokes);
-  const answer=lv=>{ gradeCard(c,lv,cards.free); track(state.course, lv===2); cards.n++;
-    if(lv===2) cards.right++; else if(lv===1) cards.unsure++;
-    else if((cards.req[c.id]||0)<2){ cards.req[c.id]=(cards.req[c.id]||0)+1; D.splice(Math.min(D.length,cards.i+4),0,c); }
-    save(); cards.i++; cards.flip=false; cStrokes.length=0; renderCards(); };
-  if($("#g0")) $("#g0").onclick=()=>answer(0);
+  /* Wischen nach dem Aufdecken: rechts sicher, links nicht sicher. Pro Bild nur transform und opacity (ruckelfrei). */
+  if(cards.flip){ const tint=cd.querySelector(".tint"); let x0=null, y0=0, dx=0, raf=0, w=360, dir=0;
+    const paint=()=>{ raf=0; const k=Math.min(1,Math.abs(dx)/(w*.35)), d=dx>0?1:-1;
+      if(d!==dir){ dir=d; tint.className="tint "+(d>0?"ok":"no"); }
+      cd.style.transform=`translate3d(${dx}px,0,0) rotate(${dx/45}deg)`; tint.style.opacity=k; };
+    cd.onpointerdown=e=>{ if(e.target.closest("a,button,select")) return; x0=e.clientX; y0=e.clientY; dx=0; moved=false; w=cd.offsetWidth||360; };
+    cd.onpointermove=e=>{ if(x0===null) return; const d=e.clientX-x0;
+      if(!moved){ if(Math.abs(d)>6&&Math.abs(d)>Math.abs(e.clientY-y0)){ moved=true; x0+=d>0?6:-6; try{cd.setPointerCapture(e.pointerId);}catch(x){} cd.style.transition="none"; tint.style.transition="none"; } else return; }
+      e.preventDefault(); dx=e.clientX-x0; if(!raf) raf=requestAnimationFrame(paint); };
+    cd.onpointerup=cd.onpointercancel=()=>{ if(x0===null) return; x0=null; if(!moved) return; if(raf){ cancelAnimationFrame(raf); raf=0; }
+      const lim=Math.min(100,w*.25);
+      if(Math.abs(dx)>lim){ const out=(dx>0?1:-1)*(window.innerWidth+100);
+        cd.style.transition="transform .3s cubic-bezier(.2,.7,.3,1), opacity .3s ease-out"; cd.style.transform=`translate3d(${out}px,0,0) rotate(${dx>0?12:-12}deg)`; cd.style.opacity="0";
+        setTimeout(()=>answer(dx>0?2:1),220); }
+      else { cd.style.transition="transform .35s cubic-bezier(.3,1.4,.5,1)"; tint.style.transition="opacity .25s"; cd.style.transform=""; tint.style.opacity="0"; setTimeout(()=>{ moved=false; },0); } };
+  }
+  /* 2 sicher, 1 nicht sicher (morgen wieder, in dieser Runde noch einmal) */
+  function answer(lv){
+    cards.hist.push({st:JSON.stringify(state), i:cards.i, deck:D.slice(), n:cards.n, right:cards.right, unsure:cards.unsure, req:Object.assign({},cards.req), typed:cards.typed});
+    gradeCard(c,lv,cards.free); track(state.course, lv===2); cards.n++;
+    if(lv===2) cards.right++;
+    else { cards.unsure++; if(!cards.req[c.id]){ cards.req[c.id]=1; D.splice(Math.min(D.length,cards.i+4),0,c); } }
+    save(); cards.i++; cards.flip=false; cards.typed=""; cards.enter=true; renderCards(); window.scrollTo(0,0); }
   if($("#g1")) $("#g1").onclick=()=>answer(1);
   if($("#g2")) $("#g2").onclick=()=>answer(2);
+  /* Eine Karte zurück: letzte Bewertung rückgängig */
+  if($("#cprev")) $("#cprev").onclick=()=>{ const h=cards.hist.pop(); if(!h) return;
+    state=JSON.parse(h.st); cards.deck=h.deck; cards.i=h.i; cards.n=h.n; cards.right=h.right; cards.unsure=h.unsure; cards.req=h.req; cards.typed=h.typed; cards.flip=true; cards.enter=true; save(); renderCards(); };
 }
 
 /* ===== Tägliche Einheit „Heute“: mischt Wiederholung, Neues, Zuordnen und Prüfungsformat (Spacing und Interleaving) ===== */
@@ -1592,7 +1629,7 @@ load().then(render);
    Beim Start lädt die App eine neue Version sofort. Beim Zurückkehren nur, wenn gerade nichts läuft;
    mitten in Karten, Aufgaben oder Probeklausur erscheint stattdessen ein Hinweis zum Antippen. Der Lernstand liegt im Gerät und wird vorher abgeglichen. */
 (function(){
-  var V="0ba42b922155", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
+  var V="f43157954695", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
   function busy(){ try{ return BUSY.indexOf(view)>=0; }catch(e){ return false; } }
   function syncing(){ try{ return !!(pushTimer||pushing); }catch(e){ return false; } }
   function reload(t){ try{ sessionStorage.setItem("upd-"+t,"1"); }catch(e){} location.replace(location.pathname+"?v="+t+location.hash); }
