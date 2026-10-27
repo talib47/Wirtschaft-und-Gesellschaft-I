@@ -373,6 +373,145 @@ const BASE = {
 /* ===== Sozialstruktur: Inhalte (Regeln siehe README, „So kommen neue Sitzungen dazu“) ===== */
 const BASE_SOZ = {
   sitzungen: { "1": "Einführung (15.10.)" },
+  /* Klausurfragen: Single Choice wie in der E-Klausur (rund 70 Fragen in 60 Minuten, keine Minuspunkte).
+     Richtige Antwort zuerst, die App mischt. last:true = letzte Option („Alle …“ / „Keine …“) bleibt unten, a = Index der richtigen. */
+  fragen: [
+    {id:"soz1-f01",s:1,q:"Welche Aussage ist richtig? Soziale Regeln …",o:["… steuern, ordnen und stabilisieren soziale Prozesse.","… sind für die Sozialstrukturanalyse unerheblich.","… wirken wie Naturgesetze auf das gesellschaftliche Leben.","… manifestieren die Klassenstruktur benachteiligter Gesellschaftsschichten.","… werden in Demokratien durch freie Wahlen durch die Bevölkerung festgelegt."],
+      e:"Beispielfrage 1 aus den Klausurinfos. Folie „Wie entsteht Sozialstruktur?“: Regeln steuern, ordnen und stabilisieren soziale Prozesse, um ein gesamtgesellschaftliches Ziel zu erreichen.",
+      w:{1:"Im Gegenteil: Sozialstruktur ist sichtbares Produkt wirksamer sozialer Regeln. Regeln sind der Kern der Analyse.",2:"Soziale Regeln sind von Menschen gemacht, historisch und kulturell wandelbar. Naturgesetze sind das nicht.",3:"Klingt nach Marx, steht so aber nicht auf der Folie. Regeln betreffen alle, nicht nur benachteiligte Schichten.",4:"Regeln entstehen bewusst **oder unbewusst**. Viele Normen hat nie jemand gewählt."}},
+    {id:"soz1-f02",s:1,q:"Was ist KEIN genereller Faktor der Sozialstrukturanalyse?",o:["Ungerechtigkeit","Lebensverlauf","Restriktionen","Ressourcen"],
+      e:"Beispielfrage 2 aus den Klausurinfos. Die drei generellen Faktoren: Restriktionen – Ressourcen – Lebensverlauf.",
+      w:{1:"Der Lebensverlauf ist Faktor 3.",2:"Restriktionen sind Faktor 1.",3:"Ressourcen sind Faktor 2."}},
+    {id:"soz1-f03",s:1,q:"Von einer Struktur spricht man nach Glatzer (2002), wenn …",o:["… eine Mehrzahl von Einheiten in nicht zufälliger Weise angeordnet bzw. verbunden ist.","… eine Gesellschaft rechtlich in Stände gegliedert ist.","… sich das Verhalten eines Einzelnen vorhersagen lässt.","… alle Einheiten gleich groß und gleich wichtig sind.","… staatliche Gesetze das Verhalten vollständig festlegen."],
+      e:"Glatzer: nicht zufällige Anordnung, Regelmäßigkeiten oder Muster. Was an einer Stelle auftritt, kehrt an einer anderen wieder.",
+      w:{1:"Stände sind eine historische Form von Sozialstruktur, nicht die Definition von Struktur.",2:"Der Einzelfall interessiert die Sozialstrukturanalyse gerade nicht.",3:"Von Gleichheit der Einheiten ist keine Rede, nur von Regelmäßigkeit.",4:"Gesetze sind nur eine Art sozialer Regeln. Die Definition spricht allgemein von Mustern."}},
+    {id:"soz1-f04",s:1,q:"Welche Fragestellung entspricht dem Erkenntnisinteresse der Soziologie?",o:["Welche gesellschaftlichen Bedingungen fördern die Häufigkeit von Amokläufen?","Warum läuft Herr K. Amok?","Welche Persönlichkeitsstörung hatte ein bestimmter Täter?","Wie lässt sich ein einzelner Amoklauf juristisch bewerten?","Wie hat Herr K. seine Tat geplant?"],
+      e:"Die Soziologie interessiert sich für strukturierende Einflüsse, die Handeln **systematisch** beeinflussen, nicht für das Verhalten einzelner Menschen.",
+      w:{1:"Das ist genau das Beispiel für den Einzelfall, an dem die Soziologie nicht interessiert ist.",2:"Psychologische Einzelfallfrage, keine strukturierenden Einflüsse.",3:"Juristische Bewertung eines Einzelfalls, nicht soziologisch.",4:"Wieder der Einzelfall Herr K."}},
+    {id:"soz1-f05",s:1,q:"Welche Aussage ist richtig? Die Sozialstrukturanalyse interessiert sich vor allem für …",o:["… Durchschnittswerte bzw. Wahrscheinlichkeiten.","… gut dokumentierte Einzelfälle.","… das Verhalten besonders prominenter Personen.","… ausschließlich rechtlich festgelegte Regeln.","… die Persönlichkeit einzelner Akteure."],
+      e:"Kein Interesse am Einzelfall, sondern an „Durchschnittswerten“ bzw. Wahrscheinlichkeiten.",
+      w:{1:"Goldene Regel: keine Argumentation mit Einzelfällen.",2:"Prominente sind Einzelfälle (siehe Helmut Schmidt).",3:"Es geht um **offene oder verdeckte** soziale Regeln, nicht nur um Gesetze.",4:"Einzelne Persönlichkeiten sind nicht der Fokus."}},
+    {id:"soz1-f06",s:1,q:"Welche Aussage ist richtig? Die beobachtbare Sozialstruktur ist …",o:["… sichtbares Produkt existenter und wirksamer sozialer Regeln.","… unabhängig von sozialen Regeln.","… ein Naturgesetz, das sich nicht verändert.","… allein das Ergebnis individueller Talente.","… nur in vormodernen Gesellschaften vorhanden."],
+      e:"Folie „Ziel jeder Sozialstrukturanalyse“: Soziale Regeln manifestieren sich in sozialen Strukturen.",
+      w:{1:"Gerade umgekehrt: Struktur ist Ausdruck der Regeln.",2:"Regeln sind historisch und kulturell wandelbar, also auch die Struktur.",3:"Das wäre das Menschenbild Homo oeconomicus, nicht die Definition der Sozialstruktur.",4:"Sozialstruktur gibt es seit größeren Gesellschaften der Antike bis heute."}},
+    {id:"soz1-f07",s:1,q:"Was besagt die „goldene Regel“ der Sozialstrukturanalyse?",o:["Keine Argumentation mit Einzelfällen.","Jede Gesellschaft braucht eine Ständeordnung.","Gesetze gehen immer vor Normen.","Nur Zahlen aus amtlichen Statistiken zählen.","Ungleichheit ist grundsätzlich schlecht."],
+      e:"Beispiel: Helmut Schmidt rauchte ca. 40 Zigaretten am Tag und wurde 96. Das beweist nicht, dass Raucher nicht früher sterben.",
+      w:{1:"Stände sind ein historisches Beispiel, keine Regel der Analyse.",2:"Steht nicht auf den Folien.",3:"Von amtlichen Statistiken ist nicht die Rede. Die Raucherdaten kommen aus einer Studie (Doll et al.).",4:"Auf der Folie: Ungleichheit ist **nicht per se** gut oder schlecht."}},
+    {id:"soz1-f08",s:1,q:"Mit welchem Beispiel zeigt Erlinghagen, warum man nicht mit Einzelfällen argumentieren darf?",o:["Helmut Schmidt, der stark rauchte und sehr alt wurde","Karl Marx, der im Exil lebte","Max Weber und sein Begriff des Prestiges","Ein Lottogewinner, der plötzlich reich wird","Ein Arbeiter, der zum Unternehmer aufsteigt"],
+      e:"„Raucher sterben nicht früher!“ mit Verweis auf Helmut Schmidt ist ein unzulässiger Einzelfall. Dagegen stehen die Überlebensraten britischer Ärzte (Doll et al. 2004).",
+      w:{1:"Marx kommt als Theoretiker der Klassengesellschaft vor, nicht als Einzelfall-Beispiel.",2:"Weber ist Theoretiker, kein Einzelfall-Beispiel.",3:"Kommt in der Vorlesung nicht vor.",4:"Kommt in der Vorlesung nicht vor."}},
+    {id:"soz1-f09",s:1,q:"Welche Aussage über soziale Regeln ist NICHT zutreffend?",o:["Soziale Regeln gelten unabhängig von Zeit und Kultur.","Soziale Regeln sind von Menschen gemacht.","Soziale Regeln können bewusst oder unbewusst entstehen.","Beständigkeit und Wandel von Regeln hängen von der Verteilung von Ressourcen (Macht) ab.","Soziale Regeln sind von begrenzter Reichweite."],
+      e:"Gesucht ist die falsche Aussage: Soziale Regeln sind **historisch und kulturell wandelbar**.",
+      w:{1:"Stimmt: Strukturen sind immer von Menschen „gemacht“.",2:"Stimmt: bewusst oder unbewusst geschaffene, dauerhafte, durchsetzbare Regeln.",3:"Stimmt so auf der Folie.",4:"Stimmt so auf der Folie."}},
+    {id:"soz1-f10",s:1,q:"Gesellschaftliche Strukturen sind laut Vorlesung …",o:["… zugleich Grundlage und Ergebnis menschlichen Handelns.","… nur Ergebnis, nie Grundlage menschlichen Handelns.","… nur Grundlage, nie Ergebnis menschlichen Handelns.","… unabhängig von menschlichem Handeln.","… allein durch den Staat geschaffen."],
+      e:"Strukturen sind von Menschen gemacht und wirken zugleich auf ihr Handeln zurück.",
+      w:{1:"Halb richtig: Sie sind auch Grundlage des Handelns.",2:"Halb richtig: Sie sind auch Ergebnis des Handelns.",3:"Strukturen sind immer von Menschen „gemacht“.",4:"Regeln entstehen auch unbewusst, nicht nur durch den Staat."}},
+    {id:"soz1-f11",s:1,q:"Welches ist ein Beispiel für eine Restriktion sozialer Art?",o:["Ein Gesetz","Die Schwerkraft","Das Klima","Ein hohes Einkommen","Gute Beziehungen"],
+      e:"Soziale Restriktionen sind soziale Regeln: Normen und Gesetze.",
+      w:{1:"Schwerkraft ist eine **natürliche** Restriktion.",2:"Klima ist eine **natürliche** Restriktion.",3:"Einkommen ist eine Ressource, keine Beschränkung.",4:"Beziehungen sind eine Ressource (später: Sozialkapital)."}},
+    {id:"soz1-f12",s:1,q:"Welche Aussage über Restriktionen ist richtig?",o:["Sie können enger oder weiter sein und natürlicher oder sozialer Art.","Sie sind immer sozialer Art.","Sie sind immer natürlicher Art.","Sie betreffen nur Menschen ohne Ressourcen.","Sie erweitern den individuellen Handlungsspielraum."],
+      e:"Restriktionen begrenzen den Handlungsspielraum. Sie können enger oder weiter sein, natürlich (Schwerkraft, Klima) oder sozial (Normen, Gesetze).",
+      w:{1:"Es gibt auch natürliche Restriktionen wie Schwerkraft oder Klima.",2:"Es gibt auch soziale Restriktionen wie Normen und Gesetze.",3:"Restriktionen wirken auf alle. Ressourcen verändern nur, wie stark.",4:"Restriktionen **begrenzen** den Handlungsspielraum."}},
+    {id:"soz1-f13",s:1,q:"Wie hängen Ressourcen und Restriktionen laut Vorlesung zusammen?",o:["Restriktionen wirken in Kombination mit Ressourcen auf den Handlungsspielraum.","Ressourcen heben Restriktionen vollständig auf.","Ressourcen und Restriktionen sind dasselbe.","Restriktionen gibt es nur für Menschen ohne Ressourcen.","Ressourcen haben keinen Einfluss auf Macht."],
+      e:"Mehr (weniger) Ressourcen = mehr (weniger) Macht. Restriktionen wirken in Kombination mit Ressourcen.",
+      w:{1:"Ressourcen vergrößern den Spielraum, schaffen Restriktionen aber nicht ab.",2:"Ressourcen ermöglichen, Restriktionen beschränken.",3:"Restriktionen betreffen alle.",4:"Auf der Folie: mehr Ressourcen = mehr Macht."}},
+    {id:"soz1-f14",s:1,q:"Welche Aussage ist richtig? Mehr Ressourcen bedeuten …",o:["… mehr Macht.","… weniger Macht.","… mehr Restriktionen.","… keinen Unterschied für den Handlungsspielraum.","… automatisch einen höheren Stand."],
+      e:"Folie: mehr (weniger) Ressourcen = mehr (weniger) Macht.",
+      w:{1:"Gerade umgekehrt.",2:"Ressourcen sind keine Beschränkungen.",3:"Ressourcen wirken mit Restriktionen auf den Handlungsspielraum.",4:"Der Stand hängt in der Ständegesellschaft an der Herkunft, nicht an Ressourcen."}},
+    {id:"soz1-f15",s:1,q:"Für welche Wechselwirkungen interessiert sich der Lebensverlaufsansatz NICHT?",o:["Zwischen Naturgesetzen und dem Klima","Zwischen unterschiedlichen Lebensbereichen","Zwischen früheren Erfahrungen und aktuellem Verhalten","Zwischen dem eigenen Verhalten und dem anderer Menschen","Der Ansatz interessiert sich für alle genannten Wechselwirkungen."],last:true,
+      e:"Die drei Wechselwirkungen: Lebensbereiche, Vorher-nachher, „linked lives“. Naturgesetze und Klima gehören nicht dazu.",
+      w:{1:"Wechselwirkung (1): z. B. Beruf und Familie.",2:"Wechselwirkung (2): „Vorher-Nachher“.",3:"Wechselwirkung (3): „linked lives“.",4:"Eine der Optionen gehört nicht zum Lebensverlaufsansatz."}},
+    {id:"soz1-f16",s:1,q:"Eine Partnerschaft kann nur bestehen, wenn beide Partner zustimmen. Welche Wechselwirkung des Lebensverlaufsansatzes beschreibt das?",o:["„linked lives“: Wechselwirkung mit dem Verhalten anderer Menschen","Wechselwirkung zwischen Lebensbereichen","„Vorher-Nachher“-Wechselwirkung","Wechselwirkung zwischen Ressourcen und Restriktionen","Wechselwirkung zwischen Stand und Klasse"],
+      e:"Wechselwirkung (3): Entscheidungen hängen vom Verhalten anderer ab, Lebensläufe sind verknüpft.",
+      w:{1:"Das wäre z. B. Beruf im Kontext der Familie.",2:"Das wäre z. B. frühere Arbeitslosigkeit und heutige Jobangst.",3:"Das ist kein Teil des Lebensverlaufsansatzes, sondern betrifft den Handlungsspielraum.",4:"Stand und Klasse sind Webers Dimensionen."}},
+    {id:"soz1-f17",s:1,q:"Frühere Arbeitslosigkeit verstärkt die heutige Angst, den Job zu verlieren. Welche Wechselwirkung ist das?",o:["„Vorher-Nachher“-Wechselwirkung","„linked lives“","Wechselwirkung zwischen Lebensbereichen","Wechselwirkung zwischen Effizienz und Gerechtigkeit","Keine der genannten Wechselwirkungen"],last:true,
+      e:"Zurückliegende Erfahrungen strukturieren aktuelles Verhalten. Die zeitliche Abfolge wird berücksichtigt.",
+      w:{1:"„linked lives“ meint das Verhalten **anderer** Menschen.",2:"Das wäre z. B. Beruf und Familie.",3:"Effizienz und Gerechtigkeit sind Ziele der Sozialordnung.",4:"Das Beispiel steht genau so auf der Folie zur Vorher-Nachher-Wechselwirkung."}},
+    {id:"soz1-f18",s:1,q:"Was müssen Gesellschaften im Rahmen ihrer Sozialordnung festlegen?",o:["Verhaltensregeln und Kriterien der Ressourcenverteilung","Nur Verhaltensregeln","Nur die Höhe der Löhne","Die Zugehörigkeit zu Ständen","Die Zahl der sozialen Klassen"],
+      e:"Sozialordnung: Gesellschaften müssen Spielregeln für das Verhalten und Kriterien der Ressourcenverteilung festlegen.",
+      w:{1:"Es fehlt die Ressourcenverteilung.",2:"Zu eng: Löhne sind nur ein Teil der Ressourcenverteilung.",3:"Stände gehören zur vormodernen Gesellschaft.",4:"Klassen sind ein Konzept von Marx und Weber, keine Aufgabe der Sozialordnung."}},
+    {id:"soz1-f19",s:1,q:"Wofür muss die Sozialordnung grundsätzlich sorgen?",o:["Effizienz und Gerechtigkeit","Gleichheit und Freiheit","Wachstum und Stabilität","Mobilität und Säkularisierung","Ordnung und Sicherheit"],
+      e:"Keine Ressourcen verschwenden (Effizienz) und Ressourcen gerecht verteilen (Gerechtigkeit).",
+      w:{1:"Klingt plausibel, steht so aber nicht auf der Folie.",2:"Wirtschaftspolitische Ziele, nicht die der Folie.",3:"Das sind Merkmale moderner Gesellschaften.",4:"Steht so nicht auf der Folie."}},
+    {id:"soz1-f20",s:1,q:"Welche Aussage ist richtig? Soziale Ungleichheit ist …",o:["… nicht per se gut oder schlecht.","… immer schlecht und muss beseitigt werden.","… immer gut, weil sie motiviert.","… für die praktische Sozialpolitik irrelevant.","… unabhängig von Fragen der Gerechtigkeit."],
+      e:"Ungleichheit ist nicht per se gut oder schlecht, immer mit Motivation und Gerechtigkeit verbunden und relevant für die Sozialpolitik.",
+      w:{1:"Zu einseitig: nicht per se schlecht.",2:"Zu einseitig: nicht per se gut. Motivation ist nur ein Aspekt.",3:"Gerade umgekehrt: relevant für die praktische Sozialpolitik.",4:"Ungleichheit ist immer mit Gerechtigkeit verbunden."}},
+    {id:"soz1-f21",s:1,q:"Seit wann kann man laut Vorlesung von einer Sozialstruktur sprechen?",o:["Seit dem Entstehen größerer und komplexerer Gesellschaften seit der Antike","Erst seit der Industrialisierung im 19. Jahrhundert","Erst seit dem Zweiten Weltkrieg","Seit Menschen überhaupt in kleinen Gruppen zusammenleben","Erst seit der Einführung der Sozialversicherungen"],
+      e:"In frühen Gruppen gab es eher eine interne Gruppenstruktur. Von Sozialstruktur spricht man erst bei größeren, komplexeren Gesellschaften seit der Antike.",
+      w:{1:"Seit dem 19. Jh. ändert sich die Sozialstruktur grundlegend. Es gab sie aber schon vorher, z. B. als Ständegesellschaft.",2:"Viel zu spät.",3:"In kleinen Gruppen spricht man eher von einer **internen Gruppenstruktur**.",4:"Viel zu spät, die Sozialversicherung ist ein Ergebnis der Moderne."}},
+    {id:"soz1-f22",s:1,q:"Was ist laut Schäfers/Kopp (2006) entscheidend für die Standeszugehörigkeit?",o:["Die soziale Herkunft","Das Einkommen","Die Bildung","Die eigene Leistung","Der Besitz von Produktionsmitteln"],
+      e:"Stände: Gruppen mit rechtlich abgesichertem ungleichem Status. Entscheidend für Stand und Lebenschancen ist die soziale Herkunft.",
+      w:{1:"Einkommen ist eher ein Merkmal moderner Schichtmodelle.",2:"Bildung spielt in Schichtmodellen eine Rolle, nicht für den Stand.",3:"Leistung ist ein modernes Prinzip.",4:"Das ist Marx' Kriterium für Klassen."}},
+    {id:"soz1-f23",s:1,q:"Welche Aussage über Stände ist richtig?",o:["Ihr ungleicher sozialer Status ist rechtlich abgesichert.","Man kann frei zwischen Ständen wechseln.","Sie sind typisch für moderne Dienstleistungsgesellschaften.","Sie unterscheiden sich nur durch das Einkommen.","Sie wurden erstmals von Max Weber beschrieben."],
+      e:"Stände haben spezifische Rechte (Privilegien) und Pflichten. Der ungleiche Status ist rechtlich abgesichert.",
+      w:{1:"Über den Stand entscheidet die Herkunft, freie Mobilität kennzeichnet erst die Moderne.",2:"Stände sind typisch für vormoderne Gesellschaften.",3:"Entscheidend sind Rechte, Pflichten und Herkunft.",4:"Die Definition auf der Folie stammt von Schäfers/Kopp. Weber nutzt „Stand“ anders: als Grad des Prestiges."}},
+    {id:"soz1-f24",s:1,q:"Welche Gruppe gehört NICHT zu den Ständen in der symbolischen Darstellung um 1795?",o:["Proletariat","Adel","Geistlichkeit","Bürgertum","Einfaches Volk (Bauern, Arbeiter)"],
+      e:"Die Stände um 1795: Adel, Geistlichkeit, Bürgertum (z. B. Handwerker) und einfaches Volk. „Proletariat“ ist ein Begriff von Marx für die Industriegesellschaft.",
+      w:{1:"Der Adel gehört zu den Ständen.",2:"Die Geistlichkeit gehört zu den Ständen.",3:"Das Bürgertum gehört zu den Ständen.",4:"Das einfache Volk gehört zu den Ständen."}},
+    {id:"soz1-f25",s:1,q:"Was ist KEIN Kennzeichen moderner Gesellschaften laut Vorlesung?",o:["Rechtlich abgesicherte Standesprivilegien","Säkularisierung","Individualisierung","Soziale Mobilität","Pluralisierung"],
+      e:"Kennzeichen der Moderne: rationale Lebensführung, wissenschaftlich-technischer Fortschritt, soziale Mobilität, Säkularisierung, Ausdifferenzierung, Pluralisierung, Individualisierung, später Industrialisierung. Standesprivilegien gehören zur Vormoderne.",
+      w:{1:"Säkularisierung steht auf der Liste.",2:"Individualisierung steht auf der Liste.",3:"Soziale Mobilität steht auf der Liste.",4:"Pluralisierung steht auf der Liste."}},
+    {id:"soz1-f26",s:1,q:"Welche Voraussetzung der Industrialisierung in Deutschland wird in der Vorlesung NICHT genannt?",o:["Die Abschaffung des Privateigentums","Aufhebung feudaler Abhängigkeiten („Bauernbefreiung“)","Berufs- und Niederlassungsfreiheit","Bevölkerungswachstum","Trennung von Arbeits- und Wohnort"],
+      e:"Genannt werden u. a. Bauernbefreiung, Berufs- und Niederlassungsfreiheit, Bevölkerungswachstum, steigender Bildungsstand, Trennung von Arbeits- und Wohnort, späte Nationalstaatsbildung, späte Demokratisierung. Privateigentum wurde nicht abgeschafft.",
+      w:{1:"Steht auf der Folie.",2:"Steht auf der Folie.",3:"Steht auf der Folie.",4:"Steht auf der Folie."}},
+    {id:"soz1-f27",s:1,q:"In welcher Reihenfolge verläuft die Modernisierung laut Vorlesung?",o:["Agrargesellschaft → Industriegesellschaft → Dienstleistungsgesellschaft","Industriegesellschaft → Agrargesellschaft → Dienstleistungsgesellschaft","Dienstleistungsgesellschaft → Industriegesellschaft → Agrargesellschaft","Ständegesellschaft → Dienstleistungsgesellschaft → Industriegesellschaft","Agrargesellschaft → Dienstleistungsgesellschaft → Industriegesellschaft"],
+      e:"(vormoderne) Agrargesellschaft → (moderne) Industriegesellschaft → (postmoderne?) Dienstleistungsgesellschaft (?).",
+      w:{1:"Die Agrargesellschaft steht am Anfang.",2:"Genau umgekehrt.",3:"Die Industriegesellschaft kommt vor der Dienstleistungsgesellschaft.",4:"Die Industriegesellschaft kommt vor der Dienstleistungsgesellschaft."}},
+    {id:"soz1-f28",s:1,q:"Spätestens seit wann ändert sich die Sozialstruktur gegenüber der vormodernen Stände- oder Agrargesellschaft grundlegend?",o:["Seit dem 19. Jahrhundert","Seit dem 15. Jahrhundert","Seit dem 17. Jahrhundert","Seit den 1950er Jahren","Seit der Wiedervereinigung 1990"],
+      e:"Folie: Die Sozialstruktur moderner Gesellschaften ändert sich spätestens seit dem 19. Jahrhundert grundlegend.",
+      w:{1:"Zu früh.",2:"Zu früh. Die Darstellung der Stände stammt sogar noch von um 1795.",3:"Zu spät.",4:"Viel zu spät."}},
+    {id:"soz1-f29",s:1,q:"Anhand wie vieler Ungleichheitsdimensionen bestimmt Karl Marx die soziale Position eines Menschen?",o:["Einer: Besitz von Produktionsmitteln","Zwei: Kapital und Bildung","Drei: Klasse, Stand, Partei","Vier: Beruf, Bildung, Einkommen, Region","Keiner: Die Position ist allein durch Talent bestimmt"],
+      e:"Marx: **eine** Dimension, der Besitz von Produktionsmitteln („Kapital“). Daraus folgen zwei Klassen.",
+      w:{1:"Zwei sind die **Klassen**, nicht die Dimensionen.",2:"Das ist Max Weber.",3:"Das ist eher ein Schichtmodell.",4:"Talent und Präferenzen: das Menschenbild Homo oeconomicus."}},
+    {id:"soz1-f30",s:1,q:"Welche Aussage passt NICHT zu Marx' Klassengesellschaft?",o:["Die soziale Position hängt auch vom sozialen Prestige ab.","Die Gesellschaft zerfällt in Bourgeoisie und Proletariat.","Arbeiter müssen ihre Arbeitskraft verkaufen.","Die Bourgeoisie beutet das Proletariat aus.","Die Klassen stehen sich antagonistisch gegenüber."],
+      e:"Prestige (Stand) ist eine Dimension bei **Weber**. Marx kennt nur den Besitz von Produktionsmitteln.",
+      w:{1:"Passt zu Marx: zwei Klassen.",2:"Passt zu Marx: keine andere Möglichkeit, als die Arbeitskraft zu veräußern.",3:"Passt zu Marx: Ausbeutung durch die herrschende Klasse.",4:"Passt zu Marx: Klassenkonflikt."}},
+    {id:"soz1-f31",s:1,q:"In welchem historischen Kontext entwickelt Marx seine Theorie der Klassengesellschaft?",o:["Rasante Industrialisierung bis in die zweite Hälfte des 19. Jahrhunderts","Ständegesellschaft im Mittelalter","Wirtschaftswunder der 1950er Jahre","Dienstleistungsgesellschaft um das Jahr 2000","Französische Revolution 1789"],
+      e:"Wenige wohlhabende Fabrikanten, viele arme Industriearbeiter: harte Arbeit, geringe Löhne, beengte Wohnverhältnisse. Marx lebte 1818–1883.",
+      w:{1:"Marx beschreibt die Industriegesellschaft, nicht die Ständegesellschaft.",2:"Marx starb 1883.",3:"Das ist das Haus-Modell von Geißler.",4:"Zu früh, Marx wurde 1818 geboren."}},
+    {id:"soz1-f32",s:1,q:"Welche drei Ungleichheitsdimensionen unterscheidet Max Weber?",o:["Klasse, Stand, Partei","Kapital, Arbeit, Boden","Restriktionen, Ressourcen, Lebensverlauf","Bourgeoisie, Proletariat, Adel","Lebenslage, Lebensstil, Milieu"],
+      e:"Klasse (Kapital und Wissen), Stand (soziales Prestige), Partei (Potenzial, Gruppeninteressen zu organisieren).",
+      w:{1:"Klingt nach Produktionsfaktoren, nicht nach Weber.",2:"Das sind die drei generellen Faktoren der Sozialstrukturanalyse.",3:"Das sind Klassen bzw. Stände, keine Dimensionen.",4:"Das sind neuere Ansätze seit den 1970er/80er Jahren."}},
+    {id:"soz1-f33",s:1,q:"Was meint „Partei“ bei Max Weber?",o:["Das Potenzial zur Organisation von Gruppeninteressen (soziale Konfliktfähigkeit)","Die Mitgliedschaft in einer politischen Partei","Den Grad des sozialen Prestiges","Den Besitz von Kapital und Wissen","Die soziale Herkunft"],
+      e:"Partei = soziale Konfliktfähigkeit, also die Fähigkeit, Gruppeninteressen zu organisieren.",
+      w:{1:"Zu wörtlich. Gemeint ist die Fähigkeit, Interessen zu organisieren, nicht ein Parteibuch.",2:"Das ist Webers „Stand“.",3:"Das ist Webers „Klasse“.",4:"Das entscheidet über den Stand in der Ständegesellschaft (Schäfers/Kopp)."}},
+    {id:"soz1-f34",s:1,q:"Was meint „Klasse“ bei Max Weber?",o:["Besitz von Kapital und Wissen","Allein den Besitz von Produktionsmitteln","Den Grad des sozialen Prestiges","Die soziale Konfliktfähigkeit","Die Zugehörigkeit zum Adel"],
+      e:"Weber fasst Klasse breiter als Marx: Kapital **und Wissen**.",
+      w:{1:"Das ist Marx. Bei Weber gehört Wissen dazu.",2:"Das ist Webers „Stand“.",3:"Das ist Webers „Partei“.",4:"Adel ist ein Stand der vormodernen Gesellschaft."}},
+    {id:"soz1-f35",s:1,q:"Welches Modell ist KEIN Schichtmodell aus der Vorlesung?",o:["Der Lebensverlaufsansatz","Die Bolte-Zwiebel","Das Haus-Modell von Dahrendorf","Das Haus-Modell von Geißler","Alle genannten sind Schichtmodelle."],last:true,
+      e:"Schichtmodelle: Bolte-Zwiebel (1967, Westdeutschland 1960er), Haus-Modell von Dahrendorf (1965), Haus-Modell für Deutschland 2000 (Geißler 2008). Der Lebensverlaufsansatz ist ein Faktor der Sozialstrukturanalyse, kein Schichtmodell.",
+      w:{1:"Bolte/Kappe/Neidhardt (1967) ist ein Schichtmodell.",2:"Dahrendorf (1965) ist ein Schichtmodell.",3:"Geißler (2008) ist ein Schichtmodell.",4:"Der Lebensverlaufsansatz untersucht Wechselwirkungen im Lebenslauf, er ordnet niemanden in Schichten."}},
+    {id:"soz1-f36",s:1,q:"Auf welche Zeit bezieht sich die „Bolte-Zwiebel“?",o:["Westdeutschland in den 1960er Jahren","Deutschland im Jahr 2000","Preußen um 1795","Das Deutsche Kaiserreich um 1900","Die DDR in den 1980er Jahren"],
+      e:"Bolte/Kappe/Neidhardt (1967): Schichtung der westdeutschen Bevölkerung in den 1960er Jahren.",
+      w:{1:"Das ist das Haus-Modell von Geißler.",2:"Das ist die symbolische Darstellung der Stände.",3:"Kommt in der Vorlesung nicht vor.",4:"Kommt in der Vorlesung nicht vor."}},
+    {id:"soz1-f37",s:1,q:"Was ist eine zentrale Grenze von Klassen- und Schichtmodellen?",o:["Horizontale Ungleichheiten wie Geschlecht, Alter oder Region bleiben unberücksichtigt.","Sie berücksichtigen den Beruf nicht.","Sie erfassen nur horizontale Ungleichheiten.","Sie ignorieren die ökonomische Lage.","Sie beschreiben nur vormoderne Gesellschaften."],
+      e:"Klassen- und Schichtmodelle konzentrieren sich auf **vertikale** Ungleichheit. Horizontale Ungleichheit sowie Mentalitäten und Lebensstile kommen zu kurz.",
+      w:{1:"Der Beruf ist gerade eine vertikale Dimension, die sie erfassen.",2:"Umgekehrt: Sie erfassen nur vertikale Ungleichheiten.",3:"Die ökonomische Lage ist eine vertikale Dimension, die sie erfassen.",4:"Die Modelle beschreiben die Bundesrepublik der 1960er Jahre und Deutschland 2000."}},
+    {id:"soz1-f38",s:1,q:"Welches Merkmal ist eine horizontale Dimension sozialer Ungleichheit?",o:["Geschlecht","Beruf","Qualifikation","Ökonomische Lage","Einkommen"],
+      e:"Horizontal: Geschlecht, Alter, Generation, Region. Vertikal: Beruf, Qualifikation, ökonomische Lage.",
+      w:{1:"Beruf ist eine vertikale Dimension.",2:"Qualifikation ist eine vertikale Dimension.",3:"Die ökonomische Lage ist eine vertikale Dimension.",4:"Einkommen gehört zur ökonomischen Lage, also vertikal."}},
+    {id:"soz1-f39",s:1,q:"Welche neueren Ansätze entstehen seit den 1970er/1980er Jahren als Antwort auf die Grenzen von Klassen- und Schichtmodellen?",o:["Lebenslage, Lebensstil, Milieu","Klasse, Stand, Partei","Bourgeoisie und Proletariat","Agrar-, Industrie- und Dienstleistungsgesellschaft","Bolte-Zwiebel und Haus-Modell"],
+      e:"Folie: Daher neuere Ansätze seit den 1970er/1980er Jahren: Lebenslage – Lebensstil – Milieu.",
+      w:{1:"Das sind Webers Dimensionen, also älter.",2:"Das sind Marx' Klassen.",3:"Das sind Stufen der Modernisierung.",4:"Das sind gerade die Schichtmodelle, deren Grenzen kritisiert werden."}},
+    {id:"soz1-f40",s:1,q:"Welche Aussage beschreibt die Neue Sozialstrukturanalyse?",o:["Sie sucht Indikatoren wie Alter, Bildung oder Geschlecht, die individuelles Handeln strukturieren.","Sie sucht gesellschaftlich relevante Großgruppen wie Klassen und Schichten.","Sie geht davon aus, dass Handeln allein ein Produkt gesellschaftlicher Strukturen ist.","Sie sieht den Menschen als vollkommen rationalen Akteur ohne soziale Einbettung.","Sie ist mit der neoklassischen Ökonomie identisch."],
+      e:"Neue Sozialstrukturanalyse: Indikatoren, die individuelles Handeln strukturieren. Prämisse: Gesellschaftliches Handeln ist ein Produkt strukturierten individuellen Handelns.",
+      w:{1:"Das ist die traditionelle Sozialstrukturanalyse.",2:"Das ist die Prämisse der traditionellen Sozialstrukturanalyse.",3:"Das ist der Homo oeconomicus, also das Extrem der Neoklassik.",4:"Auf dem Kontinuum liegt sie **zwischen** traditioneller Analyse und Neoklassik."}},
+    {id:"soz1-f41",s:1,q:"Welche Prämisse hat die traditionelle Sozialstrukturanalyse?",o:["Gesellschaftliches Handeln ist ein Produkt gesellschaftlicher Strukturen.","Gesellschaftliches Handeln ist ein Produkt strukturierten individuellen Handelns.","Die Sozialstruktur ergibt sich allein aus freien Handlungen der Individuen.","Die soziale Position bestimmen allein Talent und Präferenzen.","Keine der genannten Aussagen."],last:true,
+      e:"Traditionell: Großgruppen (Klassen, Schichten, Lebenslagen). Prämisse: Handeln ist ein Produkt gesellschaftlicher Strukturen.",
+      w:{1:"Das ist die Prämisse der **Neuen** Sozialstrukturanalyse.",2:"Das ist das Menschenbild Homo oeconomicus.",3:"Das ist ebenfalls der Homo oeconomicus.",4:"Die erste Aussage ist genau die Prämisse von der Folie."}},
+    {id:"soz1-f42",s:1,q:"Welches Bild steht für den „Homo Sociologicus“?",o:["Der Mensch als Rädchen im Getriebe","Der Mensch ist seines Glückes Schmied","Der Mensch als vollkommen rationaler Akteur","Der Mensch als Nutzenmaximierer","Der Mensch als Unternehmer seiner selbst"],
+      e:"Homo Sociologicus: Spielball sozialer Gegebenheiten, Position durch vorgegebene Rollenerwartungen bestimmt.",
+      w:{1:"Das ist der Homo Oeconomicus.",2:"Das ist der Homo Oeconomicus.",3:"Nutzenmaximierung ist das Ziel des Homo Oeconomicus.",4:"Kommt in der Vorlesung nicht vor."}},
+    {id:"soz1-f43",s:1,q:"Wodurch wird die soziale Position beim Menschenbild „Homo Oeconomicus“ bestimmt?",o:["Allein durch Talent und Präferenzen","Allein durch vorgegebene Rollenerwartungen","Durch die soziale Herkunft","Durch mächtige Eliten","Durch den Stand"],
+      e:"Homo Oeconomicus: vollkommen rationaler Akteur. Die Sozialstruktur ergibt sich allein aus den freien Handlungen der Individuen.",
+      w:{1:"Das ist der Homo Sociologicus.",2:"Herkunft entscheidet in der Ständegesellschaft.",3:"Beim Homo Sociologicus wird die Sozialstruktur durch mächtige Eliten determiniert.",4:"Der Stand ist ein vormodernes Konzept."}},
+    {id:"soz1-f44",s:1,q:"Wie ordnet die Vorlesung die Ansätze auf dem Kontinuum von „gruppenzentriert“ nach „akteurszentriert“?",o:["Traditionelle Sozialstrukturanalyse → Neue Sozialstrukturanalyse → Neoklassische Ökonomie","Neoklassische Ökonomie → Neue Sozialstrukturanalyse → Traditionelle Sozialstrukturanalyse","Neue Sozialstrukturanalyse → Traditionelle Sozialstrukturanalyse → Neoklassische Ökonomie","Traditionelle Sozialstrukturanalyse → Neoklassische Ökonomie → Neue Sozialstrukturanalyse","Alle drei liegen am gleichen Punkt des Kontinuums."],
+      e:"Links (Homo Sociologicus, gruppenzentriert): traditionelle Analyse mit Klasse, Schicht, Lebenslage, Lebensstil, Milieu. Mitte: Neue Sozialstrukturanalyse. Rechts (Homo Oeconomicus, akteurszentriert): neoklassische bzw. neoliberale Ökonomie.",
+      w:{1:"Genau umgekehrt.",2:"Die Neue Sozialstrukturanalyse liegt in der Mitte.",3:"Die Neoklassik liegt am akteurszentrierten Ende.",4:"Das Kontinuum ordnet sie gerade nacheinander an."}},
+    {id:"soz1-f45",s:1,q:"Was ist laut Erlinghagen vor allem klausurrelevant?",o:["Die Ausführungen in der Vorlesung und die Folien","Nur das Lehrbuch von Althammer/Lampert/Sommer","Nur der Sozialbericht 2024","Nur die Literaturhinweise am Ende jeder Vorlesung","Nur exakte Zahlenwerte aus den Statistiken"],
+      e:"Klausurrelevant sind insbesondere Vorlesung und Folien. Dringend empfohlen: parallel Erlinghagen & Hank (2018). Exakte Werte werden laut Klausurinfos nicht gefragt.",
+      w:{1:"Nur ergänzende Literatur.",2:"Nur ergänzende Literatur.",3:"Vertiefung, nicht der Kern.",4:"Laut Klausurinfos werden keine exakten Werte gefragt, nur Entwicklungstendenzen."}}
+  ],
   karten: [
     {id:"soz1-k01",s:1,ctx:"Was meint „Sozialstruktur“?",f:"Struktur (Glatzer 2002)",b:"Eine Mehrzahl von Einheiten ist **nicht zufällig** angeordnet bzw. verbunden.\n- Es gibt Regelmäßigkeiten oder Muster.\n- Was an einer Stelle auftritt, kehrt an einer anderen wieder."},
     {id:"soz1-k02",s:1,ctx:"Wofür sich die Soziologie interessiert",f:"Soziologie als Verhaltenswissenschaft",b:"Ziel: soziale Phänomene erklären und vorhersagen.\n| | Nicht | Sondern\n| Blick | Verhalten einzelner Menschen | strukturierende Einflüsse, die Handeln systematisch prägen\n| Beispiel | Warum läuft Herr K. Amok? | Welche Bedingungen fördern die Häufigkeit von Amokläufen?"},
@@ -645,7 +784,7 @@ const plain=s=>String(s).replace(/^> ?\[.*\]$/gm,"").replace(/^> ?/gm,"").replac
 const isSoz = () => state.course==="soz";
 function sessions(){ return isSoz() ? Object.assign({}, BASE_SOZ.sitzungen, state.soz.sitzungen) : Object.assign({}, BASE.sitzungen, state.custom.sitzungen); }
 function mergeById(a,b){ const m=new Map(); a.forEach(x=>m.set(x.id,x)); b.forEach(x=>m.set(x.id,x)); return [...m.values()]; }
-function allQ(){ return mergeById(BASE.fragen, state.custom.fragen); }
+function allQ(){ return isSoz() ? mergeById(BASE_SOZ.fragen||[], state.soz.fragen||[]) : mergeById(BASE.fragen, state.custom.fragen); }
 function allK(){ return isSoz() ? mergeById(BASE_SOZ.karten, state.soz.karten) : mergeById(BASE.karten, state.custom.karten); }
 function getF(){ return isSoz() ? state.sozFilter : state.filter; }
 function setF(v){ if(isSoz()) state.sozFilter=v; else state.filter=v; }
@@ -707,7 +846,8 @@ function prepQ(q){
   if(t==="zuord") return {q,t,order:shuffle(q.paare.map((_,i)=>i)),rights:shuffle(q.paare.map(x=>x[1]))};
   if(t==="zahl") return {q,t};
   const idx=q.o.map((_,i)=>i);
-  return {q,t,order:q.fix?idx:shuffle(idx),correct:t==="multi"?q.a:(Number.isInteger(q.a)?q.a:0)};
+  const order=q.fix?idx:q.last?shuffle(idx.slice(0,-1)).concat(idx.length-1):shuffle(idx);
+  return {q,t,order,correct:t==="multi"?q.a:(Number.isInteger(q.a)?q.a:0)};
 }
 const numOf = v => { let t=String(v).trim().replace(/\s|€|%/g,""); if(t.includes(",")) t=t.replace(/\./g,"").replace(",","."); else if(/^\d{1,3}(\.\d{3})+$/.test(t)) t=t.replace(/\./g,""); return parseFloat(t); };
 function isAnswered(p,a){
@@ -807,7 +947,7 @@ function bindFilter(after){ const f=$("#flt"); if(f) f.onchange=()=>{ setF(f.val
 
 /* ===== Navigation ===== */
 const TABS_OD = [["home","Übersicht"],["practice","Üben"],["cards","Karten"],["quiz","Quiz"],["stats","Statistik"]];
-const TABS_SOZ = [["home","Übersicht"],["cards","Karten"],["practice","Üben"],["write","Schreiben"],["stats","Statistik"]];
+const TABS_SOZ = [["home","Übersicht"],["practice","Üben"],["cards","Karten"],["quiz","Klausur"],["stats","Statistik"]];
 const SUBVIEW = {who:"practice", lex:"practice", sessdone:"home"};
 const tabs = () => isSoz() ? TABS_SOZ : TABS_OD;
 function renderNav(){
@@ -887,7 +1027,7 @@ function renderStats(){
   const odItems=mergeById(BASE.fragen,state.custom.fragen).concat(mergeById(BASE.karten,state.custom.karten));
   const odOpen=odItems.filter(x=>boxOf(x.id)<4).length;
   const sozCards=mergeById(BASE_SOZ.karten,state.soz.karten), sozOpen=sozCards.filter(x=>boxOf(x.id)<4).length;
-  const auf=mergeById(BASE_SOZ.aufgaben||[],state.soz.aufgaben||[]), aufOpen=auf.filter(x=>!(state.schreiben||{})[x.id]).length;
+  const sozQ=mergeById(BASE_SOZ.fragen||[],state.soz.fragen||[]), sozQOpen=sozQ.filter(x=>boxOf(x.id)<4).length;
   const tips=[];
   if(allSess) tips.push(`Eine Lernsitzung dauert bei dir im Schnitt ${fmtMin(allSec/allSess)}.`);
   if(most && most.t>0) tips.push(`Am meisten lernst du ${most.n}.`);
@@ -911,7 +1051,7 @@ function renderStats(){
     ${bars(H.map(x=>x.t),H.map((_,i)=>i%3===0?String(i):""),"Nach Uhrzeit (gesamt)")}
     <div class="block"><h3>Was bevorsteht</h3>
       <p class="small"><strong>Ökonomisches Denken:</strong> ${next?`Quiz ${next.n} öffnet in ${dn} Tag${dn===1?"":"en"}.`:"Alle Quiz sind offen, Abgabe bis 21.02.2027."} ${odOpen} von ${odItems.length} Fragen und Karten sind noch nicht sicher${next&&odOpen?`, also etwa ${Math.ceil(odOpen/dn)} pro Tag bis dahin`:""}.</p>
-      <p class="small"><strong>Sozialstruktur:</strong> ${sozOpen} von ${sozCards.length} Karten noch nicht sicher, ${aufOpen} von ${auf.length} Schreibaufgaben noch offen.</p></div>
+      <p class="small"><strong>Sozialstruktur:</strong> ${sozQOpen} von ${sozQ.length} Klausurfragen und ${sozOpen} von ${sozCards.length} Karten noch nicht sicher. Anmeldung zum 1. Klausurtermin: 09.–20.11.2026.</p></div>
     <p class="small muted">Lernzeit zählt nur, solange du aktiv bist. Pausen über 2 Minuten zählen nicht mit. Nach 15 Minuten Pause beginnt eine neue Sitzung.</p>`;
   bindDates(); bindWeak();
 }
@@ -971,8 +1111,10 @@ function reviewBlock(){
   const s=sessions(), rows=[];
   Object.keys(s).sort((a,b)=>a-b).forEach(k=>{
     if(isUnclear(k)) rows.push({k,lab:"unklar",cls:"unk",d:"Als unklar markiert. Karten der Sitzung wiederholen.",go:"cards"});
-    const errs=isSoz() ? allK().filter(x=>String(x.s)===k&&boxOf(x.id)===1).length : allQ().filter(x=>String(x.s)===k&&state.err[x.id]&&boxOf(x.id)<4).length;
-    if(errs) rows.push({k,lab:errs+(isSoz()?" Karten":" Fehler"),cls:"err",d:isSoz()?"Karten, die du zuletzt nicht wusstest.":"Fragen, die du falsch hattest und die noch nicht sitzen.",go:isSoz()?"cards":"errors"});
+    const errs=allQ().filter(x=>String(x.s)===k&&state.err[x.id]&&boxOf(x.id)<4).length;
+    if(errs) rows.push({k,lab:errs+" Fehler",cls:"err",d:"Fragen, die du falsch hattest und die noch nicht sitzen.",go:"errors"});
+    const kerr=isSoz() ? allK().filter(x=>String(x.s)===k&&boxOf(x.id)===1).length : 0;
+    if(kerr) rows.push({k,lab:kerr+" Karten",cls:"err",d:"Karten, die du zuletzt nicht wusstest.",go:"cards"});
   });
   if(!rows.length) return "";
   return `<div class="block"><h3>Nochmal anschauen</h3><div class="tlist">${rows.map(r=>`<button class="titem rv" data-k="${r.k}" data-go="${r.go}"><span class="t">${r.k}. ${esc(s[r.k])}</span><span class="chip ${r.cls}">${r.lab}</span><span class="d">${r.d}</span></button>`).join("")}</div></div>`;
@@ -989,8 +1131,10 @@ function examBlock(){
       <p class="small muted" style="margin:0">Quelle: Syllabus und Folien der ersten Sitzung.</p>${myDatesLine()}</details>`;
   }
   return `<details class="block exam"><summary><b>So ist die Prüfung gebaut</b></summary>
-    <ul><li>Modulklausur zur Vorlesung</li><li>Klausurrelevant: vor allem die Ausführungen in der Vorlesung und die Folien</li><li>Dringend empfohlen: parallel Erlinghagen &amp; Hank (2018), Neue Sozialstrukturanalyse</li><li>Format nach deiner Angabe: Textaufgaben</li></ul>
-    <p class="small muted" style="margin:0">Termin und genaue Aufgabenform stehen noch nicht auf den Folien.</p>${myDatesLine()}</details>`;
+    <ul><li>E-Klausur am PC („PC Hall“, Campus Essen)</li><li>Rund <b>70 Single-Choice-Fragen in 60 Minuten</b>, also gut 50 Sekunden pro Frage</li><li>Jede Frage hat genau eine passende Antwort, 1 Punkt. <b>Keine Minuspunkte:</b> immer etwas ankreuzen</li>
+      <li>Achtung bei „Was ist <b>kein</b> …?“ und bei der Option „Alle/Keine der genannten“</li><li>Keine exakten Werte, aber Entwicklungstendenzen und die zeitliche Einordnung zentraler Ereignisse</li>
+      <li>Klausurrelevant: vor allem Vorlesung und Folien, dazu Erlinghagen &amp; Hank (2018)</li><li>Zwei Termine, frei wählbar. <b>Anmeldung zum 1. Termin: 09.–20.11.2026 in HISinOne</b>, für den 2. Termin immer neu anmelden</li></ul>
+    <p class="small muted" style="margin:0">Quelle: Klausurinfos von Prof. Erlinghagen (Stand 19.10.2026). Termine stehen noch nicht fest.</p>${myDatesLine()}</details>`;
 }
 
 /* ===== Übersicht ===== */
@@ -1000,7 +1144,7 @@ function renderHome(){
   const next = QUIZZES.find(z=>new Date(z.open+"T00:00:00")>today);
   const days = next ? Math.round((new Date(next.open+"T00:00:00")-today)/864e5) : null;
   const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>sessionRow(k, s[k], qs.filter(x=>String(x.s)===k).concat(ks.filter(x=>String(x.s)===k)))).join("");
-  const last = state.quizzes.slice(-5).reverse();
+  const last = state.quizzes.filter(z=>!/^k/.test(z.scope)).slice(-5).reverse();
   $("#app").innerHTML = `
     <h1>Ökonomisches Denken</h1>
     <p class="muted">${qs.length} Fragen und ${ks.length} Karten aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}.</p>
@@ -1053,12 +1197,18 @@ function readinessBlock(){
 
 /* ===== Übersicht Sozialstruktur ===== */
 function renderSozHome(){
-  const s = sessions(), ks = allK();
-  const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>sessionRow(k, s[k], ks.filter(x=>String(x.s)===k))).join("");
+  const s = sessions(), ks = allK(), qs = allQ();
+  const rows = Object.keys(s).sort((a,b)=>a-b).map(k=>sessionRow(k, s[k], qs.filter(x=>String(x.s)===k).concat(ks.filter(x=>String(x.s)===k)))).join("");
+  const last = state.quizzes.filter(z=>/^k/.test(z.scope)).slice(-5).reverse();
   $("#app").innerHTML = `
     <h1>Sozialstruktur</h1>
-    <p class="muted">${ks.length} Karten und ${allA().length} Schreibaufgaben aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}.</p>
+    <p class="muted">${qs.length} Klausurfragen und ${ks.length} Karten aus ${Object.keys(s).length} Sitzung${Object.keys(s).length>1?"en":""}.</p>
     ${todayBlock()}
+    <div class="block">
+      <h2>Klausurfragen</h2>
+      <p class="small muted">Single Choice wie in der E-Klausur. Probeklausur: 70 Fragen in 60 Minuten, solange der Pool kleiner ist im gleichen Tempo.</p>
+      <div class="row"><button class="btn" id="goQuiz">Probeklausur</button><button class="btn ghost" id="goPr">Fragen üben</button></div>
+    </div>
     <div class="block">
       <h2>Karten lernen</h2>
       <p class="small muted">Erst selbst erklären, dann umdrehen. Sichere Karten kommen nach 1, 3, 7, 16 und 35 Tagen wieder.</p>
@@ -1069,21 +1219,20 @@ function renderSozHome(){
       <p class="small muted">Aussagen den Theorien, Ansätzen und Menschenbildern zuordnen. Trainiert genau das Unterscheiden, das Klausurfragen verlangen.</p>
       <button class="btn ghost" id="goWho">Zuordnen üben</button>
     </div>
-    <div class="block">
-      <h2>Klausurantworten üben</h2>
-      <p class="small muted">${wStat()}</p>
-      <button class="btn ghost" id="goWrite">Aufgabe schreiben</button>
-    </div>
     ${examBlock()}
     ${reviewBlock()}
     <div class="block"><h3>Sitzungen</h3>
       <p class="small muted">„Sicher“ heißt: dreimal hintereinander gewusst. Etwas unklar? „Verstehe ich nicht“ markiert die Sitzung und kopiert einen fertigen Prompt für Claude.</p>${rows}</div>
+    <div class="block"><h3>Letzte Probeklausuren</h3>
+      ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · ${z.scope==="kmini"?"Mini-Klausur":"Probeklausur"}</td><td>${z.score}&nbsp;/&nbsp;${z.total} (${Math.round(z.score/z.total*100)}&nbsp;%)</td></tr>`).join("")}</table>`
+      : `<p class="small muted">Noch keine Probeklausur.</p>`}
+    </div>
     ${storeNote()}
     ${resetBlock()}`;
   bindBackup(); bindToday(); bindReview(); bindSessionRows(renderSozHome); bindReset(renderSozHome);
   $("#goCards").onclick=()=>{ cards=null; go("cards"); };
   $("#goWho").onclick=()=>openWho(8);
-  $("#goWrite").onclick=()=>go("write");
+  $("#goQuiz").onclick=()=>go("quiz"); $("#goPr").onclick=()=>go("practice");
 }
 
 /* ===== Schreiben (Sozialstruktur): Antwort schreiben, Erwartungshorizont abhaken, optional Claude bewerten lassen ===== */
@@ -1156,7 +1305,7 @@ function renderWrite(){
 const ROUND=10;
 /* Erst abrufen: bei Einfach- und Mehrfachauswahl. Nicht bei Richtig/Falsch, Zuordnung, Zahl (dort ist die Antwort schon frei)
    und nicht bei „NICHT“-Fragen, weil man ein fehlendes Element ohne Auswahl nicht sinnvoll abrufen kann. */
-function recallFirst(q){ const t=qType(q); return (t==="sc"||t==="multi") && !q.fix && !/\bNICHT\b/.test(q.q); }
+function recallFirst(q){ const t=qType(q); return (t==="sc"||t==="multi") && !q.fix && !/\b(NICHT|KEINE?N?)\b/.test(q.q); }
 const newQ=items=>items.filter(x=>!isSeen(x.id));
 function qStatus(q){ return !isSeen(q.id)?"neu" : state.err[q.id]?"zuletzt falsch" : isDue(q.id)?"fällig":"wiederholen"; }
 function startRound(kind, list){
@@ -1189,7 +1338,7 @@ function renderPractice(){
     </div>`;
   const requeue=q=>{ if(P.req[q.id]) return; P.req[q.id]=1; L.splice(Math.min(L.length,P.i+4),0,Object.assign(prepQ(q),{st:"nochmal"})); };
   const check=()=>{ P.done=true; P.n++; const r=isRight(p,P.ans);
-    grade(p.q.id, r, P.kind==="free" && isSeen(p.q.id) && !isDue(p.q.id)); track("od", r);
+    grade(p.q.id, r, P.kind==="free" && isSeen(p.q.id) && !isDue(p.q.id)); track(state.course, r);
     if(r) P.right++; else requeue(p.q); save(); renderPractice(); };
   if(!P.done){
     if($("#show")) $("#show").onclick=()=>{ P.shown=true; renderPractice(); };
@@ -1199,7 +1348,7 @@ function renderPractice(){
         if(redraw) renderPractice(); else { const b=$("#check"); if(b) b.disabled=!isAnswered(p,a); } });
       const b=$("#check"); if(b) b.onclick=check;
     }
-    $("#idk").onclick=()=>{ P.done=true; P.idk=true; P.ans=null; P.idks++; gradeIdk(p.q.id); requeue(p.q); track("od"); logDay(Date.now()).x=(logDay(Date.now()).x||0)+1; save(); renderPractice(); };
+    $("#idk").onclick=()=>{ P.done=true; P.idk=true; P.ans=null; P.idks++; gradeIdk(p.q.id); requeue(p.q); track(state.course); logDay(Date.now()).x=(logDay(Date.now()).x||0)+1; save(); renderPractice(); };
   } else $("#nextQ").onclick=()=>{ P.i++; P.ans=null; P.shown=false; P.done=false; P.idk=false; renderPractice(); window.scrollTo(0,0); };
 }
 function renderRoundEnd(){
@@ -1215,13 +1364,13 @@ function renderRoundEnd(){
 function renderPracticeHub(){
   const ks=allK().filter(inFilter), wn=werAll().length;
   let modes="";
-  if(!isSoz()){
+  {
     const all=allQ().filter(inFilter), d=dueQ(all).length, n=newQ(all).length, e=all.filter(x=>state.err[x.id]&&boxOf(x.id)<4).length;
     modes+=`<button class="mode" id="mDue"${d+n?"":" disabled"}><span class="t">Fragen lernen</span><span class="n">${d} fällig · ${n} neu</span><span class="d">Erst selbst überlegen, dann die Auswahl. Richtige kommen nach 1, 3, 7, 16 und 35 Tagen wieder.</span></button>
       <button class="mode" id="mErr"${e?"":" disabled"}><span class="t">Meine Fehler</span><span class="n">${e}</span><span class="d">Fragen, die du falsch hattest und die noch nicht sicher sitzen.</span></button>`;
   }
   modes+=`<button class="mode" id="mWho"${wn?"":" disabled"}><span class="t">Wer sagt das?</span><span class="n">${wn} Aussagen</span><span class="d">Sinngemäße Aussagen aus den Folien ${isSoz()?"Theorien, Ansätzen und Menschenbildern":"den antiken Autoren"} zuordnen, mit Begründung.</span></button>`;
-  if(!isSoz()) modes+=`<button class="mode" id="mFree"><span class="t">Frei üben</span><span class="n">${allQ().filter(inFilter).length} Fragen</span><span class="d">Gemischt, Schwieriges öfter. Verlängert keine Abstände.</span></button>`;
+  modes+=`<button class="mode" id="mFree"><span class="t">Frei üben</span><span class="n">${allQ().filter(inFilter).length} Fragen</span><span class="d">Gemischt, Schwieriges öfter. Verlängert keine Abstände.</span></button>`;
   modes+=`<button class="mode" id="mLex"><span class="t">Lexikon</span><span class="n">${ks.length} Begriffe</span><span class="d">Alle Karten zum Nachschlagen, mit Suche.</span></button>`;
   $("#app").innerHTML=`<div class="row"><h1 class="grow">Üben</h1>${filterSelect()}</div><div class="block"><div class="modes">${modes}</div></div>`;
   bindFilter(renderPracticeHub);
@@ -1383,21 +1532,21 @@ function renderCards(){
 /* ===== Tägliche Einheit „Heute“: mischt Wiederholung, Neues, Zuordnen und Prüfungsformat (Spacing und Interleaving) ===== */
 const sessKey=()=>dayKey(Date.now())+":"+state.course;
 function nextNewSession(){ const s=sessions();
-  for(const k of Object.keys(s).sort((a,b)=>a-b)){ if(allK().some(x=>String(x.s)===k&&!isSeen(x.id)) || (!isSoz()&&allQ().some(x=>String(x.s)===k&&!isSeen(x.id)))) return k; } return null; }
+  for(const k of Object.keys(s).sort((a,b)=>a-b)){ if(allK().some(x=>String(x.s)===k&&!isSeen(x.id)) || allQ().some(x=>String(x.s)===k&&!isSeen(x.id))) return k; } return null; }
 function nextWriteTask(){ const r=wRes(), A=allA();
   return A.find(a=>!r[a.id]) || A.slice().sort((a,b)=>(r[a.id].p/r[a.id].max)-(r[b.id].p/r[b.id].max) || r[a.id].date-r[b.id].date)[0]; }
 function planToday(){
-  const S=[], dc=dueCards().length, dq=isSoz()?0:dueQ().length, nk=nextNewSession();
+  const S=[], dc=dueCards().length, dq=dueQ().length, nk=nextNewSession();
   if(dc) S.push({k:"cards", t:"Karten wiederholen", d:`${Math.min(dc,20)} fällige Karten`, min:Math.max(2,Math.round(Math.min(dc,20)*.4))});
   if(dq) S.push({k:"recall", t:"Fragen wiederholen", d:`${Math.min(dq,8)} fällige Fragen: erst abrufen, dann Auswahl`, min:Math.max(2,Math.round(Math.min(dq,8)*.6))});
   if(nk){
     const nkc=allK().filter(x=>String(x.s)===nk&&!isSeen(x.id)).length;
     if(nkc) S.push({k:"newcards", s:nk, t:`Neu: Sitzung ${nk}`, d:`${Math.min(5,nkc)} neue Karten: ${sessions()[nk]}`, min:3});
-    const nkq=isSoz()?0:allQ().filter(x=>String(x.s)===nk&&!isSeen(x.id)).length;
+    const nkq=allQ().filter(x=>String(x.s)===nk&&!isSeen(x.id)).length;
     if(nkq) S.push({k:"newq", s:nk, t:`Neu: Fragen zu Sitzung ${nk}`, d:`${Math.min(5,nkq)} neue Fragen`, min:3});
   }
   if(werAll(true).length) S.push({k:"who", t:"Wer sagt das?", d:"5 Aussagen zuordnen", min:3});
-  if(isSoz()){ const a=nextWriteTask(); if(a) S.push({k:"write", id:a.id, t:"Eine Klausuraufgabe schreiben", d:`Sitzung ${a.s} · ${a.k.length} Punkte`, min:10}); }
+  if(isSoz()){ if(allQ().length>=10) S.push({k:"mini", t:"Mini-Klausur im Prüfungstempo", d:"10 Fragen in 8:34 Minuten, wie 70 Fragen in 60 Minuten", min:9}); }
   else if(allQ().length>=6) S.push({k:"mini", t:"Mini-Quiz wie auf Moodle", d:"6 Fragen in 7:30 Minuten, Auswahl sofort sichtbar", min:8});
   return S;
 }
@@ -1479,7 +1628,7 @@ function datesBlock(){
     <p class="small" style="margin:10px 0 0"><b>Summe:</b> ${sum} von mindestens 30&nbsp;Punkten${open&&sum<30?`, in ${open} offenen Quiz fehlen noch ${30-sum} (Schnitt ${(Math.ceil((30-sum)/open*10)/10).toString().replace(".",",")} je Quiz, mindestens 7)`:""}.</p>
     <div class="qrow" style="margin-top:8px"><div class="row between"><b>Klausur Sozialstruktur</b>${state.dates.soz?`<span class="mini">${cdText(state.dates.soz)}</span>`:""}</div>
       <div class="dgrid"><label class="small" for="dsoz">Termin</label><input type="date" class="dateinp" id="dsoz" data-dk="soz" value="${state.dates.soz||""}"></div>
-      <p class="small muted" style="margin:4px 0 0">Der Termin steht noch nicht auf den Folien.</p></div></div>`;
+      <p class="small muted" style="margin:4px 0 0">Die Termine stehen noch nicht fest. Anmeldung zum 1. Termin: 09.–20.11.2026 in HISinOne.</p></div></div>`;
 }
 function bindDates(){
   document.querySelectorAll("[data-dk]").forEach(el=>el.onchange=()=>{ if(el.value) state.dates[el.dataset.dk]=el.value; else delete state.dates[el.dataset.dk]; save(); const y=window.scrollY; render(); window.scrollTo(0,y); });
@@ -1489,7 +1638,7 @@ function bindDates(){
 }
 function weakData(){
   const wc=allK().filter(c=>(state.lapses[c.id]||0)>=2).sort((a,b)=>state.lapses[b.id]-state.lapses[a.id]);
-  const wq=isSoz()?[]:allQ().filter(q=>((state.lapses[q.id]||0)>=1||state.err[q.id])&&boxOf(q.id)<=2).sort((a,b)=>(state.lapses[b.id]||0)-(state.lapses[a.id]||0));
+  const wq=allQ().filter(q=>((state.lapses[q.id]||0)>=1||state.err[q.id])&&boxOf(q.id)<=2).sort((a,b)=>(state.lapses[b.id]||0)-(state.lapses[a.id]||0));
   const conf={}, wwho=[];
   werAll(true).forEach(x=>{ const h=state.who[x.id]; if(h&&h.last===false){ wwho.push(x); if(h.conf){ const k=werName(x.a)+" ↔ "+werName(h.conf); conf[k]=(conf[k]||0)+1; } } });
   const r=wRes(), wa=isSoz()?allA().filter(a=>r[a.id]&&r[a.id].p/r[a.id].max<.6):[];
@@ -1517,7 +1666,23 @@ function blockOf(n){ return QUIZZES.find(z=>z.n===n); }
 function defaultBlock(){ const t=new Date(); t.setHours(0,0,0,0); const nx=QUIZZES.find(z=>new Date(z.open+"T00:00:00")>=t); return nx?nx.n:4; }
 function quizPool(b){ const qs=allQ(); return b==="alle" ? qs : qs.filter(x=>blockOf(b).s.includes(Number(x.s))); }
 function blockLabel(b){ if(b==="alle") return "Alle Sitzungen"; const z=blockOf(b); return `Quiz ${b} (Sitzung ${z.s[0]}–${z.s[z.s.length-1]})`; }
+/* Probeklausur Sozialstruktur: 70 Fragen in 60 Minuten. Ist der Pool kleiner, gleiches Tempo (60/70 Minuten pro Frage). */
+const KL_N=70, KL_MS=60*60*1000, klMs=n=>Math.round(n*KL_MS/KL_N/1000)*1000;
+function renderKlausur(){
+  const pool=allQ(), n=Math.min(KL_N,pool.length), sk=Object.keys(sessions()).length;
+  $("#app").innerHTML = `
+    <h1>Probeklausur</h1>
+    <div class="block">
+      <p>Wie die E-Klausur: Single Choice, je Frage genau eine passende Antwort, keine Minuspunkte. Du kannst springen und erst am Ende abgeben.</p>
+      <p class="small muted">${pool.length} Fragen aus ${sk} von 13 Sitzungen im Pool. ${pool.length>=KL_N?"Volle Probeklausur: 70 Fragen in 60:00 Minuten.":`Bis der Pool 70 Fragen hat: ${n} Fragen in ${fmt(klMs(n))} Minuten, gleiches Tempo wie 70 in 60.`}</p>
+      <div class="row"><button class="btn" id="start"${n?"":" disabled"}>Probeklausur starten</button><button class="btn ghost" id="mini"${pool.length>=10?"":" disabled"}>Mini: 10 Fragen</button></div>
+    </div>
+    ${examBlock()}`;
+  $("#start").onclick=()=>beginQuiz(shuffle(pool).slice(0,n), klMs(n), "klausur");
+  $("#mini").onclick=startMini;
+}
 function renderQuiz(){
+  if(!quiz && isSoz()) return renderKlausur();
   if(!quiz){
     if(state.quizBlock===undefined) state.quizBlock=defaultBlock();
     const b=state.quizBlock, pool=quizPool(b);
@@ -1540,8 +1705,9 @@ function renderQuiz(){
 }
 function startQuiz(){ const b=state.quizBlock; beginQuiz(shuffle(quizPool(b)).slice(0,12), 15*60*1000, b==="alle"?"alle":"q"+b); }
 /* Mini-Quiz für „Heute“: 6 Fragen in 7:30 Minuten (gleiches Tempo wie Moodle), bevorzugt schon gelernte Fragen */
-function startMini(){ const seen=shuffle(allQ().filter(x=>isSeen(x.id))); let L=seen.slice(0,6);
-  if(L.length<6) L=L.concat(shuffle(allQ().filter(x=>!L.includes(x))).slice(0,6-L.length)); beginQuiz(L, 450000, "mini"); }
+function startMini(){ const n=isSoz()?10:6, seen=shuffle(allQ().filter(x=>isSeen(x.id))); let L=seen.slice(0,n);
+  if(L.length<n) L=L.concat(shuffle(allQ().filter(x=>!L.includes(x))).slice(0,n-L.length));
+  beginQuiz(L, isSoz()?klMs(L.length):450000, isSoz()?"kmini":"mini"); }
 function beginQuiz(list, ms, sc){
   const prev=state.quizzes.filter(z=>z.scope===sc).slice(-1)[0]||null;
   quiz={items:list.map(prepQ), answers:Array(list.length).fill(null), cur:0, end:Date.now()+ms, running:true, scope:sc, prev};
@@ -1570,7 +1736,7 @@ function renderQuizRunning(){
     <div class="row"><button class="btn ghost grow" id="prev"${quiz.cur===0?" disabled":""}>Zurück</button><button class="btn ghost grow" id="next"${quiz.cur===quiz.items.length-1?" disabled":""}>Weiter</button></div>`;
   document.querySelectorAll(".coin").forEach(b=>b.onclick=()=>{quiz.cur=+b.dataset.i;renderQuiz();});
   bindAnswer(it, ()=>quiz.answers[quiz.cur], (val,instant,redraw)=>{
-    quiz.answers[quiz.cur]=val; track("od");
+    quiz.answers[quiz.cur]=val; track(state.course);
     if(instant && it.t==="sc" && quiz.cur<quiz.items.length-1){ quiz.cur++; return renderQuiz(); }
     if(redraw) return renderQuiz();
     const c=document.querySelector(`.coin[data-i="${quiz.cur}"]`); if(c) c.classList.toggle("done", qDone(quiz.cur));
@@ -1595,6 +1761,7 @@ function finishQuiz(){
   save(); view="quiz"; render(); window.scrollTo(0,0);
 }
 function renderQuizResult(){
+  if(/^k/.test(quiz.scope)) return renderKlausurResult();
   const n=quiz.items.length, pass = quiz.score/n >= 7/12, mini=quiz.scope==="mini";
   $("#app").innerHTML = `
     <h1>Ergebnis</h1>
@@ -1610,6 +1777,32 @@ function renderQuizResult(){
       <p><strong>${inl(it.q.q)}</strong></p>
       ${isAnswered(it,a) && !ok && it.t!=="sc" ? `<p class="small">Deine Antwort: ${inl(answerText(it,a))}</p>` : ""}
       ${isAnswered(it,a) ? fbHTML(it,a,false) : fbHTML(it,a,true).replace("Kein Problem, die Frage kommt gleich noch einmal.","Nicht beantwortet.")}</div>`; }).join("")}`;
+  if($("#again")) $("#again").onclick=()=>{quiz=null;renderQuiz();};
+  if($("#toPr")) $("#toPr").onclick=()=>{ quiz=null; setF("alle"); startRound("err"); };
+}
+
+function quizReview(){
+  return quiz.items.map((it,i)=>{ const a=quiz.answers[i], ok=quiz.ok[i]; return `<div class="review">
+      <p class="small" style="color:var(--${ok?"good":"bad"})">Frage ${i+1}: ${ok?"richtig":isAnswered(it,a)?"falsch":"nicht beantwortet"}</p>
+      <p><strong>${inl(it.q.q)}</strong></p>
+      ${isAnswered(it,a) ? fbHTML(it,a,false) : fbHTML(it,a,true).replace("Kein Problem, die Frage kommt gleich noch einmal.","Nicht beantwortet.")}</div>`; }).join("");
+}
+function renderKlausurResult(){
+  const n=quiz.items.length, pct=Math.round(quiz.score/n*100), open=quiz.items.filter((_,i)=>!qDone(i)).length;
+  const bySes={}; quiz.items.forEach((it,i)=>{ const k=it.q.s; bySes[k]=bySes[k]||[0,0]; bySes[k][1]++; if(quiz.ok[i]) bySes[k][0]++; });
+  const s=sessions();
+  $("#app").innerHTML = `
+    <h1>Ergebnis</h1>
+    <div class="block">
+      <div class="verdict ${pct>=50?"pass":"fail"}">${quiz.score}&nbsp;von&nbsp;${n} (${pct}&nbsp;%)</div>${quiz.prev?`<p class="small muted" style="margin:4px 0 0">Zuletzt: ${quiz.prev.score} von ${quiz.prev.total}</p>`:""}
+      <div class="coins">${quiz.items.map((it,i)=>`<span class="coin ${quiz.ok[i]?"ok":"no"}">${i+1}</span>`).join("")}</div>
+      ${open?`<p class="small" style="color:var(--bad)">${open} Frage${open>1?"n":""} nicht beantwortet. Es gibt keine Minuspunkte: In der Klausur immer etwas ankreuzen.</p>`:""}
+      <p class="small muted">Die Bestehensgrenze steht nicht in den Klausurinfos. Falsche Fragen kommen jetzt öfter dran.</p>
+      ${Object.keys(bySes).length>1?`<table>${Object.keys(bySes).sort((a,b)=>a-b).map(k=>`<tr><td>${k}. ${esc(s[k]||"")}</td><td>${bySes[k][0]}&nbsp;/&nbsp;${bySes[k][1]}</td></tr>`).join("")}</table>`:""}
+      <div class="row">${sess?sessBtn():`<button class="btn" id="again">Neue Probeklausur</button><button class="btn ghost" id="toPr">Fehler üben</button>`}</div>
+    </div>
+    <h2>Durchsicht</h2>
+    ${quizReview()}`;
   if($("#again")) $("#again").onclick=()=>{quiz=null;renderQuiz();};
   if($("#toPr")) $("#toPr").onclick=()=>{ quiz=null; setF("alle"); startRound("err"); };
 }
@@ -1631,7 +1824,7 @@ load().then(render);
    Beim Start lädt die App eine neue Version sofort. Beim Zurückkehren nur, wenn gerade nichts läuft;
    mitten in Karten, Aufgaben oder Probeklausur erscheint stattdessen ein Hinweis zum Antippen. Der Lernstand liegt im Gerät und wird vorher abgeglichen. */
 (function(){
-  var V="890771d57228", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
+  var V="58dc27698686", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
   function busy(){ try{ return BUSY.indexOf(view)>=0; }catch(e){ return false; } }
   function syncing(){ try{ return !!(pushTimer||pushing); }catch(e){ return false; } }
   function reload(t){ try{ sessionStorage.setItem("upd-"+t,"1"); }catch(e){} location.replace(location.pathname+"?v="+t+location.hash); }
