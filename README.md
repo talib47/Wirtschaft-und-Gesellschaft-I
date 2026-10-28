@@ -22,6 +22,8 @@ Eine Datei (`index.html`, Vanilla-JS, kein Build-Schritt). Zwei Kurse in einer A
 
 ## Geräte-Abgleich
 
+- **Offline:** `sw.js` speichert die App-Dateien im Gerät. Die App startet auch ohne Internet (Netz höchstens 3 Sekunden, sonst die gespeicherte Kopie). Der Lernstand liegt immer zuerst im Gerät (`localStorage`) und wird abgeglichen, sobald wieder Internet da ist. Beim Abgleich gewinnt der neuere Stand als Ganzes: Wer offline auf zwei Geräten lernt, verliert den Stand des älteren.
+
 - Fortschritt liegt als `fortschritt.json` im Zweig `fortschritt` dieses Repos (GitHub-Contents-API).
 - Gerät verbinden: `https://talib47.github.io/Wirtschaft-und-Gesellschaft-I/#t=<GitHub-Schlüssel>` einmal öffnen.
 - Eigene Schlüssel pro App: `od-lernapp-v1`, `od-gh-token`, `od-zoom`.
