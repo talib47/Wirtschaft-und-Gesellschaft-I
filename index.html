@@ -1311,8 +1311,10 @@ function renderStats(){
     <div class="block"><h3>Was bevorsteht</h3>
       <p class="small"><strong>Ökonomisches Denken:</strong> ${next?`Quiz ${next.n} öffnet in ${dn} Tag${dn===1?"":"en"}.`:"Alle Quiz sind offen, Abgabe bis 21.02.2027."} ${odOpen} von ${odItems.length} Fragen und Karten sind noch nicht sicher${next&&odOpen?`, also etwa ${Math.ceil(odOpen/dn)} pro Tag bis dahin`:""}.</p>
       <p class="small"><strong>Sozialstruktur:</strong> ${sozQOpen} von ${sozQ.length} Klausurfragen und ${sozOpen} von ${sozCards.length} Karten noch nicht sicher. Anmeldung zum 1. Klausurtermin: 09.–20.11.2026.</p></div>
-    <p class="small muted">Lernzeit zählt nur, solange du aktiv bist. Pausen über 2 Minuten zählen nicht mit. Nach 15 Minuten Pause beginnt eine neue Sitzung.</p>`;
-  bindDates(); bindWeak();
+    <p class="small muted">Lernzeit zählt nur, solange du aktiv bist. Pausen über 2 Minuten zählen nicht mit. Nach 15 Minuten Pause beginnt eine neue Sitzung.</p>
+    ${storeNote()}
+    ${resetBlock()}`;
+  bindDates(); bindWeak(); bindBackup(); bindReset(renderStats);
 }
 
 function week7(){
@@ -1423,9 +1425,8 @@ function renderHome(){
       ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · ${/^q\d$/.test(z.scope)?"Quiz "+z.scope.slice(1):z.scope==="alle"?"alle Sitzungen":z.scope==="mini"?"Mini-Quiz":"Sitzung "+esc(z.scope)}</td><td style="color:var(--${z.score>=7?"good":"bad"})">${z.score}&nbsp;/&nbsp;${z.total}</td></tr>`).join("")}</table>`
       : `<p class="small muted">Noch keine Simulation. Starte eine, sobald du die Karten einmal durch hast.</p>`}
     </div>
-    ${storeNote()}
-    ${resetBlock()}`;
-  bindBackup(); bindToday(); bindReview(); bindSessionRows(renderHome); bindReset(renderHome);
+`;
+  bindToday(); bindReview(); bindSessionRows(renderHome);
   $("#goQuiz").onclick=()=>go("quiz"); $("#goPr").onclick=()=>go("practice");
 }
 function resetBlock(){ return `<div class="block"><h3>Fortschritt zurücksetzen</h3>
@@ -1486,9 +1487,8 @@ function renderSozHome(){
       ${last.length ? `<table>${last.map(z=>`<tr><td>${new Date(z.date).toLocaleDateString("de-DE")} · ${z.scope==="kmini"?"Mini-Klausur":"Probeklausur"}</td><td>${z.score}&nbsp;/&nbsp;${z.total} (${Math.round(z.score/z.total*100)}&nbsp;%)</td></tr>`).join("")}</table>`
       : `<p class="small muted">Noch keine Probeklausur.</p>`}
     </div>
-    ${storeNote()}
-    ${resetBlock()}`;
-  bindBackup(); bindToday(); bindReview(); bindSessionRows(renderSozHome); bindReset(renderSozHome);
+`;
+  bindToday(); bindReview(); bindSessionRows(renderSozHome);
   $("#goCards").onclick=()=>{ cards=null; go("cards"); };
   $("#goWho").onclick=()=>openWho(8);
   $("#goQuiz").onclick=()=>go("quiz"); $("#goPr").onclick=()=>go("practice");
@@ -2085,7 +2085,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load", ()=>navigator.
    Beim Start lädt die App eine neue Version sofort. Beim Zurückkehren nur, wenn gerade nichts läuft;
    mitten in Karten, Aufgaben oder Probeklausur erscheint stattdessen ein Hinweis zum Antippen. Der Lernstand liegt im Gerät und wird vorher abgeglichen. */
 (function(){
-  var V="3eed5eced4cd", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
+  var V="61f610737038", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
   function busy(){ try{ return BUSY.indexOf(view)>=0; }catch(e){ return false; } }
   function syncing(){ try{ return !!(pushTimer||pushing); }catch(e){ return false; } }
   function reload(t){ try{ sessionStorage.setItem("upd-"+t,"1"); }catch(e){} location.replace(location.pathname+"?v="+t+location.hash); }
