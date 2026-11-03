@@ -1885,7 +1885,7 @@ const TODOS={
  od:QUIZZES.map(z=>({id:"od-q"+z.n, t:`Quiz ${z.n} in Moodle geschrieben`, d:`offen ab ${new Date(z.open+"T00:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})}, Abgabe bis 21.02.`, auto:()=>state.quizPts[z.n]!=null})),
  soz:[
   {id:"soz-his", t:"Zur Klausur angemeldet (1. Termin)", d:"Anmeldung 09.–20.11.2026"},
-  {id:"soz-termin", t:"Klausurtermin unter Termine eingetragen", d:"dann rechnet die App die Abstände passend", auto:()=>!!state.dates.soz}
+  {id:"soz-termin", t:"Klausurtermin unter Termine eingetragen", d:"bis dahin gilt der Stichtag 31.01.", auto:()=>!!state.dates.soz}
  ]};
 const tdOn=x=>!!state.todo[x.id]||(x.auto&&x.auto());
 function todoBlock(){
@@ -1908,7 +1908,7 @@ function motivLine(){
   else m=pick([`Seit ${gap} Tagen nichts gemacht. Kein Drama, fang heute mit fünf Minuten an.`,`${gap} Tage Pause. Das Wiederholen holt schnell wieder auf, fang einfach an.`,`Lange nichts geübt. Eine Sitzung heute, und du bist wieder drin.`]);
   return `<p class="motiv">${m}</p>`;
 }
-const BRUECKE=/*BRUECKE*/[{"d": "2026-11-03", "a": "alle", "w": "Lernen nach Forschungsstand: Abstände passen sich der Prüfung an (höchstens ein Drittel der Resttage, Streuung), nicht sichere Karten bis zu dreimal in derselben Runde, täglich ein paar neue Karten, Tastatur für Karten, größere Schrift auf dem iPad, Hinweis zum Schlaf nach Abendeinheiten", "y": "Tiefenanalyse aller Apps; Regeln stehen unter „Lernprinzipien“"}, {"d": "2026-11-03", "a": "alle", "w": "Hochgeladen-Übersicht, Erledigt-Liste, Motivationssatz und Brücken-Block in allen Apps; Statistik überall in der festen Reihenfolge; gemeinsamer Code in `status.js` (W&G I: angepasster Block in der index.html), Einstellungen je App in `appcfg.js`", "y": "Von Talib bestätigt, einheitlich in allen Apps"}, {"d": "2026-11-03", "a": "alle", "w": "CLAUDE.md in alle vier Repos verteilt, fester Aufbau jeder App festgelegt (Reiter, Reihenfolge auf Lernpfad und Statistik)", "y": "Talib hat die Brücken-Anweisung in alle vier Projekte kopiert; Funktionen sollen nicht mehr zwischen den Apps an verschiedenen Stellen landen"}, {"d": "2026-10-29", "a": "W&G I", "w": "Geräte-Abgleich und Zurücksetzen unter Statistik", "y": "einheitlich mit den anderen Apps"}, {"d": "2026-10-28", "a": "alle", "w": "Offline-Modus mit eigenem Cache-Präfix je App", "y": "Apps sollen ohne Internet starten"}, {"d": "2026-10-27", "a": "W&G I", "w": "Sozialstruktur: Single-Choice-Klausurfragen statt Schreibaufgaben, Probeklausur 70 Fragen in 60 Min.", "y": "Klausurformat"}]/*BRUECKE-ENDE*/;
+const BRUECKE=/*BRUECKE*/[{"d": "2026-11-03", "a": "alle", "w": "Unbekannter Prüfungstermin: Stichtag 31.01.2027 (Wirtschaft II, Sozialstruktur in W&G I), als Annahme gekennzeichnet, eigener Termin geht vor; bekannte Termine bleiben (Politik 04.02., BiWi 17.02., Quizze laut Moodle)", "y": "Talib: Bis Ende Januar soll alles sitzen, sofern kein Termin feststeht"}, {"d": "2026-11-03", "a": "alle", "w": "Lernen nach Forschungsstand: Abstände passen sich der Prüfung an (höchstens ein Drittel der Resttage, Streuung), nicht sichere Karten bis zu dreimal in derselben Runde, täglich ein paar neue Karten, Tastatur für Karten, größere Schrift auf dem iPad, Hinweis zum Schlaf nach Abendeinheiten", "y": "Tiefenanalyse aller Apps; Regeln stehen unter „Lernprinzipien“"}, {"d": "2026-11-03", "a": "alle", "w": "Hochgeladen-Übersicht, Erledigt-Liste, Motivationssatz und Brücken-Block in allen Apps; Statistik überall in der festen Reihenfolge; gemeinsamer Code in `status.js` (W&G I: angepasster Block in der index.html), Einstellungen je App in `appcfg.js`", "y": "Von Talib bestätigt, einheitlich in allen Apps"}, {"d": "2026-11-03", "a": "alle", "w": "CLAUDE.md in alle vier Repos verteilt, fester Aufbau jeder App festgelegt (Reiter, Reihenfolge auf Lernpfad und Statistik)", "y": "Talib hat die Brücken-Anweisung in alle vier Projekte kopiert; Funktionen sollen nicht mehr zwischen den Apps an verschiedenen Stellen landen"}, {"d": "2026-10-29", "a": "W&G I", "w": "Geräte-Abgleich und Zurücksetzen unter Statistik", "y": "einheitlich mit den anderen Apps"}, {"d": "2026-10-28", "a": "alle", "w": "Offline-Modus mit eigenem Cache-Präfix je App", "y": "Apps sollen ohne Internet starten"}]/*BRUECKE-ENDE*/;
 function bridgeBlock(){
   if(!BRUECKE.length) return "";
   const f=s=>{ const [y,m,d]=s.split("-"); return +d+"."+(+m)+"."; };
@@ -1918,10 +1918,11 @@ function bridgeBlock(){
 }
 /* Abstände vor der Prüfung (Cepeda et al. 2008), wie in den anderen Apps: höchstens ein Drittel der Resttage, ±10 % Streuung.
    Ökonomisches Denken: Termin des Quiz, zu dem die Sitzung gehört (eigener Termin unter Termine, sonst Freischaltung, danach Abgabe 21.02.).
-   Sozialstruktur: eingetragener Klausurtermin. */
+   Sozialstruktur: eingetragener Klausurtermin, sonst Stichtag 31.01.2027 (Absprache mit Talib am 03.11.2026: bis dahin soll alles sitzen). */
+const SOZ_STICHTAG="2027-01-31";
 function wgExamTs(sNum){
   const iso=s=>isoTs(s);
-  if(isSoz()) return state.dates.soz?iso(state.dates.soz):null;
+  if(isSoz()) return iso(state.dates.soz||SOZ_STICHTAG);
   const z=QUIZZES.find(q=>q.s.includes(Number(sNum))); if(!z) return null;
   if(state.quizPts[z.n]!=null) return null;
   const d=state.dates["q"+z.n]; if(d) return iso(d);
@@ -1983,7 +1984,7 @@ function myDatesLine(){
     return `<p class="small" style="margin:8px 0 0">${nx?`<b>Dein nächster Termin:</b> Quiz ${nx.n} am ${fmtD(state.dates["q"+nx.n])}, ${cdText(state.dates["q"+nx.n])}.`:"Eigene Termine kannst du unter Statistik eintragen."}${done?` Bisher ${quizSum()} von mindestens 30&nbsp;Punkten.`:""}</p>`;
   }
   const k=state.dates.soz;
-  return `<p class="small" style="margin:8px 0 0">${k?`<b>Klausur:</b> ${fmtD(k)}, ${cdText(k)}.`:"Den Klausurtermin kannst du unter Statistik eintragen."}</p>`;
+  return `<p class="small" style="margin:8px 0 0">${k?`<b>Klausur:</b> ${fmtD(k)}, ${cdText(k)}.`:`<b>Stichtag:</b> ${fmtD(SOZ_STICHTAG)}, ${cdText(SOZ_STICHTAG)}. Bis dahin soll alles sitzen, solange der Klausurtermin nicht feststeht.`}</p>`;
 }
 function datesBlock(){
   const sum=quizSum(), open=QUIZZES.filter(z=>state.quizPts[z.n]==null).length;
@@ -1998,7 +1999,7 @@ function datesBlock(){
     <p class="small" style="margin:10px 0 0"><b>Summe:</b> ${sum} von mindestens 30&nbsp;Punkten${open&&sum<30?`, in ${open} offenen Quiz fehlen noch ${30-sum} (Schnitt ${(Math.ceil((30-sum)/open*10)/10).toString().replace(".",",")} je Quiz, mindestens 7)`:""}.</p>
     <div class="qrow" style="margin-top:8px"><div class="row between"><b>Klausur Sozialstruktur</b>${state.dates.soz?`<span class="mini">${cdText(state.dates.soz)}</span>`:""}</div>
       <div class="dgrid"><label class="small" for="dsoz">Termin</label><input type="date" class="dateinp" id="dsoz" data-dk="soz" value="${state.dates.soz||""}"></div>
-      <p class="small muted" style="margin:4px 0 0">Die Termine stehen noch nicht fest. Anmeldung zum 1. Termin: 09.–20.11.2026 in HISinOne.</p></div></div>`;
+      <p class="small muted" style="margin:4px 0 0">${state.dates.soz?"":`Die Termine stehen noch nicht fest. Bis dahin rechnet die App mit dem Stichtag ${fmtD(SOZ_STICHTAG)} `}Anmeldung zum 1. Termin: 09.–20.11.2026 in HISinOne.</p></div></div>`;
 }
 function bindDates(){
   document.querySelectorAll("[data-dk]").forEach(el=>el.onchange=()=>{ if(el.value) state.dates[el.dataset.dk]=el.value; else delete state.dates[el.dataset.dk]; save(); const y=window.scrollY; render(); window.scrollTo(0,y); });
@@ -2196,7 +2197,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load", ()=>navigator.
    Beim Start lädt die App eine neue Version sofort. Beim Zurückkehren nur, wenn gerade nichts läuft;
    mitten in Karten, Aufgaben oder Probeklausur erscheint stattdessen ein Hinweis zum Antippen. Der Lernstand liegt im Gerät und wird vorher abgeglichen. */
 (function(){
-  var V="7e7de07016c5", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
+  var V="1de6c36e5903", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
   function busy(){ try{ return BUSY.indexOf(view)>=0; }catch(e){ return false; } }
   function syncing(){ try{ return !!(pushTimer||pushing); }catch(e){ return false; } }
   function reload(t){ try{ sessionStorage.setItem("upd-"+t,"1"); }catch(e){} location.replace(location.pathname+"?v="+t+location.hash); }
