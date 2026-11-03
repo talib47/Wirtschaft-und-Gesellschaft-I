@@ -128,4 +128,4 @@ Zeilen mit `> ` werden zu einer Box mit Label links, z. B.
 
 ## Updates
 
-Nach jeder Änderung an `index.html` einmal `python3 stamp.py` ausführen: setzt die Versionsnummer im Update-Check und schreibt `version.txt`. Die App vergleicht beim Start und beim Zurückkehren ihre Version damit und lädt sich bei Änderungen neu.
+Nach jeder Änderung an `index.html` einmal `python3 stamp.py` ausführen: setzt das gemeinsame Design aus `design.css` (wortgleich mit den anderen Apps, Schrift in `fonts/`) zwischen `/*DESIGN*/` und `/*DESIGN-ENDE*/` ein, setzt die Versionsnummer im Update-Check und schreibt `version.txt`. Die App vergleicht beim Start und beim Zurückkehren ihre Version damit und lädt sich bei Änderungen neu.

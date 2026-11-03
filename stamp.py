@@ -4,6 +4,9 @@ import hashlib, os, re
 root=os.path.dirname(os.path.abspath(__file__)); p=os.path.join(root,'index.html')
 s=open(p,encoding='utf-8').read()
 s=re.sub(r'var V="[0-9a-f_A-Z]*"','var V="__APPVER__"',s)
+# Gemeinsames Design (design.css, wortgleich mit src/design.css der anderen Apps) einsetzen
+design=open(os.path.join(root,'design.css'),encoding='utf-8').read().strip()
+s=re.sub(r'/\*DESIGN\*/.*?/\*DESIGN-ENDE\*/', lambda _: '/*DESIGN*/\n'+design+'\n/*DESIGN-ENDE*/', s, flags=re.S)
 # Claude-Brücke: letzte Logbuch-Einträge dieser App aus CLAUDE.md in die App übernehmen
 import json
 log=[]
