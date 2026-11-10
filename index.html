@@ -521,6 +521,8 @@ body.fbon .etop{top:calc(52px + env(safe-area-inset-top,0px))}
 .klist{grid-template-columns:fit-content(40%) minmax(0,1fr)}
 .hint,.card .tap{opacity:1}
 .upl>summary{min-height:44px;display:flex;align-items:center}
+.upl .upl-sub{font-size:.8125rem;font-weight:600;color:var(--muted);margin:16px 0 6px}
+.upl .upl-how{margin:14px 0 0}
 /*DESIGN-ENDE*/
 </style>
 <style>
@@ -2541,7 +2543,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load", ()=>navigator.
    Beim Start lädt die App eine neue Version sofort. Beim Zurückkehren nur, wenn gerade nichts läuft;
    mitten in Karten, Aufgaben oder Probeklausur erscheint stattdessen ein Hinweis zum Antippen. Der Lernstand liegt im Gerät und wird vorher abgeglichen. */
 (function(){
-  var V="1fe22f186022", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
+  var V="36101f55ea35", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
   function busy(){ try{ return BUSY.indexOf(view)>=0; }catch(e){ return false; } }
   function syncing(){ try{ return !!(pushTimer||pushing); }catch(e){ return false; } }
   function reload(t){ try{ sessionStorage.setItem("upd-"+t,"1"); }catch(e){} location.replace(location.pathname+"?v="+t+location.hash); }
