@@ -2168,22 +2168,53 @@ let sessMin=0;
 /* ================= Gemeinsame Bausteine (wie status.js der modularen Apps, angepasst an diese Einzeldatei) =================
    Hochgeladen-Übersicht, Erledigt-Liste, Motivationssatz, Claude-Brücke, Abstände vor der Prüfung. Regeln: CLAUDE.md. */
 const UPLOADS=[
- {c:"od", no:1, known:false, items:[{k:"Folien", t:"Sitzung 1: Grundlagen und Antike", ok:true}]},
- {c:"od", no:2, known:false, items:[{k:"Folien", t:"Sitzung 2: Age of Religion", ok:true}]},
- {c:"soz", no:1, date:"15.10.", known:false, items:[{k:"Folien", t:"Sitzung 1: Einführung", ok:true}]},
- {c:"soz", no:2, date:"22.10.", known:false, items:[{k:"Folien", t:"Sitzung 2: Neue Sozialstrukturanalyse", ok:true}]}
+ {c:"od", no:1, added:"2026-10-19", known:false, items:[{k:"Folien", t:"Sitzung 1: Grundlagen und Antike", ok:true}]},
+ {c:"od", no:2, added:"2026-10-27", known:false, items:[{k:"Folien", t:"Sitzung 2: Age of Religion", ok:true}]},
+ {c:"soz", no:1, date:"15.10.", added:"2026-10-19", known:false, items:[{k:"Folien", t:"Sitzung 1: Einführung", ok:true}]},
+ {c:"soz", no:2, date:"22.10.", added:"2026-10-27", known:false, items:[{k:"Folien", t:"Sitzung 2: Neue Sozialstrukturanalyse", ok:true}]}
 ];
 const upName=u=>u.base?"Grundlagen":"Sitzung "+u.no;
 function upState(u){ if(!u.known) return {cls:"unk", txt:"Umfang unbekannt"}; const m=u.items.filter(x=>!x.ok).length; return m?{cls:"part", txt:`${u.items.length-m} von ${u.items.length}`}:{cls:"full", txt:"vollständig"}; }
 function uploadsBlock(){
-  const c=isSoz()?"soz":"od", L=UPLOADS.filter(u=>u.c===c).sort((a,b)=>(a.base?-1:a.no)-(b.base?-1:b.no)), U=L.filter(u=>!u.base);
-  if(!L.length) return ""; const last=U[U.length-1], ls=last?upState(last):null;
-  return `<details class="block upl"><summary><span class="eyebrow" style="margin:0">Hochgeladen</span><span class="upl-last">${last?`bis ${upName(last)} · <span class="upst ${ls.cls}">${ls.txt}</span>`:"nur Grundlagen"}</span></summary>
-    ${L.map(u=>{ const st=upState(u);
-      return `<div class="upl-u"><p class="upl-h"><b>${upName(u)}</b><span class="muted">${u.date||""}</span><span class="upst ${st.cls}">${st.txt}</span></p>
-        <ul class="upl-i">${u.items.map(x=>`<li class="${x.ok?"":"miss"}"><span aria-hidden="true">${x.ok?"✓":"○"}</span><span>${x.k?`<span class="muted">${x.k}:</span> `:""}${x.t}${x.ok?"":` <span class="muted">fehlt</span>`}</span></li>`).join("")}</ul>
-        <p class="upl-src small muted">${u.known?`Umfang laut ${u.src}.`:`Den Überblick, was alles zu ${upName(u)} gehört, habe ich noch nicht gesehen. Schick mir dazu den Moodle-Screenshot.`}</p></div>`; }).join("")}
-    ${last?`<p class="small muted" style="margin:8px 0 0">Alles nach ${upName(last)} fehlt noch im Projekt.</p>`:""}</details>`;
+  const c=isSoz()?"soz":"od", L=UPLOADS.filter(u=>u.c===c).sort((a,b)=>(a.base?-1:a.no)-(b.base?-1:b.no));
+  if(!L.length) return ""; return uploadsTodo(L);
+}
+function upDate(u){ return u.date||""; }
+/* Wortgleich mit status.js der anderen Apps */
+/* Unterlagen (Muster Politik I, 10.11.2026): oben, was noch fehlt (vergangene Sitzungen ohne Dateien, Texte schon
+   7 Tage vorher), dann in zwei Schritten, wie hochladen, darunter, was schon drin ist. Braucht APP.expect(hälfte) mit
+   [{ch, label, date, ts, items:[…], pre}] (pre: Unterlagen gibt es schon vor dem Termin, etwa Texte in Moodle). */
+function uploadsTodo(L){
+  const now=Date.now(), key=u=>u.ch!=null?u.ch:u.no, have=new Set(L.filter(u=>!u.base).map(key)), U=L.filter(u=>!u.base);
+  const X=APP.expect(APP.halves?state.course:null,L)||[], E=Array.isArray(X)?X:(X.list||[]), unsure=!Array.isArray(X)&&X.unsure;
+  const miss=E.filter(e=>!have.has(e.ch)&&(e.ts<=now||(e.pre&&e.ts-7*864e5<=now))), late=miss.filter(e=>e.ts<=now);
+  const head=miss.length?`<span class="upst ${late.length?"part":"unk"}">${unsure?"vermutlich ":""}${late.length?(late.length===1?"1 fehlt":late.length+" fehlen"):"bald"}</span> ${miss.map(e=>e.label).join(", ")}`
+    :`<span class="upst full">alles da</span>${U.length?" bis "+upName(U[U.length-1]):""}`;
+  return `<details class="block upl"${late.length?" open":""}><summary><span class="eyebrow" style="margin:0">Unterlagen</span><span class="upl-last">${head}</span></summary>
+    ${miss.length?`<p class="upl-sub">Noch hochladen</p><ul class="upl-i">${miss.map(e=>`<li class="miss"><span aria-hidden="true">○</span><span><b>${e.label}</b> <span class="muted">${e.date}${e.ts>now?", bald":""}</span><br>${e.items.join(" · ")}</span></li>`).join("")}</ul>`:""}
+    ${unsure&&miss.length?`<p class="small muted upl-how">Hergeleitet aus deinen bisherigen Uploads. Stimmt das nicht, leg einen Screenshot der Moodle-Kursseite dazu, dann passe ich es an.</p>`:""}
+    <p class="small upl-how"><b>So geht’s:</b> Dateien ins claude.ai-Projekt zu ${APP.project||APP.name} laden, dort einen neuen Chat öffnen und <b>Update</b> schreiben. Den Rest mache ich.</p>
+    ${U.length?`<p class="upl-sub">Schon drin</p>`+L.map(u=>{ const st=upState(u);
+      return `<div class="upl-u"><p class="upl-h"><b>${upName(u)}</b><span class="muted">${upDate(u)}</span><span class="upst ${st.cls}">${st.txt}</span></p>
+        <ul class="upl-i">${u.items.map(x=>`<li class="${x.ok?"":"miss"}"><span aria-hidden="true">${x.ok?"✓":"○"}</span><span>${x.k?`<span class="muted">${x.k}:</span> `:""}${x.t}${x.ok?"":` <span class="muted">fehlt</span>`}</span></li>`).join("")}</ul></div>`; }).join(""):""}</details>`;
+}
+
+/* Erwartung aus dem bisherigen Rhythmus herleiten, für Fächer ohne bekannten Sitzungsplan: Nach dem letzten Upload
+   (Feld `added` in UPLOADS) kommt etwa alle 7 Tage etwas Neues, nicht in der Weihnachtspause und nicht nach cfg.end.
+   items: was kommt (Standard: dieselbe Art wie beim letzten Upload). grow: eine Datei wächst jede Woche, dann eine
+   Zeile für den neuesten Stand. Das Ergebnis gilt als „vermutlich“. */
+function weeklyAfter(L,cfg){
+  cfg=cfg||{}; const U=L.filter(u=>!u.base&&u.added), last=U[U.length-1]; if(!last) return {list:[],unsure:true};
+  const key=u=>u.ch!=null?u.ch:u.no, unit=cfg.unit||"Sitzung", day=864e5, end=cfg.end?new Date(cfg.end).getTime():Infinity;
+  const pause=(cfg.pause||[["2026-12-21","2027-01-06"]]).map(p=>[new Date(p[0]).getTime(),new Date(p[1]).getTime()+day]);
+  const dm=t=>{ const d=new Date(t); return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."; };
+  const items=cfg.items||[...new Set(last.items.map(x=>x.k).filter(Boolean))].map(k=>k+" (wie bisher)");
+  const out=[]; let t=new Date(last.added).getTime(), n=key(last);
+  for(let i=0;i<30;i++){ t+=(cfg.every||7)*day; if(t>end) break; if(pause.some(([a,b])=>t>=a&&t<b)) continue; n++;
+    out.push({ch:n, label:unit+" "+n, date:"etwa "+dm(t), ts:t, items}); }
+  if(cfg.grow){ const due=out.filter(e=>e.ts<=Date.now()); if(due.length>1){ const z=due[due.length-1];
+    return {list:[{...z, label:`${unit} ${due[0].ch}–${z.ch}`}].concat(out.filter(e=>e.ts>Date.now())), unsure:true}; } }
+  return {list:out, unsure:true};
 }
 /* Erledigt-Liste je Hälfte. Quiz gelten auch als erledigt, sobald unter Termine Punkte eingetragen sind. */
 const TODOS={
@@ -2224,7 +2255,9 @@ const NAV_ICONS=(()=>{ const s=b=>`<svg viewBox="0 0 24 24" fill="none" stroke="
   return {home:book, overview:book, practice:target, stats:bars, cards, quiz, exam:quiz}; })();
 
 /* Einstellungen für den Lernmodus (gleiche Logik wie status.js der anderen Apps). W&G I hat keinen Zurück-Link, darum exit(). */
-const APP={ name:"W&G I", focus:{
+const APP={ name:"W&G I",
+ /* Unterlagen-Muster, hergeleitet aus den Uploads bis 27.10.: je Hälfte etwa wöchentlich neue Unterlagen, Art wie beim letzten Upload */
+ expect:(h,L)=>weeklyAfter(L,{end:"2027-02-06"}), focus:{
   on:()=>(view==="practice"&&!!practice)||view==="cards"||view==="who"||(view==="quiz"&&!!quiz&&!!quiz.running),
   prog:()=>{ const P={practice:()=>practice&&{i:practice.i,n:practice.list.length}, cards:()=>cards&&cards.deck&&{i:cards.i,n:cards.deck.length},
     who:()=>who&&{i:who.i,n:who.list.length}, quiz:()=>quiz&&{i:quiz.cur,n:quiz.items.length}}[view]; const r=P&&P(); return r&&r.n?r:null; },
@@ -2251,7 +2284,7 @@ new MutationObserver(()=>focusBar()).observe(document.getElementById("app"),{chi
 document.addEventListener("keydown",e=>{ if(e.key!=="Escape"||!document.body.classList.contains("fbon")) return;
   const a=document.activeElement; if(a&&/^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName)) return; const x=document.getElementById("fx"); if(x){ e.preventDefault(); x.click(); } });
 
-const BRUECKE=/*BRUECKE*/[{"d": "2026-11-04", "a": "alle", "w": "`PRUEFAUFTRAG.md` verschlankt: erst Skripte, dann gezielt lesen, keine parallelen Agenten, Bericht im Chat", "y": "Talib: Das Limit wurde ständig erreicht"}, {"d": "2026-11-04", "a": "alle", "w": "`spaceDays` nie unter 3 Tage, Streuung nach dem Deckel; `design.css`: Grauton und Gold dunkler (WCAG AA), Hinweise voll deckend, Silbentrennung gegen Überlauf bei 180 % Schrift, Zurück, Schließen und Aufklappzeilen 44 px, Häkchen 24 px", "y": "Prüfauftrag Politik I: Stau in der letzten Woche vor der Prüfung, 16 Kontrastfehler, Überlauf bei großer Schrift"}, {"d": "2026-11-03", "a": "alle", "w": "Prüfauftrag `PRUEFAUFTRAG.md` in allen Repos: Gesamtprüfung in acht Schritten (Inhalt gegen Unterlagen, Prüfungspassung, Lernwirksamkeit, Oberfläche, Technik, unabhängige Zweitprüfung, Umsetzen, Bericht)", "y": "Talib will die Apps regelmäßig von Grund auf prüfen lassen"}, {"d": "2026-11-03", "a": "alle", "w": "Lernmodus in BiWi II, Wirtschaft II und W&G I übernommen (W&G I: Fragenrunde, Karten, Wer sagt das?, laufendes Quiz; Umschalter dort ausgeblendet)", "y": "Talib hat das Muster freigegeben"}, {"d": "2026-11-03", "a": "alle", "w": "Abstände geprüft (automatische Messung in allen Ansichten) und nach festem Raster korrigiert: kleine Zeile über Titeln, Titel zu Text, Listen in Gruppen", "y": "Talib: kleine Sätze klebten an Titeln wie „Üben“"}, {"d": "2026-11-03", "a": "alle", "w": "Design „Die Reihe“ in BiWi II (Pflaume, II), Wirtschaft II (Blau, II) und W&G I (Grün, I, fünf Reiter mit Symbolen) übernommen", "y": "Talib hat das Muster in Politik I freigegeben"}]/*BRUECKE-ENDE*/;
+const BRUECKE=/*BRUECKE*/[{"d": "2026-11-10", "a": "alle", "w": "Block „Unterlagen“ in allen Apps, Muster je App aus den bisherigen Uploads hergeleitet: BiWi II ein wachsender Foliensatz (immer die neueste ganze Datei), W&G I je Hälfte etwa wöchentlich wie bisher, Wirtschaft II komplett, Politik I nach Vorlesungs- und Verlaufsplan; unsicher heißt „vermutlich“ mit Bitte um Moodle-Screenshot; Regel 7 neu", "y": "Talib: Die Fächer laden sehr unterschiedlich hoch, Claude soll das selbst herleiten und in jedem Chat wissen"}, {"d": "2026-11-04", "a": "alle", "w": "`PRUEFAUFTRAG.md` verschlankt: erst Skripte, dann gezielt lesen, keine parallelen Agenten, Bericht im Chat", "y": "Talib: Das Limit wurde ständig erreicht"}, {"d": "2026-11-04", "a": "alle", "w": "`spaceDays` nie unter 3 Tage, Streuung nach dem Deckel; `design.css`: Grauton und Gold dunkler (WCAG AA), Hinweise voll deckend, Silbentrennung gegen Überlauf bei 180 % Schrift, Zurück, Schließen und Aufklappzeilen 44 px, Häkchen 24 px", "y": "Prüfauftrag Politik I: Stau in der letzten Woche vor der Prüfung, 16 Kontrastfehler, Überlauf bei großer Schrift"}, {"d": "2026-11-03", "a": "alle", "w": "Prüfauftrag `PRUEFAUFTRAG.md` in allen Repos: Gesamtprüfung in acht Schritten (Inhalt gegen Unterlagen, Prüfungspassung, Lernwirksamkeit, Oberfläche, Technik, unabhängige Zweitprüfung, Umsetzen, Bericht)", "y": "Talib will die Apps regelmäßig von Grund auf prüfen lassen"}, {"d": "2026-11-03", "a": "alle", "w": "Lernmodus in BiWi II, Wirtschaft II und W&G I übernommen (W&G I: Fragenrunde, Karten, Wer sagt das?, laufendes Quiz; Umschalter dort ausgeblendet)", "y": "Talib hat das Muster freigegeben"}, {"d": "2026-11-03", "a": "alle", "w": "Abstände geprüft (automatische Messung in allen Ansichten) und nach festem Raster korrigiert: kleine Zeile über Titeln, Titel zu Text, Listen in Gruppen", "y": "Talib: kleine Sätze klebten an Titeln wie „Üben“"}]/*BRUECKE-ENDE*/;
 function bridgeBlock(){
   if(!BRUECKE.length) return "";
   const f=s=>{ const [y,m,d]=s.split("-"); return +d+"."+(+m)+"."; };
@@ -2543,7 +2576,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load", ()=>navigator.
    Beim Start lädt die App eine neue Version sofort. Beim Zurückkehren nur, wenn gerade nichts läuft;
    mitten in Karten, Aufgaben oder Probeklausur erscheint stattdessen ein Hinweis zum Antippen. Der Lernstand liegt im Gerät und wird vorher abgeglichen. */
 (function(){
-  var V="36101f55ea35", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
+  var V="9d28ca08264d", BUSY=["task","exam","essay","graph","kurz","lesson","cards","kreuz","recall","who","outline"];
   function busy(){ try{ return BUSY.indexOf(view)>=0; }catch(e){ return false; } }
   function syncing(){ try{ return !!(pushTimer||pushing); }catch(e){ return false; } }
   function reload(t){ try{ sessionStorage.setItem("upd-"+t,"1"); }catch(e){} location.replace(location.pathname+"?v="+t+location.hash); }
