@@ -1,4 +1,4 @@
-# Wirtschaft und Gesellschaft I – Lern-App
+# Wirtschaft und Gesellschaft I
 
 Vor jeder Arbeit `CLAUDE.md` lesen (Claude-Brücke: gemeinsame Regeln, Aufbau, Bausteine aller Apps, Logbuch).
 
